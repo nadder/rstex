@@ -60,6 +60,7 @@ for those who want to understand how this complex software works.
 */
 
 #include <sstream>
+#include <cmath>  // for round()
 
 #include "rstex.h"
 
@@ -2639,7 +2640,7 @@ void show_node_list(int p)
 						if (glue_sign(p) == shrinking) print(TEX_STRING("- "));
 						if (myabs(mem[p + glue_offset].union_t.an_int) < 04000000)
 							print(TEX_STRING("?.?"));
-						else if (abs(g) > float_constant(20000)) {
+						else if (myabs(g) > float_constant(20000)) {
 							if (g > float_constant(0)) print_char(TEX_STRING(">"));
 							else print(TEX_STRING("< -"));
 							print_glue(20000 * unity, glue_order(p), 0);
