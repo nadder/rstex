@@ -1,3 +1,9 @@
 This program is Copyright (C) Richard Sandberg 2018, mylodon at gmail dot com.
+
 This program is for educational purpose only, all commercial use
 is strictly forbidden.
+
+This is NOT the official version of TeX, it is only based upon the official version of TeX.
+It may contain bugs not present in the official version. 
+In no way shall the author of this program be responsible for any damages, 
+direct or indirect, that may result out of its use.
