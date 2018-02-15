@@ -216,7 +216,7 @@ int main(int argc, char **argv)
 		out_file.close();
 
 		// remove the temporary file, no need for this anymore
-		int ret = remove(filename.c_str());
+		remove(filename.c_str());
 
 		// now we have filename equal to something like file.cpp.pre.out
 		// remove last 8 characters, unless we can't
@@ -224,6 +224,8 @@ int main(int argc, char **argv)
 		if (filename.size() >= 9)
 			filename.resize(filename.size() - 8);
 		// Before we rename the new file, get rid of the old one, move it to .bak just in case
+		// But before we do that we better remove the old .bak file if there was one
+		remove((filename + ".bak").c_str());
 		rename(filename.c_str(), (filename + ".bak").c_str());
 		rename(outfilename.c_str(), filename.c_str());
 
