@@ -841,7 +841,7 @@ bool get_strings_started()
 			#pragma region <Read one string, but return false if the string memory space is getting too tight for comfort 52>
 			{
 				if (feof(pool_file))
-					bad_pool("! TEX.POOL has no checksum.");
+					bad_pool("! tex.pool has no checksum.", true);
 				m = fgetc(pool_file);
 				n = fgetc(pool_file);
 				if (m == '*') 
@@ -851,7 +851,7 @@ bool get_strings_started()
 					k = 1;
 					while (1) {
 						if (xord[n] < '0' || xord[n] > '9')
-							bad_pool("! TEX.POOL check sum doesn\'t have nine digits.");
+							bad_pool("! tex.pool check sum doesn\'t have nine digits.", true);
 						a = 10 * a + xord[n] - '0';
 						if (k == 9) goto done;
 						k++;
@@ -859,16 +859,16 @@ bool get_strings_started()
 					}
 				done:
 					if (a != @$)
-						bad_pool("! TEX.POOL doesn\'t match; TANGLE me again.");
+						bad_pool("! tex.pool doesn\'t match; TANGLE me again.", true);
 					c = true;
 				}
 	#pragma endregion
 				else {
 					if (xord[m] < TEX_STRING("0") || xord[m]> TEX_STRING("9") || xord[n] < TEX_STRING("0") || xord[n] > TEX_STRING("9"))
-						bad_pool("! TEX.POOL line does not begin with two digits.");
+						bad_pool("! tex.pool line does not begin with two digits.", true);
 					l = xord[m] * 10 + xord[n] - TEX_STRING("0") * 11;
 					if (pool_ptr + l + string_vacancies > pool_size)
-						bad_pool("! You have to increase POOLSIZE.");
+						bad_pool("! You have to increase POOLSIZE.", true);
 					for (k = 1; k <= l; k++) {
 						int ch = fgetc(pool_file);
 						if (ch == '\n')
@@ -889,7 +889,7 @@ bool get_strings_started()
 		return true;
 	}
 	else
-		bad_pool("! I cannot read TEX.POOL.");
+		bad_pool("! I cannot read tex.pool.", false);
 	#pragma endregion
 
 }

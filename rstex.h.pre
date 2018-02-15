@@ -89,18 +89,18 @@ private:
 #define loc cur_input.loc_field
 
 // 11
-//const int mem_max = 30000;
-const int mem_max = 3000; // triptex
-//const int mem_min = 0;
-const int mem_min = 1; // triptex
+const int mem_max = 30000;
+//const int mem_max = 3000; // triptex
+const int mem_min = 0;
+//const int mem_min = 1; // triptex
 
 const int buf_size = 500;
-//const int error_line = 72;
-const int error_line = 64; // triptex
-//const int half_error_line = 42;
-const int half_error_line = 32; // triptex
-//const int max_print_line = 79;
-const int max_print_line = 72; // triptex
+const int error_line = 72;
+//const int error_line = 64; // triptex
+const int half_error_line = 42;
+//const int half_error_line = 32; // triptex
+const int max_print_line = 79;
+//const int max_print_line = 72; // triptex
 const int stack_size = 200;
 const int max_in_open = 6;
 const int font_max = 75;
@@ -115,7 +115,7 @@ const int trie_size = 8000;
 const int trie_op_size = 500;
 const int dvi_buf_size = 800;
 const int file_name_size = 40;
-const char pool_name[file_name_size+1] = "TEX.POOL";
+const char pool_name[file_name_size+1] = "tex.pool";
 
 // 13
 int bad;
@@ -249,9 +249,10 @@ const int empty = 0;
 }while(0)
 
 // 51
-#define bad_pool(str) do {\
+// Add extra parameter if we should close the file
+#define bad_pool(str, do_close) do {\
   puts(str);\
-  a_close(pool_file);\
+  if(do_close) a_close(pool_file);\
   return false;\
 } while(0)
 
@@ -334,10 +335,10 @@ bool OK_to_interrupt;
 
 
 // 12
-//const int mem_bot = 0;
-const int mem_bot = 1; // triptex
-//const int mem_top = 30000;
-const int mem_top = 3000; // triptex
+const int mem_bot = 0;
+//const int mem_bot = 1; // triptex
+const int mem_top = 30000;
+//const int mem_top = 3000; // triptex
 const int font_base = 0;
 const int hash_size = 2100;
 const int hash_prime = 1777;
@@ -1343,12 +1344,6 @@ enum group_code : quarterword
 };
 unsigned char max_group_code = 16;
 
-
-
-//typedef char group_code;
-
-
-
 // 271
 Array<memory_word, 0, save_size> save_stack;
 int save_ptr;
@@ -1978,10 +1973,6 @@ s=qw;\
 // 576
 #define adjust(s) s[f] = qo(s[f])
 
-
-
-
-
 // 253
 
 Array<memory_word, active_base, eqtb_size> eqtb;
@@ -2023,7 +2014,6 @@ namespace dvi_const {
 	const int post = 248;
 	const int post_post = 249;
 }
-
 
 // 592
 int total_pages;
