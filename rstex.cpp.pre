@@ -61,7 +61,7 @@ for those who want to understand how this complex software works.
 
 #include <sstream>
 
-#include "tex_constants.h"
+#include "rstex.h"
 
 int myabs(int c)
 {
