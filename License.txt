@@ -1,0 +1,3 @@
+This program is Copyright (C) Richard Sandberg 2018, mylodon at gmail dot com.
+This program is for educational purpose only, all commercial use
+is strictly forbidden.
