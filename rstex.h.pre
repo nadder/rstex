@@ -31,13 +31,13 @@ thought the debugging time would be on par with the time it took to type it in.
 Had I been more systematic in my approach and introduced more asserts and checks
 from the beginning the debugging time would have been considerably shorter.
 
-The program consists of two files tex_constants.h.pre and Main.cpp.pre.
+The program consists of two files rstex.h.pre and rstex.cpp.pre.
 These two files must be preprocessed by another program which converts all
 special strings in the program to numbers (as the original tangle program does),
 and makes a string pool file.
-After this preprocessing we are left with three files tex_constants.h,
-Main.cpp, and tex.pool.
-Main.cpp can then be compiled by any C++ compiler, and the executable can be run.
+After this preprocessing we are left with three files rstex.h,
+rstex.cpp, and tex.pool.
+rstex.cpp can then be compiled by any C++ compiler, and the executable can be run.
 
 Notable omissions:
 * Currently no path searching is done so all files the program needs are supposed
