@@ -336,7 +336,7 @@ void print_ln()
 
 void print_nl(str_number s)
 {
-	if(term_offset > 0 && myodd(selector) || file_offset > 0 && selector >= log_only)
+	if((term_offset > 0 && myodd(selector)) || (file_offset > 0 && selector >= log_only))
 		print_ln();
 	print(s);
 }
@@ -5972,7 +5972,7 @@ void handle_right_brace()
 		break;
 	case group_code::output_group:
 		#pragma region <Resume the page builder after an output routine ahs come to an end 1026>
-		if (loc != null || token_type != output_text && token_type != backed_up) 
+		if (loc != null || (token_type != output_text && token_type != backed_up))
 			#pragma region <Recover from an unbalanced output routine 1027>
 		{
 			print_err(TEX_STRING("Unbalanced output routine"));
@@ -10043,7 +10043,7 @@ void box_end(int box_context)
 				get_x_token();
 			} while (!(cur_cmd != spacer && cur_cmd != relax));
 			#pragma endregion
-			if (cur_cmd == hskip && myabs(mode) != vmode || cur_cmd == vskip && myabs(mode) == vmode) {
+			if ((cur_cmd == hskip && myabs(mode) != vmode) || (cur_cmd == vskip && myabs(mode) == vmode)) {
 				append_glue(); subtype(tail) = box_context - (leader_flag - a_leaders);
 				leader_ptr(tail) = cur_box;
 			}
@@ -11727,7 +11727,7 @@ void prefixed_command()
 		p = p + cur_val;
 		scan_optional_equals();
 		scan_int();
-		if (cur_val < 0 && p < del_code_base || cur_val > n) {
+		if (cur_val < 0 && (p < del_code_base || cur_val > n)) {
 			print_err(TEX_STRING("Invalid code (")); print_int(cur_val);
 			if (p < del_code_base)
 				print(TEX_STRING("), should be in the range 0.."));
@@ -13010,7 +13010,7 @@ bool load_fmt_file()
 	do {
 		for (k = p; k <= q + 1; k++) undump_wd(&mem[k]);
 		p = q + node_size(q);
-		if (p > lo_mem_max || q >= rlink(q) && rlink(q) != rover) goto bad_fmt;
+		if (p > lo_mem_max || (q >= rlink(q) && rlink(q) != rover)) goto bad_fmt;
 		q = rlink(q);
 	} while (!(q == rover));
 	for (k = p; k <= lo_mem_max; k++) undump_wd(&mem[k]);
@@ -14483,7 +14483,7 @@ done:;
 		}
 		#pragma region <Calculate the length, l, and the shift amount, s, of the display lines 1149>
 		if(par_shape_ptr == null)
-			if (hang_indent != 0 && (hang_after >= 0 && prev_graf + 2 > hang_after || prev_graf + 1 < -hang_after)) {
+			if (hang_indent != 0 && ((hang_after >= 0 && prev_graf + 2 > hang_after) || prev_graf + 1 < -hang_after)) {
 				l = hsize - myabs(hang_indent);
 				if (hang_indent > 0) s = hang_indent;
 				else s = 0;
@@ -15305,8 +15305,8 @@ void line_break(int final_widow_penalty)
 				do {
 					if (type(r) != delta_node) {
 						line_diff = line_number(r) - best_line;
-						if (line_diff < actual_looseness && looseness <= line_diff ||
-							line_diff > actual_looseness && looseness >= line_diff) {
+						if ((line_diff < actual_looseness && looseness <= line_diff) ||
+							(line_diff > actual_looseness && looseness >= line_diff)) {
 							best_bet = r; actual_looseness = line_diff; fewest_demerits = total_demerits(r);
 						}
 						else if (line_diff == actual_looseness && total_demerits(r) < fewest_demerits) {
@@ -16010,8 +16010,8 @@ void unpackage()
 	c = cur_chr; scan_eight_bit_int(); p = box(cur_val);
 	if (p == null)
 		return;
-	if (myabs(mode) == mmode || myabs(mode) == vmode && type(p) != vlist_node ||
-		myabs(mode) == hmode && type(p) != hlist_node) {
+	if (myabs(mode) == mmode || (myabs(mode) == vmode && type(p) != vlist_node) ||
+		(myabs(mode) == hmode && type(p) != hlist_node)) {
 		print_err(TEX_STRING("Incompatible list can't be unboxed"));
 		help3(TEX_STRING("Sorry, Pandora. (You sneaky devil.)"),
 			TEX_STRING("I refuse to unbox an \hbox in vertical mode or vice versa."),
