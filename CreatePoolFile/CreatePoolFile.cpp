@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 				else {
 					index_of_string = replacement[0];// just use the character code in case of a one character string
 				}
-				output_file << index_of_string;
+				output_file << "/*" << replacement << "*/" << index_of_string;
 
 			}
 
