@@ -1570,20 +1570,7 @@ bool force_eof;
 
 // 122
 // make this function instead, bah, we don't need to use this one just replace with get_avail
-//#define fast_get_avail(s) do{\
-//  s=avail;\
-//  if(s==null)\
-//    s=get_avail();\
-//  else\
-//  {\
-//    avail=link(s);\
-//    link(s)=null;\
-//    /*stat*/\
-//    incr(dyn_used);\
-//    /*tats*/\
-//  }\
-//}while(0)
-
+// #define fast_get_avail(s) ...
 
 // 371
 
@@ -1649,7 +1636,7 @@ const int continental_point_token = other_token + TEX_STRING(",");
 small_number radix;
 
 // 445
-const int infinity = 017777777777;
+const int _infinity = 017777777777;
 const int zero_token = other_token + TEX_STRING("0");
 const int A_token = letter_token + TEX_STRING("A");
 const int other_A_token = other_token + TEX_STRING("A");

@@ -37,7 +37,7 @@ special strings in the program to numbers (as the original tangle program does),
 and makes a string pool file.
 After this preprocessing we are left with three files rstex.h,
 rstex.cpp, and tex.pool.
-rstex.cpp can then be compiled by any C++ compiler, and the executable can be run.
+rstex.cpp can then be compiled by any (C++11) C++ compiler, and the executable can be run.
 
 Notable omissions:
 * Currently no path searching is done so all files the program needs are supposed
@@ -59,9 +59,16 @@ for those who want to understand how this complex software works.
 
 */
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#pragma GCC diagnostic ignored "-Wparentheses"
+#pragma GCC diagnostic ignored "-Wswitch"
+#endif
+
 #include <sstream>
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
 #include "rstex.h"
 
 bool myodd(int c)
@@ -74,7 +81,6 @@ void setup_char_arrays()
 {
 	for (int i = 0; i < 32; i++)
 		xchr[i] = i;
-
 
 	for (int i = 127; i < 256; i++)
 		xchr[i] = ' ';
@@ -740,18 +746,18 @@ void build_discretionary()
 
 	#pragma region <Prune the current list, if necessary, until it contains onlychar_node, kern_node, hlist_node.. 1121>
 	q = head; p = link(q); n = 0;
-	while (p != null) 
-	{ if(!is_char_node(p))
-		if(type(p) > rule_node)
-			if(type(p) != kern_node)
-				if (type(p) != ligature_node) {
-					print_err(TEX_STRING("Improper discretionary list"));
-					help1(TEX_STRING("Discretionary lists must contain only boxes and kerns."));
-					error();
-					begin_diagnostic();
-					print_nl(TEX_STRING("The following discretionary sublist has been deleted:")); show_box(p);
-					end_diagnostic(true); flush_node_list(p); link(q) = null; goto done;
-				}
+	while (p != null) { 
+		if(!is_char_node(p))
+			if(type(p) > rule_node)
+				if(type(p) != kern_node)
+					if (type(p) != ligature_node) {
+						print_err(TEX_STRING("Improper discretionary list"));
+						help1(TEX_STRING("Discretionary lists must contain only boxes and kerns."));
+						error();
+						begin_diagnostic();
+						print_nl(TEX_STRING("The following discretionary sublist has been deleted:")); show_box(p);
+						end_diagnostic(true); flush_node_list(p); link(q) = null; goto done;
+					}
 		q = p; p = link(q); incr(n);
 	}
 done:
@@ -797,7 +803,7 @@ bool get_strings_started()
 {
 	int k, l; // 0..255
 	text_char m, n;
-	str_number g;
+	// str_number g; // not used
 	int a;
 	bool c;
 
@@ -822,7 +828,7 @@ bool get_strings_started()
 		}
 		else
 			append_char(k);
-		g = make_string();
+		make_string();
 	}
 	#pragma endregion
 
@@ -871,8 +877,8 @@ bool get_strings_started()
 							m = ch;
 						append_char(xord[m]);
 					}
-					int new_line = fgetc(pool_file); // read and discard new line
-					g = make_string();
+					fgetc(pool_file); // read and discard new line
+					make_string();
 			
 				}
 			}
@@ -5914,38 +5920,38 @@ void handle_right_brace()
 	scaled d;
 	int f;
 	switch (cur_group) {
-	case group_code::simple_group:
+	case simple_group:
 		unsave();
 		break;
-	case group_code::bottom_level:
+	case bottom_level:
 		print_err(TEX_STRING("Too many }'s"));
 		help2(TEX_STRING("You've closed more groups than you opened."),
 			TEX_STRING("Such booboos are generally harmless, so keep going."));
 		error();
 		break;
-	case group_code::semi_simple_group:
-	case group_code::math_shift_group:
-	case group_code::math_left_group:
+	case semi_simple_group:
+	case math_shift_group:
+	case math_left_group:
 		extra_right_brace();
 		break;
 	#pragma region <Cases of handle_right_brace where a right_brace triggers a delayed action 1085>
-	case group_code::hbox_group:
+	case hbox_group:
 		package(0);
 		break;
-	case group_code::adjusted_hbox_group:
+	case adjusted_hbox_group:
 		adjust_tail = adjust_head; package(0);
 		break;
-	case group_code::vbox_group:
+	case vbox_group:
 		end_graf();
 		package(0);
 		break;
-	case group_code::vtop_group:
+	case vtop_group:
 		end_graf();
 		package(vtop_code);
 		break;
 
 		//1100
-	case group_code::insert_group:
+	case insert_group:
 		end_graf(); q = split_top_skip; add_glue_ref(q); d = split_max_depth;
 		f = floating_penalty; unsave(); decr(save_ptr);
 		p = vpack(link(head), 0,additional); pop_nest();
@@ -5963,7 +5969,7 @@ void handle_right_brace()
 		if (nest_ptr == 0)
 			build_page();
 		break;
-	case group_code::output_group:
+	case output_group:
 		#pragma region <Resume the page builder after an output routine ahs come to an end 1026>
 		if (loc != null || token_type != output_text && token_type != backed_up) 
 			#pragma region <Recover from an unbalanced output routine 1027>
@@ -6003,12 +6009,12 @@ void handle_right_brace()
 		break;
 
 		//1118
-	case group_code::disc_group:
+	case disc_group:
 		build_discretionary();
 		break;
 
 		//1132
-	case group_code::align_group:
+	case align_group:
 		back_input(); cur_tok = cs_token_flag + frozen_cr; print_err(TEX_STRING("Missing "));
 		print_esc(TEX_STRING("cr")); 
 		print(TEX_STRING(" inserted"));
@@ -6017,13 +6023,13 @@ void handle_right_brace()
 		break;
 
 		// 1133
-	case group_code::no_align_group:
+	case no_align_group:
 		end_graf();
 		unsave();
 		align_peek();
 		break;
 		//1168
-	case group_code::vcenter_group:
+	case vcenter_group:
 		end_graf();
 		unsave();
 		save_ptr -= 2;
@@ -6031,11 +6037,11 @@ void handle_right_brace()
 		math_type(nucleus(tail)) = sub_box; info(nucleus(tail)) = p;
 		break;
 		//1173
-	case group_code::math_choice_group:
+	case math_choice_group:
 		build_choices();
 		break;
 		//1186
-	case group_code::math_group:
+	case math_group:
 		unsave(); decr(save_ptr);
 		math_type(saved(0)) = sub_mlist; p = fin_mlist(null); info(saved(0)) = p;
 		if(p!=null)
@@ -7859,8 +7865,8 @@ void macro_call()
 								else {
 									r = link(v); goto mycontinue;
 								}
-								if (info(u) != info(v)) goto done;
-								u = link(u); v = link(v);
+							if (info(u) != info(v)) goto done;
+							u = link(u); v = link(v);
 						}
 					done: t = link(t);
 					} while (!(t == r));
@@ -11147,7 +11153,7 @@ void scan_int()
 					help2(TEX_STRING("I can only go up to 2147483647='17777777777=""7FFFFFFF,"),
 						TEX_STRING("so I'm using that number instead of yours."));
 					error();
-					cur_val = infinity;
+					cur_val = _infinity;
 					OK_so_far = false;
 				}
 			}
@@ -12282,10 +12288,10 @@ pointer vsplit(eight_bits n, scaled h)
 				delete_token_ref(split_bot_mark); split_bot_mark = mark_ptr(p);
 				add_token_ref(split_bot_mark);
 			}
-			if (link(p) == q) {
-				link(p) = null; goto done;
-			}
-			p = link(p);
+		if (link(p) == q) {
+			link(p) = null; goto done;
+		}
+		p = link(p);
 	}
 done:
 	#pragma endregion
@@ -12864,7 +12870,7 @@ void print_meaning()
 // 1293
 void show_whatever()
 {
-	pointer p;
+	//pointer p; // This variable is not used
 	switch (cur_chr) {
 	case show_lists:
 		begin_diagnostic();
@@ -12893,7 +12899,7 @@ void show_whatever()
 		break;
 	default:
 		//<Show the current value of some parameter or register, then goto common_ending 1297>
-		p = the_toks();
+		the_toks();
 		if (interaction == error_stop_mode) wake_up_terminal();
 		print_nl(TEX_STRING("> ")); token_show(temp_head);
 		flush_list(link(temp_head));
@@ -15671,12 +15677,12 @@ mycontinue:
 						#pragma endregion
 					w = char_kern(hf, q); goto done;
 				}
-				if (skip_byte(q) >= stop_flag)
-					if (cur_rh == non_char) goto done;
-					else {
-						cur_rh = non_char; goto mycontinue;
-					}
-					k = k + qo(skip_byte(q)) + 1; q = font_info[k].union_t.qqqq;
+		if (skip_byte(q) >= stop_flag)
+			if (cur_rh == non_char) goto done;
+			else {
+				cur_rh = non_char; goto mycontinue;
+			}
+		k = k + qo(skip_byte(q)) + 1; q = font_info[k].union_t.qqqq;
 	}
 done:
 
@@ -16655,7 +16661,7 @@ void first_fit(trie_pointer p)
 	trie_pointer q;
 	ASCII_code c;
 	trie_pointer l, r;
-	unsigned int ll;
+	int ll; // 1..256
 
 	c = so(trie_c[p]); z = trie_min[c];
 	while (1) {
