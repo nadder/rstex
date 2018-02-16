@@ -52,13 +52,13 @@ int main(int argc, char **argv)
 		int line_count = 0;
 		while (std::getline(filein, sline)) {
 			line_count++;
-			int start_fpos = 0;
-			int end_prev_fpos = 0;
+			size_t start_fpos = 0;
+			size_t end_prev_fpos = 0;
 
 
 			while ((start_fpos = sline.find(replace_text, end_prev_fpos)) != std::string::npos) {
 				// write everything from previous TEX_STRING up until this TEX_STRING
-				for (int k = end_prev_fpos; k < start_fpos; k++) {
+				for (size_t k = end_prev_fpos; k < start_fpos; k++) {
 					output_file << sline[k];
 				}
 
@@ -174,7 +174,7 @@ int main(int argc, char **argv)
 		}
 		std::ifstream filein(filename);
 		std::string sline;
-		int line_count = 0;
+
 		while (std::getline(filein, sline)) {
 			size_t pos = sline.find("@$", 0);
 			if (pos != std::string::npos)
