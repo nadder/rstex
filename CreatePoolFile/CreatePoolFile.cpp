@@ -124,8 +124,14 @@ int main(int argc, char **argv)
 				else {
 					index_of_string = replacement[0];// just use the character code in case of a one character string
 				}
-				output_file << "/*" << replacement << "*/" << index_of_string;
-
+				// Put the text in as a comment next to the number
+				// If the text contains */ we're in trouble, better check that
+				if (replacement.find("*/") == std::string::npos) {
+					output_file << "/*" << replacement << "*/" << index_of_string;
+				}
+				else {
+					output_file << "/*" << "This text contained comment characters, refer to preprocessed file for this one." << "*/" << index_of_string;
+				}
 			}
 
 			for (size_t k = end_prev_fpos; k < sline.size(); k++) {
