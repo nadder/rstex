@@ -746,7 +746,7 @@ const int inf_bad = 10000;
 #define set_glue_ratio_one(n) n=1.0
 #define _float(n) (float)n
 #define unfloat(n) glue_ratio(n)
-#define float_constant(n) n.0
+#define float_constant(n) n ## .0
 
 typedef float glue_ratio;
 
