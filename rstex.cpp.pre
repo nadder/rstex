@@ -59,12 +59,6 @@ for those who want to understand how this complex software works.
 
 */
 
-#if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wunknown-pragmas"
-#pragma GCC diagnostic ignored "-Wparentheses"
-#pragma GCC diagnostic ignored "-Wswitch"
-#endif
-
 #include <sstream>
 #include <cmath>
 #include <cstdlib>
@@ -3835,7 +3829,7 @@ void prompt_file_name(str_number s, str_number e)
 		print_err(TEX_STRING("I can't find file `"));
 	else print_err(TEX_STRING("I can't write on file `"));
 	print_file_name(cur_name, cur_area, cur_ext); print(TEX_STRING("'."));
-	if (e = TEX_STRING(".tex")) show_context();
+	if (e == TEX_STRING(".tex")) show_context();
 	print_nl(TEX_STRING("Please type another ")); print(s);
 	if (interaction < scroll_mode)
 		fatal_error(TEX_STRING("*** (job aborted, file error in nonstop mode)"));
