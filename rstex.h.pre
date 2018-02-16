@@ -746,7 +746,9 @@ const int inf_bad = 10000;
 #define set_glue_ratio_one(n) n=1.0
 #define _float(n) (float)n
 #define unfloat(n) glue_ratio(n)
-#define float_constant(n) n.0
+
+// No need to use this macro
+//#define float_constant(n) n.0
 
 typedef float glue_ratio;
 
@@ -2093,7 +2095,7 @@ int cur_s;
 
 
 // 625
-#define billion float_constant(1000000000)
+#define billion 1000000000.0f
 #define vet_glue(s) do{glue_temp = s; if(glue_temp>billion) glue_temp=billion;else if(glue_temp < -billion) glue_temp=-billion;}while(0)
 
 
@@ -2975,7 +2977,7 @@ void alter_page_so_far();
 void alter_prev_graf();
 void alter_aux();
 void alter_box_dimen();
-int myabs(int c);
+//int myabs(int c);
 void report_illegal_case();
 bool scan_keyword(str_number s);
 void read_toks(int n, pointer r);
