@@ -42,8 +42,6 @@ rstex.cpp can then be compiled by any C++ compiler, and the executable can be ru
 Notable omissions:
 * Currently no path searching is done so all files the program needs are supposed
   to exist in the current directory. (Maybe should add checking of a few locations given by env. vars).
-* No command line processing is done, so input files must be entered at the prompt. (Just put it in!)
-* No system specific handling of current time. (Just put it in!)
 * No special defines for excluding init, stat, or debug code (most likely easy to add these),
   although I don't think it hurts much to keep it in.
 * No other files needed for a complete system is included, i.e. fmt files, fonts, tfm files
@@ -689,7 +687,7 @@ const int eqtb_size = scaled_base + 255; // moved this below scaled base
 #define mag int_par(mag_code)
 #define delimiter_factor int_par(delimiter_factor_code)
 #define looseness int_par(looseness_code)
-#define time int_par(time_code)
+#define _time int_par(time_code)
 #define day int_par(day_code)
 #define month int_par(month_code)
 #define year int_par(year_code)

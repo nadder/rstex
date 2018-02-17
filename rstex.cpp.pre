@@ -42,8 +42,6 @@ rstex.cpp can then be compiled by any (C++11) C++ compiler, and the executable c
 Notable omissions:
 * Currently no path searching is done so all files the program needs are supposed
   to exist in the current directory. (Maybe should add checking of a few locations given by env. vars).
-* No command line processing is done, so input files must be entered at the prompt. (Just put it in!)
-* No system specific handling of current time. (Just put it in!)
 * No special defines for excluding init, stat, or debug code (most likely easy to add these),
   although I don't think it hurts much to keep it in.
 * No other files needed for a complete system is included, i.e. fmt files, fonts, tfm files
@@ -63,6 +61,7 @@ for those who want to understand how this complex software works.
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include "rstex.h"
 
 bool myodd(int c)
@@ -3294,8 +3293,34 @@ void show_cur_cmd_chr()
 
 
 // 37
-bool init_terminal()
+bool init_terminal(int argc, char **argv)
 {
+	//////////////////////////////////////////////////////////
+	// system dependent part, similar to tex-sparc/initex.ch
+	if(argc > 1) {
+		last = first;
+		for (int i = 1; i < argc; i++) {
+			int j = 0;
+			int k = strlen(argv[i]) - 1;
+			while (k > 0 && argv[i][k] == ' ')
+				decr(k);
+			while (j <= k) {
+				buffer[last] = xord[argv[i][j]];
+				incr(j); incr(last);
+			}
+			if(k > 0) {
+				buffer[last] = xord[' '];
+				incr(last);
+			}
+		}
+		if(last > first) {
+			loc  = first;
+			return true;
+		}
+	}
+	//////////////////////////////////////////////////////////
+	
+	
 	while (1) {
 		fputs("**", term_out);
 		if (!input_ln(term_in, true)) {
@@ -6152,8 +6177,8 @@ void open_log_file()
 	for (k = 3 * month - 2; k <= 3 * month; k++) wlog_c(months[k-1]);
 	print_char(TEX_STRING(" "));
 	print_int(year); print_char(TEX_STRING(" "));
-	print_two(time / 60); print_char(TEX_STRING(":"));
-	print_two(time % 60);
+	print_two(_time / 60); print_char(TEX_STRING(":"));
+	print_two(_time % 60);
 	#pragma endregion
 
 	input_stack[input_ptr] = cur_input;
@@ -9156,7 +9181,7 @@ void ship_out(pointer p)
 		prepare_mag(); dvi_four(mag);
 		old_setting = selector; selector = new_string; print(TEX_STRING(" TeX output ")); print_int(year);
 		print_char(TEX_STRING(".")); print_two(month); print_char(TEX_STRING(".")); print_two(day); print_char(TEX_STRING(":"));
-		print_two(time / 60); print_two(time % 60); selector = old_setting; dvi_out(cur_length);
+		print_two(_time / 60); print_two(_time % 60); selector = old_setting; dvi_out(cur_length);
 		for (s = str_start[str_ptr]; s <= pool_ptr - 1; s++) dvi_out(so(str_pool[s]));
 		pool_ptr = str_start[str_ptr];
 	}
@@ -10888,10 +10913,14 @@ bool privileged()
 // 1241
 void fix_date_and_time()
 {
-	time = 12 * 60;
-	day = 4;
-	month = 7;
-	year = 1776;
+	time_t unixtime;
+	time(&unixtime);
+	struct tm *tm_struct = localtime(&unixtime);
+	
+	_time = tm_struct->tm_hour*60+tm_struct->tm_min;
+	day = tm_struct->tm_mday;
+	month = tm_struct->tm_mon + 1;
+	year = 1900 + tm_struct->tm_year;
 }
 
 // 1257
@@ -17022,7 +17051,7 @@ void store_fmt_file()
 }
 //tini
 
-int main()
+int main(int argc, char **argv)
 {
 	// 1332
 	history = fatal_error_stop;
@@ -17114,7 +17143,7 @@ start_of_TEX:
 	} while (!(first == 0));
 	scanner_status = normal; warning_index = null; first = 1; state = new_line; start = 1; index = (enum_token_type)0;
 	line = 0; name = 0; force_eof = false; align_state = 1000000;
-	if (!init_terminal()) goto final_end;
+	if (!init_terminal(argc, argv)) goto final_end;
 	limit = last; first = last + 1;
 #pragma endregion
 
