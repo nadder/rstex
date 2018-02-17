@@ -532,7 +532,7 @@ void check_mem(bool print_locs)
 		_free[p] = true; q = p; p = link(q);
 	}
 done1:
-#pragma endregion
+	#pragma endregion
 
 	#pragma region <Check varaible-size avail list 169>
 	p = rover; q = null; clobbered = false;
@@ -556,8 +556,7 @@ done1:
 		q = p; p = rlink(p);
 	} while (!(p==rover));
 done2:
-
-#pragma endregion
+	#pragma endregion
 
 	#pragma region <Check flags of unavailable nodes 170>
 	p = mem_min;
@@ -569,8 +568,7 @@ done2:
 		while (p <= lo_mem_max && !_free[p]) incr(p);
 		while (p <= lo_mem_max && _free[p]) incr(p);
 	}
-
-#pragma endregion
+	#pragma endregion
 
 	if (print_locs) 
 		#pragma region <Print newly busy locations 171>
@@ -587,7 +585,7 @@ done2:
 				print_char(TEX_STRING(" ")); print_int(p);
 			}
 	}
-#pragma endregion
+		#pragma endregion
 
 
 	for (p = mem_min; p <= lo_mem_max; p++)
@@ -855,7 +853,7 @@ bool get_strings_started()
 						bad_pool("! tex.pool doesn\'t match; TANGLE me again.", true);
 					c = true;
 				}
-	#pragma endregion
+					#pragma endregion
 				else {
 					if (xord[m] < TEX_STRING("0") || xord[m]> TEX_STRING("9") || xord[n] < TEX_STRING("0") || xord[n] > TEX_STRING("9"))
 						bad_pool("! tex.pool line does not begin with two digits.", true);
@@ -1686,7 +1684,7 @@ restart:
 										goto start_cs;
 									}
 								}
-#pragma endregion
+						#pragma endregion
 
 						if (cat != letter)
 							decr(k);
@@ -1694,7 +1692,7 @@ restart:
 							cur_cs = id_lookup(loc, k - loc); loc = k; goto found;
 						}
 					}
-#pragma endregion
+						#pragma endregion
 					else 
 						#pragma region <If an expanded code is present, reduce it and goto start_cs 355>
 					{
@@ -1730,7 +1728,7 @@ restart:
 								}
 
 					}
-#pragma endregion
+						#pragma endregion
 
 					cur_cs = single_base + buffer[loc]; incr(loc);
 				}
@@ -1738,18 +1736,17 @@ restart:
 				cur_cmd = eq_type(cur_cs); cur_chr = equiv(cur_cs);
 				if (cur_cmd >= outer_call)
 					check_outer_validity();
-#pragma endregion
+				#pragma endregion
 				break;
 			case any_state_plus(active_char):
 				#pragma region <Process an active-character control sequence and set state to mid line 353>
 				cur_cs = cur_chr + active_base; cur_cmd = eq_type(cur_cs); cur_chr = equiv(cur_cs);
 				state = mid_line;
 				if (cur_cmd >= outer_call) check_outer_validity();
-
-#pragma endregion
+				#pragma endregion
 				break;
 			case any_state_plus(sup_mark):
-#pragma region <If this sup_mark starts an expanded character like ^^A or ^^df then goto reswitch, otherwwise set state to mid line 352>
+				#pragma region <If this sup_mark starts an expanded character like ^^A or ^^df then goto reswitch, otherwwise set state to mid line 352>
 				if(cur_chr == buffer[loc])
 					if (loc < limit) {
 						c = buffer[loc + 1]; 
@@ -1769,8 +1766,7 @@ restart:
 						}
 					}
 				state = mid_line;
-#pragma endregion
-
+				#pragma endregion
 				break;
 			case any_state_plus(invalid_char):
 				#pragma region <Decry the invalid character and goto restart 346>
@@ -1780,7 +1776,7 @@ restart:
 				deletions_allowed = false; error(); deletions_allowed = true;
 				goto restart;
 
-#pragma endregion
+				#pragma endregion
 				break;
 
 			#pragma region <Handle situations involving spaces, braces, changes of state 347>
@@ -1823,10 +1819,10 @@ restart:
 				state = mid_line;
 				break;
 
-#pragma endregion
+			#pragma endregion
 
 			}
-#pragma endregion
+			#pragma endregion
 		}
 		else {
 			state = new_line;
@@ -1849,7 +1845,7 @@ restart:
 				else buffer[limit] = end_line_char;
 				first = limit + 1; loc = start;
 			}
-#pragma endregion
+				#pragma endregion
 			else {
 				if (!terminal_input) {
 					cur_cmd = 0; cur_chr = 0; return;
@@ -1871,7 +1867,7 @@ restart:
 				else fatal_error(TEX_STRING("*** (job aborted, no legal \end found)"));
 			}
 
-#pragma endregion
+			#pragma endregion
 			check_interrupt;
 			goto _switch;
 		}
@@ -1937,9 +1933,8 @@ restart:
 				align_state = 1000000;
 				goto restart;
 			}
-#pragma endregion
-
-#pragma endregion
+				#pragma endregion
+	#pragma endregion
 
 }
 
@@ -4633,7 +4628,7 @@ void mlist_to_hlist()
 			t = make_left_right(q, style, max_d, max_h);
 			break;
 		case style_node:
-			#pragma region <Change the current style adn goto delete_q 763>
+			#pragma region <Change the current style and goto delete_q 763>
 			cur_style = subtype(q); s = style_node_size;
 			#pragma region <Set up the values of cur_size and cur_mu, based on cur_style 703>
 			if (cur_style < script_style) cur_size = text_size;
@@ -4815,8 +4810,9 @@ void make_math_accent(pointer q)
 				printf("Overflow assignment\n");
 				exit(1);
 			}
-			c = (quarterword)y;
 			//---------
+			c = (quarterword)y;
+			
 		}
 	done:
 
@@ -4869,7 +4865,7 @@ void make_fraction(pointer q)
 		if (thickness(q) != 0) shift_up = num2(cur_size);
 		else shift_up = num3(cur_size);
 	}
-#pragma endregion
+	#pragma endregion
 
 	if (thickness(q) == 0)
 		#pragma region <Adjust shift_up and shift_down for the case of no fraction line 745>
@@ -4881,7 +4877,7 @@ void make_fraction(pointer q)
 			shift_up += delta; shift_down += delta;
 		}
 	}
-#pragma endregion
+		#pragma endregion
 	else
 		#pragma region <Adjust shift_up and shift_down for the case of a fraction line 746>
 	{
@@ -4892,7 +4888,7 @@ void make_fraction(pointer q)
 		if (delta1 > 0) shift_up += delta1;
 		if (delta2 > 0) shift_down += delta2;
 	}
-#pragma endregion
+		#pragma endregion
 
 	#pragma region <Construct a vlist box for the fraction, according to shift_up and shift_down 747>
 	v = new_null_box(); type(v) = vlist_node; height(v) = shift_up + height(x);
@@ -4907,7 +4903,7 @@ void make_fraction(pointer q)
 		p = new_kern((shift_up - depth(x)) - (axis_height(cur_size) + delta)); link(p) = y;
 	}
 	link(x) = p; list_ptr(v) = x;
-#pragma endregion
+	#pragma endregion
 
 	#pragma region <Put the fraction into a box with its delimiters, and make new_hlsit(q) point to it 748>
 	if (cur_style < text_style) delta = delim1(cur_size);
@@ -4915,7 +4911,7 @@ void make_fraction(pointer q)
 	x = var_delimiter(left_delimiter(q), cur_size, delta); link(x) = v;
 	z = var_delimiter(right_delimiter(q), cur_size, delta); link(v) = z;
 	new_hlist(q) = hpack(x, 0, additional);
-#pragma endregion
+	#pragma endregion
 
 
 }
@@ -4949,7 +4945,7 @@ scaled make_op(pointer q)
 	}
 	else delta = 0;
 	if (subtype(q) == limits)
-		#pragma region <Construct a box with limits above adn below it, skewed by delta 750>
+		#pragma region <Construct a box with limits above and below it, skewed by delta 750>
 	{
 		x = clean_box(supscr(q), sup_style(cur_style)); y = clean_box(nucleus(q), cur_style);
 		z = clean_box(subscr(q), sub_style(cur_style)); v = new_null_box(); type(v) = vlist_node;
@@ -4978,10 +4974,10 @@ scaled make_op(pointer q)
 			p = new_kern(big_op_spacing5); link(z) = p;
 			depth(v) += big_op_spacing5 + height(z) + depth(z) + shift_down;
 		}
-#pragma endregion
+		#pragma endregion
 		new_hlist(q) = v;
 	}
-#pragma endregion
+		#pragma endregion
 	return delta;
 }
 
@@ -5430,7 +5426,7 @@ void fin_align()
 			}
 				#pragma endregion
 			else if (type(q) == rule_node)
-				#pragma region <Make the running dimensions in rule q extend to teh boundaries of teh alignment 806>
+				#pragma region <Make the running dimensions in rule q extend to the boundaries of the alignment 806>
 			{
 				if (is_running(width(q))) width(q) = width(p);
 				if (is_running(height(q))) height(q) = height(p);
@@ -5440,7 +5436,7 @@ void fin_align()
 					link(s) = q;
 				}
 			}
-#pragma endregion
+				#pragma endregion
 		s = q; q = link(q);
 	}
 	#pragma endregion
@@ -5633,7 +5629,7 @@ void unsave()
 					if (tracing_restores > 0) restore_trace(p, TEX_STRING("retaining"));
 					//tats
 				}
-#pragma endregion
+				#pragma endregion
 			}
 		}
 	done:
@@ -7861,7 +7857,7 @@ void macro_call()
 			#pragma region <Contribute the recently matched tokens to the current paramter, and goto continue if a partial match... 397>			
 			if (s != r)
 				if (s == null)
-					#pragma region <Report an improper use of teh macro and abort 398>
+					#pragma region <Report an improper use of the macro and abort 398>
 				{
 					print_err(TEX_STRING("Use of "));
 					sprint_cs(warning_index);
@@ -8356,7 +8352,7 @@ pointer scan_toks(bool macro_def, bool xpand)
 	else
 		scan_left_brace();
 
-	#pragma region <Scan and build the body of teh token list; goto found when finished 477>
+	#pragma region <Scan and build the body of the token list; goto found when finished 477>
 	unbalance = 1;
 	while (1) {
 		if(xpand)
@@ -8616,7 +8612,7 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
 		error();
 		goto done;
 	}
-#pragma endregion
+		#pragma endregion
 	f = font_ptr + 1; char_base[f] = fmem_ptr - bc; width_base[f] = char_base[f] + ec + 1;
 	height_base[f] = width_base[f] + nw; depth_base[f] = height_base[f] + nh;
 	italic_base[f] = depth_base[f] + nd; lig_kern_base[f] = italic_base[f] + ni;
@@ -8844,7 +8840,7 @@ void hlist_out()
 					}
 					dvi_f = f;
 				}
-	#pragma endregion
+					#pragma endregion
 				if (c >= qi(128)) dvi_out(dvi_const::set1);
 				dvi_out(qo(c));
 				cur_h += char_width(f, char_info(f, c)); p = link(p);
@@ -8865,7 +8861,7 @@ void hlist_out()
 					if (type(p) == vlist_node) vlist_out(); else hlist_out();
 					dvi_h = save_h; dvi_v = save_v; cur_h = edge + width(p); cur_v = base_line;
 				}
-	#pragma endregion
+				#pragma endregion
 				break;
 			case rule_node:
 				rule_ht = height(p); rule_dp = depth(p); rule_wd = width(p); goto fin_rule;
@@ -8873,7 +8869,7 @@ void hlist_out()
 			case whatsit_node:
 				#pragma region <Output the whatsit node p in an hlist 1367>
 				out_what(p);
-	#pragma endregion
+				#pragma endregion
 				break;
 			case glue_node:
 				#pragma region <Move right or output leaders 625>
@@ -8915,7 +8911,7 @@ void hlist_out()
 								lx = lr / (lq + 1); cur_h += ((lr - (lq - 1)*lx) / 2);
 							}
 						}
-	#pragma endregion
+						#pragma endregion
 						while (cur_h + leader_wd <= edge)
 							#pragma region <Output a leader box at cur_h, then advance cur_h by leader_wd+lx 628>
 						{
@@ -8926,11 +8922,11 @@ void hlist_out()
 							doing_leaders = outer_doing_leaders; dvi_v = save_v; dvi_h = save_h; cur_v = base_line;
 							cur_h = save_h + leader_wd + lx;
 						}
-	#pragma endregion
+							#pragma endregion
 						cur_h = edge - 10; goto next_p;
 					}
 				}
-	#pragma endregion
+				#pragma endregion
 				goto move_past;
 
 				#pragma endregion
@@ -8952,7 +8948,7 @@ void hlist_out()
 
 fin_rule:
 
-	#pragma region <Output a rule in an hlist 624>
+			#pragma region <Output a rule in an hlist 624>
 			if (is_running(rule_ht)) rule_ht = height(this_box);
 			if (is_running(rule_dp)) rule_dp = depth(this_box);
 			rule_ht += rule_dp;
@@ -8960,13 +8956,13 @@ fin_rule:
 				synch_h; cur_v = base_line + rule_dp; synch_v; dvi_out(dvi_const::set_rule); dvi_four(rule_ht);
 				dvi_four(rule_wd); cur_v = base_line; dvi_h += rule_wd;
 			}
-	#pragma endregion
-	move_past:
+			#pragma endregion
+move_past:
 			cur_h += rule_wd;
-	next_p:
+next_p:
 			p = link(p);
 		}
-	#pragma endregion
+		#pragma endregion
 
 		#pragma endregion
 
@@ -9070,7 +9066,7 @@ void vlist_out()
 								lx = lr / (lq + 1); cur_v += ((lr - (lq - 1)*lx) / 2);
 							}
 						}
-#pragma endregion
+						#pragma endregion
 						while (cur_v + leader_ht <= edge)
 							#pragma region <Output a leader box at cur_v, then advance cur_v by leader_ht+lx 637>
 						{
@@ -9086,11 +9082,11 @@ void vlist_out()
 						cur_v = edge - 10; goto next_p;
 					}
 				}
-#pragma endregion
+				#pragma endregion
 
 				goto move_past;
 
-#pragma endregion
+				#pragma endregion
 				break;
 			case kern_node:
 				cur_v += width(p);
@@ -9337,7 +9333,7 @@ pointer vpackage(pointer p, scaled h, small_number m, scaled l)
 		}
 		if(o==normal)
 			if (list_ptr(r) != null) 
-				#pragma region <Report an underfull vbox adn goto common_ending, if this box is sufficiently bad 674>
+				#pragma region <Report an underfull vbox and goto common_ending, if this box is sufficiently bad 674>
 			{
 				last_badness = badness(x, total_stretch[normal]);
 				if (last_badness > vbadness) {
@@ -9370,7 +9366,7 @@ pointer vpackage(pointer p, scaled h, small_number m, scaled l)
 		if (total_shrink[o] < -x && o == normal && list_ptr(r) != null) {
 			last_badness = 1000000; set_glue_ratio_one(glue_set(r));
 
-			#pragma region <Report an overfull vbox adn goto common_ending, if this box is sufficienlty bad 677>
+			#pragma region <Report an overfull vbox and goto common_ending, if this box is sufficiently bad 677>
 			if (-x - total_shrink[normal] > vfuzz || vbadness < 100) {
 				print_ln(); print_nl(TEX_STRING("Overfull \vbox (")); print_scaled(-x - total_shrink[normal]);
 				print(TEX_STRING("pt too high")); goto common_ending;
@@ -9388,13 +9384,13 @@ pointer vpackage(pointer p, scaled h, small_number m, scaled l)
 					goto common_ending;
 				}
 			}
-#pragma endregion
+				#pragma endregion
 			
 		goto _exit;
 	}
 		#pragma endregion
 
-#pragma endregion
+	#pragma endregion
 
 common_ending:
 
@@ -9969,7 +9965,7 @@ void try_break(int pi, small_number break_type)
 			}
 			#pragma endregion
 			if (node_r_stays_active) goto mycontinue;
-	deactivate:
+deactivate:
 			#pragma region <Deactivate node r 860>
 			link(prev_r) = link(r); free_node(r, active_node_size);
 			if (prev_r == active)
@@ -10848,18 +10844,17 @@ done1:
 		link(contrib_head) = link(p); link(p) = null; flush_node_list(p);
 		#pragma endregion
 done:
-
 		;
 
-#pragma endregion
+		#pragma endregion
 	} while (!(link(contrib_head) == null));
 
-#pragma region <Make the contribution list empty by setting its tail to contrib_head 995>
+	#pragma region <Make the contribution list empty by setting its tail to contrib_head 995>
 	if (nest_ptr == 0)
 		tail = contrib_head;
 	else
 		contrib_tail = contrib_head;
-#pragma endregion
+	#pragma endregion
 }
 
 // 1265
@@ -11183,8 +11178,7 @@ void scan_int()
 			else cur_val = cur_val * radix + d;
 			get_x_token();
 		}
-	done:
-
+done:
 		#pragma endregion
 
 		if (vacuous) 
@@ -11277,11 +11271,7 @@ done:
 	#pragma region <Read the first line of the new file 538>
 	line = 1;
 
-#pragma warning(push)
-#pragma warning(disable : 4390)
-	if (input_ln(cur_file, false))
-		; // do_nothing
-#pragma warning(pop)
+	input_ln(cur_file, false);
 	firm_up_the_line();
 	if (end_line_char_inactive) decr(limit);
 	else buffer[limit] = end_line_char;
@@ -11370,7 +11360,7 @@ void after_math()
 		a = hpack(link(temp_head), 0, additional); unsave(); decr(save_ptr);
 		if (saved(0) == 1) l = true;
 		danger = false;
-		#pragma region <Check that the necessary fonts for math symbols are presnet; if nt flush the current math lists adn set danger = true 1195>
+		#pragma region <Check that the necessary fonts for math symbols are present; if not flush the current math lists and set danger = true 1195>
 		if (font_params[fam_fnt(2 + text_size)] < total_mathsy_params ||
 			font_params[fam_fnt(2 + script_size)] < total_mathsy_params ||
 			font_params[fam_fnt(2 + script_script_size)] < total_mathsy_params) {
@@ -11400,7 +11390,6 @@ void after_math()
 	if (m < 0) 
 		#pragma region <Finish math in text 1196>
 	{
-		//
 		tail_append(new_math(math_surround, before)); cur_mlist = p; cur_style = text_style;
 		mlist_penalties = (mode > 0); mlist_to_hlist(); link(tail) = link(temp_head);
 		while (link(tail) != null) tail = link(tail);
@@ -11923,7 +11912,7 @@ void fire_up(pointer c)
 		top_mark = bot_mark; add_token_ref(top_mark); delete_token_ref(first_mark);
 		first_mark = null;
 	}
-	#pragma region <Put the optimal current page into box 255 update first_mark and bot_mark append insertions to their boxes and put the remianiing ndoes bac on teh contribution list 1014>
+	#pragma region <Put the optimal current page into box 255 update first_mark and bot_mark append insertions to their boxes and put the remaining nodes back on the contribution list 1014>
 	if (c == best_page_break) best_page_break = null;
 	#pragma region <Ensure that box 255 is empty before output 1015>
 	if (box(255) != null) {
@@ -12132,9 +12121,8 @@ void append_kern()
 		printf("Overflow assignment append_kern\n");
 		exit(1);
 	}
-	s = (quarterword)cur_chr;
-
 	//--------
+	s = (quarterword)cur_chr;
 	scan_dimen(s == mu_glue, false, false); tail_append(new_kern(cur_val));
 	subtype(tail) = s;
 }
@@ -12192,7 +12180,7 @@ pointer vert_break(pointer p, scaled h, scaled d)
 				confusion(TEX_STRING("vertbreak"));
 				break;
 			}
-#pragma endregion
+			#pragma endregion
 
 		#pragma region <Check if node p is a new champion breakpoint .. 974>
 		if (pi < inf_penalty) {
@@ -12219,7 +12207,7 @@ pointer vert_break(pointer p, scaled h, scaled d)
 		#pragma endregion
 
 		if (type(p) < glue_node || type(p) > kern_node) goto not_found;
-	update_heights:
+update_heights:
 		#pragma region <Update the current height and depth measurements with respect to a glue or kern node p 976>
 		if (type(p) == kern_node) q = p;
 		else {
@@ -12378,12 +12366,11 @@ void do_register_command(small_number a)
 found:
 
 	#pragma endregion
-	if (q == _register) scan_optional_equals();
-#pragma warning(push)
-#pragma warning(disable : 4390)	
-	else if (scan_keyword(TEX_STRING("by")))
-		;//do_nothing
-#pragma warning(pop)
+	if (q == _register)
+		scan_optional_equals();
+	else
+		scan_keyword(TEX_STRING("by"));
+
 
 	arith_error = false;
 	if(q<multiply)
@@ -13548,11 +13535,11 @@ bool fin_col()
 				link(q) = get_avail(); q = link(q); info(q) = info(r); r = link(r);
 			}
 			link(q) = null; v_part(p) = link(hold_head);
-#pragma endregion
+			#pragma endregion
 
 			cur_loop = link(cur_loop); link(p) = new_glue(glue_ptr(cur_loop));
 		}
-#pragma endregion
+			#pragma endregion
 		else {
 			print_err(TEX_STRING("Extra alignment tab has been changed to ")); print_esc(TEX_STRING("cr"));
 			help3(TEX_STRING("You have given more \span or & marks than there were"),
@@ -13614,7 +13601,7 @@ bool fin_col()
 			else if (total_shrink[fill] != 0) o = fill;
 			else if (total_shrink[fil] != 0) o = fil;
 			else o = normal;
-#pragma endregion
+			#pragma endregion
 			glue_sign(u) = o; glue_shrink(u) = total_shrink[o];
 			pop_nest(); link(tail) = u; tail = u;
 		}
@@ -13633,7 +13620,7 @@ bool fin_col()
 	do {
 		get_x_token();
 	} while (!(cur_cmd != spacer));
-#pragma endregion
+	#pragma endregion
 
 	cur_align = p; init_col();
 	return false;
@@ -13681,7 +13668,7 @@ reswitch:
 	//gubed
 	if (tracing_commands > 0)
 		show_cur_cmd_chr();
-#pragma endregion
+	#pragma endregion
 
 	switch (abs(mode) + cur_cmd) {
 	case hmode + letter:
@@ -13774,7 +13761,7 @@ reswitch:
 	case mmode+hrule:
 		insert_dollar_sign();
 		break;
-#pragma endregion
+	#pragma endregion
 
 	#pragma region <Cases of main_control that build boxes and lists 1056>
 	case vmode+hrule:
@@ -14148,7 +14135,7 @@ reswitch:
 	case any_mode(extension):
 		do_extension();
 		break;
-#pragma endregion
+	#pragma endregion
 
 	#pragma endregion
 
@@ -14443,7 +14430,7 @@ void init_math()
 		}
 		else {
 			line_break(display_widow_penalty);
-			#pragma region <Calculate the natural width, w, by which the characters of teh final line extend ot teh right..1146>
+			#pragma region <Calculate the natural width, w, by which the characters of the final line extend to the right... 1146>
 			v = shift_amount(just_box) + 2 * quad(cur_font); w = -max_dimen; p = list_ptr(just_box);
 			while (p != null) {
 				#pragma region <Let d be the natural width of node p; if the node is visible.. 1147>
@@ -14477,12 +14464,12 @@ void init_math()
 								if (glue_order(just_box) == shrink_order(q) && shrink(q) != 0) v = max_dimen;
 							}
 							if (subtype(p) >= a_leaders) goto found;
-#pragma endregion
+							#pragma endregion
 							break;
 						case whatsit_node:
 							#pragma region <Let d be the width of the whatsit p 1361>
 							d = 0;
-#pragma endregion
+							#pragma endregion
 							break;
 
 						default: d = 0; break;
@@ -14500,7 +14487,8 @@ void init_math()
 			not_found:
 				p = link(p);
 			}
-done:;
+		done:
+			;
 			#pragma endregion
 		}
 		#pragma region <Calculate the length, l, and the shift amount, s, of the display lines 1149>
@@ -14535,7 +14523,7 @@ done:;
 			push_math(math_shift_group); eq_word_define(int_base + cur_fam_code, -1);
 			if (every_math != null) begin_token_list(every_math, every_math_text);
 		}
-#pragma endregion
+		#pragma endregion
 	}
 }
 
@@ -14548,7 +14536,7 @@ void start_eq_no()
 		push_math(math_shift_group); eq_word_define(int_base + cur_fam_code, -1);
 		if (every_math != null) begin_token_list(every_math, every_math_text);
 	}
-#pragma endregion
+	#pragma endregion
 }
 
 // 1151
@@ -14563,7 +14551,7 @@ restart:
 	{
 		get_x_token();
 	} while (!(cur_cmd != spacer && cur_cmd != relax));
-#pragma endregion
+	#pragma endregion
 
 reswitch:
 
@@ -14578,7 +14566,7 @@ reswitch:
 				cur_cs = cur_chr + active_base; cur_cmd = eq_type(cur_cs); cur_chr = equiv(cur_cs); x_token();
 				back_input();
 			}
-#pragma endregion
+			#pragma endregion
 			goto restart;
 		}
 		break;
@@ -14598,7 +14586,7 @@ reswitch:
 		#pragma region <Scan a subformula enclosed in braces and return 1153>
 		back_input(); scan_left_brace();
 		saved(0) = p; incr(save_ptr); push_math(math_group); return;
-#pragma endregion
+		#pragma endregion
 		break;
 	}
 	math_type(p) = math_char; character(p) = qi(c % 256);
@@ -14671,7 +14659,7 @@ void init_align()
 		error();
 		flush_math();
 	}
-#pragma endregion
+	#pragma endregion
 	push_nest();
 	#pragma region <Change current mode to -vmode for halign, -hmode for valign 775>
 	if (mode == mmode) {
@@ -14679,8 +14667,7 @@ void init_align()
 	}
 	else if (mode > 0)
 		mode = (mode_type)-mode;
-
-#pragma endregion
+	#pragma endregion
 	scan_spec(align_group, false);
 	#pragma region <Scan the preamble and record it in the preamble list 777>
 	preamble = null; cur_align = align_head; cur_loop = null; scanner_status = aligning;
@@ -14712,8 +14699,7 @@ void init_align()
 			}
 		}
 	done1:
-
-#pragma endregion
+		#pragma endregion
 		link(cur_align) = new_null_box(); cur_align = link(cur_align);
 		info(cur_align) = end_span; width(cur_align) = null_flag; u_part(cur_align) = link(hold_head);
 		#pragma region <Scan the template <v_j>, putting the resulting token list in hold_head 784>
@@ -14734,7 +14720,7 @@ void init_align()
 		}
 	done2:
 		link(p) = get_avail(); p = link(p); info(p) = end_template_token;
-#pragma endregion
+		#pragma endregion
 		v_part(cur_align) = link(hold_head);
 
 		#pragma endregion
@@ -14922,7 +14908,7 @@ pointer prune_page_top(pointer p)
 			if (width(temp_ptr) > height(p)) width(temp_ptr) -= height(p);
 			else width(temp_ptr) = 0;
 			p = null;
-#pragma endregion
+			#pragma endregion
 			break;
 		case whatsit_node:
 		case mark_node:
@@ -15127,7 +15113,7 @@ void line_break(int final_widow_penalty)
 							else if (type(s) == whatsit_node) {
 								#pragma region <Advance past a whatsit node in the pre-hyphenation loop 1363>
 								adv_past(s);
-#pragma endregion
+								#pragma endregion
 								goto mycontinue;
 							}
 							else goto done1;
@@ -15141,7 +15127,7 @@ void line_break(int final_widow_penalty)
 						if (hyf_char < 0) goto done1;
 						if (hyf_char > 255) goto done1;
 						ha = prev_s;
-#pragma endregion
+						#pragma endregion
 						if (l_hyf + r_hyf > 63) goto done1;
 						#pragma region <Skip to node hb, putting letters into hu and hc 897>
 						hn = 0;
@@ -15176,8 +15162,8 @@ void line_break(int final_widow_penalty)
 							else goto done3;
 							s = link(s);
 						}
-						done3:
-#pragma endregion
+					done3:
+						#pragma endregion
 						#pragma region <Check that the nodes following hb permit hyphenation and that at least l_hyf... 899>
 						if (hn < l_hyf + r_hyf) goto done1;
 						while (1) {
@@ -15204,13 +15190,13 @@ void line_break(int final_widow_penalty)
 							s = link(s);
 						}
 					done4:
-#pragma endregion
+						#pragma endregion
 						hyphenate();
 					}
 				done1:
 					;
 				}
-#pragma endregion
+				#pragma endregion
 				break;
 			case kern_node:
 				if (subtype(cur_p) == _explicit) kern_break;
@@ -15497,51 +15483,48 @@ void post_line_break(int final_widow_penalty)
 		#pragma region <Put the rightskip glue after node q 886>
 		r = new_param_glue(right_skip_code); link(r) = link(q); link(q) = r; q = r;
 		#pragma endregion
-		done:
-
-
-#pragma endregion
-
-		#pragma region <Put the leftskip glue at the left and detach this line 887>
-			r = link(q); link(q) = null; q = link(temp_head); link(temp_head) = r;
-			if (left_skip != zero_glue) {
-				r = new_param_glue(left_skip_code); link(r) = q; q = r;
-			}
+done:
 		#pragma endregion
 
+		#pragma region <Put the leftskip glue at the left and detach this line 887>
+		r = link(q); link(q) = null; q = link(temp_head); link(temp_head) = r;
+		if (left_skip != zero_glue) {
+			r = new_param_glue(left_skip_code); link(r) = q; q = r;
+		}
+		#pragma endregion
 
 		#pragma region <Call the packaging subroutine, setting just_box to the justified box 889>
-			if (cur_line > last_special_line) {
-				cur_width = second_width; cur_indent = second_indent;
-			}
-			else if (par_shape_ptr == null) {
-				cur_width = first_width; cur_indent = first_indent;
-			}
-			else {
-				cur_width = mem[par_shape_ptr + 2 * cur_line].sc;
-				cur_indent = mem[par_shape_ptr + 2 * cur_line - 1].sc;
-			}
-			adjust_tail = adjust_head; just_box = hpack(q, cur_width, exactly); shift_amount(just_box) = cur_indent;
+		if (cur_line > last_special_line) {
+			cur_width = second_width; cur_indent = second_indent;
+		}
+		else if (par_shape_ptr == null) {
+			cur_width = first_width; cur_indent = first_indent;
+		}
+		else {
+			cur_width = mem[par_shape_ptr + 2 * cur_line].sc;
+			cur_indent = mem[par_shape_ptr + 2 * cur_line - 1].sc;
+		}
+		adjust_tail = adjust_head; just_box = hpack(q, cur_width, exactly); shift_amount(just_box) = cur_indent;
 		#pragma endregion
 
 		#pragma region <Append the new box to the current vertical list, followed by the list of special nodes .. 888>
-			append_to_vlist(just_box);
-			if (adjust_head != adjust_tail) {
-				link(tail) = link(adjust_head); tail = adjust_tail;
-			}
-			adjust_tail = null;
+		append_to_vlist(just_box);
+		if (adjust_head != adjust_tail) {
+			link(tail) = link(adjust_head); tail = adjust_tail;
+		}
+		adjust_tail = null;
 		#pragma endregion
 
 		#pragma region <Append a penalty node, if a nonzero penalty is appropriate 890>
-			if (cur_line + 1 != best_line) {
-				pen = inter_line_penalty;
-				if (cur_line == prev_graf + 1) pen += club_penalty;
-				if (cur_line + 2 == best_line) pen += final_widow_penalty;
-				if (disc_break) pen += broken_penalty;
-				if (pen != 0) {
-					r = new_penalty(pen); link(tail) = r; tail = r;
-				}
+		if (cur_line + 1 != best_line) {
+			pen = inter_line_penalty;
+			if (cur_line == prev_graf + 1) pen += club_penalty;
+			if (cur_line + 2 == best_line) pen += final_widow_penalty;
+			if (disc_break) pen += broken_penalty;
+			if (pen != 0) {
+				r = new_penalty(pen); link(tail) = r; tail = r;
 			}
+		}
 		#pragma endregion
 
 
@@ -15568,6 +15551,7 @@ void post_line_break(int final_widow_penalty)
 			}
 				#pragma endregion
 	} while (!(cur_p == null));
+
 	if (cur_line != best_line || link(temp_head) != null)
 		confusion(TEX_STRING("line breaking"));
 	prev_graf = best_line - 1;
@@ -15597,7 +15581,7 @@ small_number reconstitute(small_number j, small_number n, halfword bchar, halfwo
 	}
 	else if (cur_l < non_char) append_charnode_to_t(quarterword(cur_l));
 	lig_stack = null; set_cur_r;
-#pragma endregion
+	#pragma endregion
 
 mycontinue:
 	#pragma region <If theres a ligature or constant.. 909>
@@ -15774,25 +15758,25 @@ void hyphenate()
 			while (s != null) {
 				hyf[info(s)] = 1; s = link(s);
 			}
-#pragma endregion
+			#pragma endregion
 			decr(hn); goto found;
 
 		}
 	done:
 
-#pragma endregion
+		#pragma endregion
 		if (h > 0) decr(h); else h = hyph_size;
 	}
 not_found:
 	decr(hn);
-#pragma endregion
+	#pragma endregion
 	if (trie_char(cur_lang + 1) != qi(cur_lang)) goto myexit;
 	hc[0] = 0; hc[hn + 1] = 0; hc[hn + 2] = 256;
 	for (j = 0; j <= hn - r_hyf + 1; j++) {
 		z = trie_link(cur_lang + 1) + hc[j]; l = j;
 		while (hc[l] == qo(trie_char(z))) {
 			if (trie_op(z) != min_quarterword)
-			#pragma region <Store maximum values in teh hyf table 924>
+			#pragma region <Store maximum values in the hyf table 924>
 			{
 				v = trie_op(z);
 				do {
@@ -15809,7 +15793,7 @@ found:
 	for (j = 0; j <= l_hyf - 1; j++) hyf[j] = 0;
 	for (j = 0; j <= r_hyf - 1; j++) hyf[hn - j] = 0;
 
-#pragma endregion
+	#pragma endregion
 
 
 	#pragma region <If no hyphens were found, return 902>
@@ -15818,7 +15802,7 @@ found:
 	goto myexit;
 found1:
 
-#pragma endregion
+	#pragma endregion
 
 	#pragma region <Replace nodes ha..hb by a sequence of nodes that includes the discretionary hyphens 903>
 	q = link(hb); link(hb) = null; r = link(ha); link(ha) = null; bchar = hyf_bchar;
@@ -15851,7 +15835,7 @@ found2:
 	s = ha; j = 0; hu[0] = 256; init_lig = false; init_list = null;
 common_ending:
 	flush_node_list(r);
-#pragma region <Reconstitute nodes for the hyphenated word, inserting discretionary hyphens 913>
+	#pragma region <Reconstitute nodes for the hyphenated word, inserting discretionary hyphens 913>
 	do {
 		l = j; j = reconstitute(j, hn, bchar, qi(hyf_char)) + 1;
 		if (hyphen_passed == 0) {
@@ -15862,14 +15846,14 @@ common_ending:
 			}
 		}
 		if (hyphen_passed > 0)
-#pragma region < Create and append a discretionary node as an alternative... 914>
+			#pragma region < Create and append a discretionary node as an alternative... 914>
 
 			do {
 				r = get_node(small_node_size); link(r) = link(hold_head); type(r) = disc_node; major_tail = r;
 				r_count = 0;
 				while (link(major_tail) > null) advance_major_tail;
 				i = hyphen_passed; hyf[i] = 0;
-#pragma region <Put the characters hu[l..i] and a hyphen into pre_break(r) 915>
+				#pragma region <Put the characters hu[l..i] and a hyphen into pre_break(r) 915>
 				minor_tail = null; pre_break(r) = null; hyf_node = new_character(hf, hyf_char);
 				if (hyf_node != null) {
 					incr(i); c = hu[i]; hu[i] = hyf_char; free_avail(hyf_node);
@@ -15887,8 +15871,8 @@ common_ending:
 					hu[i] = c;
 					l = i; decr(i);
 				}
-#pragma endregion
-#pragma region <Put the characters hu[i+1..] into post_break(r)... 916>
+				#pragma endregion
+				#pragma region <Put the characters hu[i+1..] into post_break(r)... 916>
 				minor_tail = null; post_break(r) = null; c_loc = 0;
 				if (bchar_label[hf] != non_address) {
 					decr(l); c = hu[l]; c_loc = l; hu[l] = 256;
@@ -15908,16 +15892,16 @@ common_ending:
 							
 					} while (!(l >= j));
 					while (l > j)
-#pragma region <Append characters of hu[j..] to major_tail advancing j 917>
+						#pragma region <Append characters of hu[j..] to major_tail advancing j 917>
 					{
 						j = reconstitute(j, hn, bchar, non_char) + 1;
 						link(major_tail) = link(hold_head);
 						while (link(major_tail) > null) advance_major_tail;
 					}
-#pragma endregion
+						#pragma endregion
 				}
-#pragma endregion
-#pragma region <Move pointer s to the end of teh current list, and set replace_count(r) approp... 918>
+				#pragma endregion
+				#pragma region <Move pointer s to the end of the current list, and set replace_count(r) approp... 918>
 				if (r_count > 127) {
 					link(s) = link(r); link(r) = null; flush_node_list(r);
 				}
@@ -15925,16 +15909,16 @@ common_ending:
 					link(s) = r; replace_count(r) = r_count;
 				}
 				s = major_tail;
-#pragma endregion
+				#pragma endregion
 				hyphen_passed = j - 1; link(hold_head) = null;
 			} while (!(!myodd(hyf[j - 1])));
 
-#pragma endregion
+		#pragma endregion
 	} while (!(j > hn));
 	link(s) = q;
-#pragma endregion
+	#pragma endregion
 	flush_list(init_list);
-#pragma endregion
+	#pragma endregion
 	myexit:
 		  ;
 }
@@ -16003,7 +15987,7 @@ void delete_last()
 			error();
 		}
 	}
-#pragma endregion
+		#pragma endregion
 	else {
 		if(!is_char_node(tail))
 			if (type(tail) == cur_chr) {
@@ -16058,7 +16042,7 @@ void app_space()
 		if (space_skip != zero_glue)
 			main_p = space_skip;
 		else
-			#pragma region <Find the glue specification, main_p, for text spaces in teh current font 1042>
+			#pragma region <Find the glue specification, main_p, for text spaces in the current font 1042>
 		{
 			main_p = font_glue[cur_font];
 			if (main_p == null) {
@@ -16069,14 +16053,14 @@ void app_space()
 				font_glue[cur_font] = main_p;
 			}
 		}
-#pragma endregion
+			#pragma endregion
 		main_p = new_spec(main_p);
 		#pragma region <Modify the glue specification in main_p according to the space factor 1044>
 		if (space_factor >= 2000)
 			width(main_p) = width(main_p) + extra_space(cur_font);
 		stretch(main_p) = xn_over_d(stretch(main_p), space_factor, 1000);
 		shrink(main_p) = xn_over_d(shrink(main_p), 1000, space_factor);
-#pragma endregion
+		#pragma endregion
 		q = new_glue(main_p); glue_ref_count(main_p) = null;
 	}
 	link(tail) = q; tail = q;
@@ -16589,7 +16573,7 @@ void init_prim()
 	primitive(TEX_STRING("immediate"), extension, immediate_code);
 	primitive(TEX_STRING("setlanguage"), extension, set_language_code);
 
-#pragma endregion
+	#pragma endregion
 
 	no_new_control_sequence = true;
 }
@@ -16697,7 +16681,7 @@ void first_fit(trie_pointer p)
 				trie_back(trie_max) = trie_max - 1;
 			} while (!(trie_max == h + 256));
 		}
-#pragma endregion
+		#pragma endregion
 		if (trie_taken[h]) goto not_found;
 		#pragma region <If all characters of the family fit relative to h, then goto found otherwise goto not_found 955>
 		q = trie_r[p];
@@ -16706,7 +16690,7 @@ void first_fit(trie_pointer p)
 			q = trie_r[q];
 		}
 		goto found;
-#pragma endregion
+		#pragma endregion
 
 	not_found:
 		z = trie_link(z);
@@ -16864,7 +16848,7 @@ void store_fmt_file()
 	dump_int(eqtb_size);
 	dump_int(hash_prime);
 	dump_int(hyph_size);
-#pragma endregion
+	#pragma endregion
 
 	#pragma region <Dump the string pool 1309>
 	dump_int(pool_ptr); dump_int(str_ptr);
@@ -17004,12 +16988,12 @@ void store_fmt_file()
 			print(TEX_STRING("pt"));
 		}
 	}
-#pragma endregion
+	#pragma endregion
 
 	print_ln(); print_int(fmem_ptr - 7); print(TEX_STRING(" words of font info for "));
 	print_int(font_ptr - font_base); print(TEX_STRING(" preloaded font"));
 	if (font_ptr != font_base + 1) print_char(TEX_STRING("s"));
-#pragma endregion
+	#pragma endregion
 
 	#pragma region <Dump the hyphenation tables 1324>
 	dump_int(hyph_count);
@@ -17096,7 +17080,7 @@ int main(int argc, char **argv)
 	if (2 * max_halfword < mem_top - mem_min) bad = 41;
 	
 
-#pragma endregion
+	#pragma endregion
 
 	if (bad > 0) {
 		wterm_ln_s("Ouch---my internal constants have been clobbered");
@@ -17132,7 +17116,7 @@ start_of_TEX:
 	//533
 	output_file_name = 0;
 
-#pragma endregion
+	#pragma endregion
 
 	#pragma region <Get the first line of input and prepare to start 1337
 
@@ -17145,7 +17129,7 @@ start_of_TEX:
 	line = 0; name = 0; force_eof = false; align_state = 1000000;
 	if (!init_terminal(argc, argv)) goto final_end;
 	limit = last; first = last + 1;
-#pragma endregion
+	#pragma endregion
 
 	if (format_ident == 0 || buffer[loc] == TEX_STRING("&")) {
 		if (format_ident != 0) initialize();
@@ -17163,7 +17147,7 @@ start_of_TEX:
 
 	#pragma region <Compute the magic offset 765>
 	magic_offset = str_start[math_spacing] - 9 * ord_noad;
-#pragma endregion
+	#pragma endregion
 
 	#pragma region <Initialize the print selector based on interaction 75>
 	if (interaction == batch_mode) selector = no_print;
@@ -17172,7 +17156,7 @@ start_of_TEX:
 
 	if (loc < limit && cat_code(buffer[loc]) != escape) start_input();
 
-#pragma endregion
+	#pragma endregion
 
 	history = spotless;
 	main_control();
