@@ -64,6 +64,7 @@ for those who want to understand how this complex software works.
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <climits>
 #include "rstex.h"
 
 
