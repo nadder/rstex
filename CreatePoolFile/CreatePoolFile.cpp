@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	// second and third argument and so on represent files which should be searched for strings of above sort.
 
 	if (argc < 3) {
-		std::cerr << "Error too few arguments\n. Need <string> <filename1> <filename2> ...\n";
+		std::cerr << "Error too few arguments. Need <string> <filename1> <filename2> ...\n";
 		return 1;
 	}
 
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 					output_file << "/*" << replacement << "*/" << index_of_string;
 				}
 				else {
-					output_file << "/*" << "This text contained comment characters, refer to preprocessed file for this one." << "*/" << index_of_string;
+					output_file << "/*" << "This text contained comment characters, refer to unprocessed file for this one." << "*/" << index_of_string;
 				}
 			}
 
