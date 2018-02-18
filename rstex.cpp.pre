@@ -66,6 +66,25 @@ for those who want to understand how this complex software works.
 #include <ctime>
 #include "rstex.h"
 
+
+// Some versions of gcc and clang easily get confused about the abs function overloads so let's use our own abs functions
+float myabs(float x)
+{
+	return x >= 0.0f ? x : -x;
+}
+
+int myabs(int x)
+{
+	// overflow check
+	if (x == INT_MIN) {
+		printf("Overflow myabs.\n");
+		exit(1);
+	}
+	///////////////////////
+	
+	return x >= 0 ? x : -x;
+}
+
 bool myodd(int c)
 {
 	return ((c % 2) != 0);
@@ -353,7 +372,7 @@ void slow_print(int s)
 // 66
 void print_two(int n)
 {
-	n = std::abs(n) % 100;
+	n = myabs(n) % 100;
 	print_char(TEX_STRING("0") + (n / 10));
 	print_char(TEX_STRING("0") + (n % 10));
 }
@@ -762,7 +781,7 @@ done:
 	case 1: post_break(tail) = p; break;
 	case 2: 
 		#pragma region <Attach list p to the current list, and record its length; then finish up and return 1120>
-		if (n > 0 && std::abs(mode) == mmode) {
+		if (n > 0 && myabs(mode) == mmode) {
 			print_err(TEX_STRING("Illegal math ")); 
 			print_esc(TEX_STRING("discretionary"));
 			help2(TEX_STRING("Sorry: The third part of a discretionary break must be"),
@@ -2569,7 +2588,7 @@ void begin_file_reading()
 void show_node_list(int p)
 {
 	int n;
-	double g;
+	float g;
 	if (cur_length > depth_threshold) {
 		if (p > null)
 			print(TEX_STRING(" []"));
@@ -2627,9 +2646,9 @@ void show_node_list(int p)
 					if (g != 0.0f && glue_sign(p) != normal) {
 						print(TEX_STRING(", glue set "));
 						if (glue_sign(p) == shrinking) print(TEX_STRING("- "));
-						if (std::abs(mem[p + glue_offset].union_t.an_int) < 04000000)
+						if (myabs(mem[p + glue_offset].union_t.an_int) < 04000000)
 							print(TEX_STRING("?.?"));
-						else if (std::abs(g) > 20000.0f) {
+						else if (myabs(g) > 20000.0f) {
 							if (g > 0.0f) print_char(TEX_STRING(">"));
 							else print(TEX_STRING("< -"));
 							print_glue(20000 * unity, glue_order(p), 0);
@@ -3546,7 +3565,7 @@ void scan_something_internal(small_number level, bool negative)
 		break;
 	case set_aux:
 		#pragma region <Fetch the space factor or the prev_depth 418>
-		if (std::abs(mode) != m) {
+		if (myabs(mode) != m) {
 			print_err(TEX_STRING("Improper "));
 			print_cmd_chr(set_aux, m);
 			help4(TEX_STRING("You can refer to \spacefactor only in horizontal mode;"),
@@ -3571,7 +3590,7 @@ void scan_something_internal(small_number level, bool negative)
 			scanned_result(0, int_val);
 		else {
 			nest[nest_ptr] = cur_list; p = nest_ptr;
-			while (std::abs(nest[p].mode_field) != vmode)
+			while (myabs(nest[p].mode_field) != vmode)
 				decr(p);
 			scanned_result(nest[p].pg_field, int_val);
 		}
@@ -3957,16 +3976,16 @@ void movement(scaled w, eight_bits o)
 
 	#pragma region <Generate a down or right command for w and return 610>
 	info(q) = yz_OK;
-	if (std::abs(w) >= 040000000) {
+	if (myabs(w) >= 040000000) {
 		dvi_out(o + 3);
 		dvi_four(w); goto _exit;
 	}
-	if (std::abs(w) >= 0100000) {
+	if (myabs(w) >= 0100000) {
 		dvi_out(o + 2);
 		if (w < 0) w += 0100000000;
 		dvi_out(w / 0200000); w = w % 0200000; goto my2;
 	}
-	if (std::abs(w) >= 0200) {
+	if (myabs(w) >= 0200) {
 		dvi_out(o + 1);
 		if (w < 0) w += 0200000;
 		goto my2;
@@ -4745,9 +4764,9 @@ void make_radical(pointer q)
 
 	x = clean_box(nucleus(q), cramped_style(cur_style));
 	if (cur_style < text_style)
-		clr = default_rule_thickness + (std::abs(math_x_height(cur_size)) / 4);
+		clr = default_rule_thickness + (myabs(math_x_height(cur_size)) / 4);
 	else {
-		clr = default_rule_thickness; clr += std::abs(clr) / 4;
+		clr = default_rule_thickness; clr += myabs(clr) / 4;
 	}
 	y = var_delimiter(left_delimiter(q), cur_size, height(x) + depth(x) + clr + default_rule_thickness);
 	delta = depth(y) - (height(x) + depth(x) + clr);
@@ -5072,7 +5091,7 @@ void make_scripts(pointer q, scaled delta)
 	{
 		x = clean_box(subscr(q), sub_style(cur_style)); width(x) += script_space;
 		if (shift_down < sub1(cur_size)) shift_down = sub1(cur_size);
-		clr = height(x) - (std::abs(math_x_height(cur_size)*4) / 5);
+		clr = height(x) - (myabs(math_x_height(cur_size)*4) / 5);
 		if (shift_down < clr) shift_down = clr;
 		shift_amount(x) = shift_down;
 	}
@@ -5085,7 +5104,7 @@ void make_scripts(pointer q, scaled delta)
 			else if (cur_style < text_style) clr = sup1(cur_size);
 			else clr = sup2(cur_size);
 			if (shift_up < clr) shift_up = clr;
-			clr = depth(x) + (std::abs(math_x_height(cur_size)) / 4);
+			clr = depth(x) + (myabs(math_x_height(cur_size)) / 4);
 			if (shift_up < clr) shift_up = clr;
 		}
 		#pragma endregion
@@ -5098,7 +5117,7 @@ void make_scripts(pointer q, scaled delta)
 			clr = 4 * default_rule_thickness - ((shift_up - depth(x)) - (height(y) - shift_down));
 			if (clr > 0) {
 				shift_down += clr;
-				clr = (std::abs(math_x_height(cur_size) * 4) / 5) - (shift_up - depth(x));
+				clr = (myabs(math_x_height(cur_size) * 4) / 5) - (shift_up - depth(x));
 				if (clr > 0) {
 					shift_up += clr; shift_down -= clr;
 				}
@@ -7232,7 +7251,7 @@ done:
 
 
 attach_sign:
-	if (arith_error || std::abs(cur_val) >= 010000000000)
+	if (arith_error || myabs(cur_val) >= 010000000000)
 		#pragma region <Report that this dimension is out of range 460>
 	{
 		print_err(TEX_STRING("Dimension too large"));
@@ -7518,11 +7537,11 @@ void conditional()
 		b = myodd(cur_val);
 		#pragma endregion
 		break;
-	case if_vmode_code: b = (std::abs(mode) == vmode);
+	case if_vmode_code: b = (myabs(mode) == vmode);
 		break;
-	case if_hmode_code: b = (std::abs(mode) == hmode);
+	case if_hmode_code: b = (myabs(mode) == hmode);
 		break;
-	case if_mmode_code: b = (std::abs(mode) == mmode);
+	case if_mmode_code: b = (myabs(mode) == mmode);
 		break;
 	case if_inner_code: b = (mode < 0);
 		break;
@@ -8053,7 +8072,7 @@ quarterword new_trie_op(small_number d, small_number n, quarterword v)
 	quarterword u;
 	unsigned l; // 0..trie_op_size
 
-	h = std::abs(n + 313 * d + 361 * v + 1009 * cur_lang) % (trie_op_size + trie_op_size) - trie_op_size;
+	h = myabs(n + 313 * d + 361 * v + 1009 * cur_lang) % (trie_op_size + trie_op_size) - trie_op_size;
 	while (1) {
 		l = trie_op_hash[h];
 		if (l == 0) {
@@ -9400,7 +9419,7 @@ common_ending:
 	if (output_active) print(TEX_STRING(") has occurred while \output is active"));
 	else {
 		if (pack_begin_line != 0) {
-			print(TEX_STRING(") in alignment at lines ")); print_int(std::abs(pack_begin_line));
+			print(TEX_STRING(") in alignment at lines ")); print_int(myabs(pack_begin_line));
 			print(TEX_STRING("--"));
 		}
 		else print(TEX_STRING(") detected at line "));
@@ -9633,7 +9652,7 @@ common_ending:
 		if (pack_begin_line != 0) {
 			if (pack_begin_line > 0) print(TEX_STRING(") in paragraph at lines "));
 			else print(TEX_STRING(") in alignment at lines "));
-			print_int(std::abs(pack_begin_line));
+			print_int(myabs(pack_begin_line));
 			print(TEX_STRING("--"));
 		}
 		else print(TEX_STRING(") detected at line "));
@@ -9677,7 +9696,7 @@ void try_break(int pi, small_number break_type)
 	#pragma endregion
 
 	#pragma region <Make sure that pi is in the proper range 831>
-	if (std::abs(pi) >= inf_penalty)
+	if (myabs(pi) >= inf_penalty)
 		if (pi > 0) goto myexit;
 		else pi = eject_penalty;
 	#pragma endregion
@@ -9804,8 +9823,8 @@ void try_break(int pi, small_number break_type)
 					}
 					#pragma endregion
 
-					if (std::abs(adj_demerits) >= awful_bad - minimum_demerits) minimum_demerits = awful_bad - 1;
-					else minimum_demerits += std::abs(adj_demerits);
+					if (myabs(adj_demerits) >= awful_bad - minimum_demerits) minimum_demerits = awful_bad - 1;
+					else minimum_demerits += myabs(adj_demerits);
 					for (fit_class = very_loose_fit; fit_class <= tight_fit; fit_class++) {
 						if (minimal_demerits[fit_class] <= minimum_demerits)
 							#pragma region <Insert a new active node from best_place[fit_class] to cur_p 845>
@@ -9915,14 +9934,14 @@ void try_break(int pi, small_number break_type)
 				#pragma region <Compute the demerits, d, from r to cur_p 859>
 			{
 				d = line_penalty + b;
-				if (std::abs(d) >= 10000) d = 100000000; else d = d * d;
+				if (myabs(d) >= 10000) d = 100000000; else d = d * d;
 				if (pi != 0)
 					if (pi > 0) d = d + pi * pi;
 					else if (pi > eject_penalty) d = d - pi * pi;
 				if (break_type == hyphenated && type(r) == hyphenated)
 					if (cur_p != null) d = d + double_hyphen_demerits;
 					else d = d + final_hyphen_demerits;
-				if (std::abs(fit_class - fitness(r)) > 1) d = d + adj_demerits;
+				if (myabs(fit_class - fitness(r)) > 1) d = d + adj_demerits;
 			}
 				#pragma endregion
 			//stat
@@ -10021,7 +10040,7 @@ void box_end(int box_context)
 	{
 		if (cur_box != null) {
 			shift_amount(cur_box) = box_context;
-			if (std::abs(mode) == vmode) {
+			if (myabs(mode) == vmode) {
 				append_to_vlist(cur_box);
 				if (adjust_tail != null) {
 					if (adjust_head != adjust_tail) {
@@ -10032,7 +10051,7 @@ void box_end(int box_context)
 				if (mode > 0) build_page();
 			}
 			else {
-				if (std::abs(mode) == hmode) space_factor = 1000;
+				if (myabs(mode) == hmode) space_factor = 1000;
 				else {
 					p = new_noad(); math_type(nucleus(p)) = sub_box; info(nucleus(p)) = cur_box;
 					cur_box = p;
@@ -10059,7 +10078,7 @@ void box_end(int box_context)
 				get_x_token();
 			} while (!(cur_cmd != spacer && cur_cmd != relax));
 			#pragma endregion
-			if ((cur_cmd == hskip && std::abs(mode) != vmode) || (cur_cmd == vskip && std::abs(mode) == vmode)) {
+			if ((cur_cmd == hskip && myabs(mode) != vmode) || (cur_cmd == vskip && myabs(mode) == vmode)) {
 				append_glue(); subtype(tail) = box_context - (leader_flag - a_leaders);
 				leader_ptr(tail) = cur_box;
 			}
@@ -12527,7 +12546,7 @@ void show_activities()
 	print_nl(TEX_STRING("")); print_ln();
 	for (p = nest_ptr; p >= 0; p--) {
 		m = nest[p].mode_field; a = nest[p].aux_field; print_nl(TEX_STRING("### ")); print_mode(m);
-		print(TEX_STRING(" entered at line ")); print_int(std::abs(nest[p].ml_field));
+		print(TEX_STRING(" entered at line ")); print_int(myabs(nest[p].ml_field));
 		if(m==hmode)
 			if (nest[p].pg_field != 040600000) {
 				print(TEX_STRING(" (language")); print_int(nest[p].pg_field % 0200000); print(TEX_STRING(":hyphenmin"));
@@ -12566,7 +12585,7 @@ void show_activities()
 		}
 		show_box(link(nest[p].head_field));
 		#pragma region <Show the auxiliary field 219>
-		switch (std::abs(m) / (max_command + 1)) {
+		switch (myabs(m) / (max_command + 1)) {
 		case 0:
 			print_nl(TEX_STRING("prevdepth "));
 			if (a.sc <= ignore_depth) print(TEX_STRING("ignored"));
@@ -13338,7 +13357,7 @@ void do_extension()
 		break;
 	case set_language_code:
 		#pragma region <Implement setlanguge 1377>
-		if (std::abs(mode) != hmode)
+		if (myabs(mode) != hmode)
 			report_illegal_case();
 		else {
 			new_whatsit(language_node, small_node_size);
@@ -13381,7 +13400,7 @@ void begin_box(int box_context)
 	case last_box_code:
 		#pragma region <If the current list ends with a box node delete it from the list and make cur_box point to it; otherwise set cur_box = null 1080>
 		cur_box = null;
-		if (std::abs(mode) == mmode) {
+		if (myabs(mode) == mmode) {
 			you_cant(); help1(TEX_STRING("Sorry; this \lastbox will be void."));
 			error();
 		}
@@ -13431,7 +13450,7 @@ void begin_box(int box_context)
 		#pragma region <Initiate the construction of an hbox or vbox, then return 1083>
 		k = cur_chr - vtop_code; saved(0) = box_context;
 		if (k == hmode)
-			if (box_context < box_flag && std::abs(mode) == vmode) scan_spec(adjusted_hbox_group, true);
+			if (box_context < box_flag && myabs(mode) == vmode) scan_spec(adjusted_hbox_group, true);
 			else scan_spec(hbox_group, true);
 		else {
 			if (k == vmode) scan_spec(vbox_group, true);
@@ -13497,7 +13516,7 @@ void indent_in_hmode()
 	pointer p, q;
 	if (cur_chr > 0) {
 		p = new_null_box(); width(p) = par_indent;
-		if (std::abs(mode) == hmode) space_factor = 1000;
+		if (myabs(mode) == hmode) space_factor = 1000;
 		else {
 			q = new_noad(); math_type(nucleus(q)) = sub_box; info(nucleus(q)) = p; p = q;
 		}
@@ -13672,7 +13691,7 @@ reswitch:
 		show_cur_cmd_chr();
 	#pragma endregion
 
-	switch (std::abs(mode) + cur_cmd) {
+	switch (myabs(mode) + cur_cmd) {
 	case hmode + letter:
 	case hmode + other_char:
 	case hmode + char_given:
@@ -13770,9 +13789,9 @@ reswitch:
 	case hmode+vrule:
 	case mmode+vrule:
 		tail_append(scan_rule_spec());
-		if (std::abs(mode) == vmode)
+		if (myabs(mode) == vmode)
 			prev_depth = ignore_depth;
-		else if (std::abs(mode) == hmode)
+		else if (myabs(mode) == hmode)
 			space_factor = 1000;
 		break;
 	// 1057
@@ -14496,7 +14515,7 @@ void init_math()
 		#pragma region <Calculate the length, l, and the shift amount, s, of the display lines 1149>
 		if(par_shape_ptr == null)
 			if (hang_indent != 0 && ((hang_after >= 0 && prev_graf + 2 > hang_after) || prev_graf + 1 < -hang_after)) {
-				l = hsize - std::abs(hang_indent);
+				l = hsize - myabs(hang_indent);
 				if (hang_indent > 0) s = hang_indent;
 				else s = 0;
 			}
@@ -14820,7 +14839,7 @@ void make_accent()
 //1127
 void align_error()
 {
-	if (std::abs(align_state) > 2)
+	if (myabs(align_state) > 2)
 		#pragma region <Express consternation over the fact that no alignment is in progress 1128>
 	{
 		print_err(TEX_STRING("Misplaced ")); print_cmd_chr(cur_cmd, cur_chr);
@@ -14997,15 +15016,15 @@ void line_break(int final_widow_penalty)
 		else
 			#pragma region <Set line length paramters in preparation for hanging indentation 849>
 		{
-			last_special_line = std::abs(hang_after);
+			last_special_line = myabs(hang_after);
 			if (hang_after < 0) {
-				first_width = hsize - std::abs(hang_indent);
+				first_width = hsize - myabs(hang_indent);
 				if (hang_indent >= 0) first_indent = hang_indent;
 				else first_indent = 0;
 				second_width = hsize; second_indent = 0;
 			}
 			else {
-				first_width = hsize; first_indent = 0; second_width = hsize - std::abs(hang_indent);
+				first_width = hsize; first_indent = 0; second_width = hsize - myabs(hang_indent);
 				if (hang_indent >= 0) second_indent = hang_indent;
 				else second_indent = 0;
 			}
@@ -16018,8 +16037,8 @@ void unpackage()
 	c = cur_chr; scan_eight_bit_int(); p = box(cur_val);
 	if (p == null)
 		return;
-	if (std::abs(mode) == mmode || (std::abs(mode) == vmode && type(p) != vlist_node) ||
-		(std::abs(mode) == hmode && type(p) != hlist_node)) {
+	if (myabs(mode) == mmode || (myabs(mode) == vmode && type(p) != vlist_node) ||
+		(myabs(mode) == hmode && type(p) != hlist_node)) {
 		print_err(TEX_STRING("Incompatible list can't be unboxed"));
 		help3(TEX_STRING("Sorry, Pandora. (You sneaky devil.)"),
 			TEX_STRING("I refuse to unbox an \hbox in vertical mode or vice versa."),
@@ -16072,7 +16091,7 @@ void app_space()
 void alter_aux()
 {
 	halfword c;
-	if (cur_chr != std::abs(mode))
+	if (cur_chr != myabs(mode))
 		report_illegal_case();
 	else {
 		c = cur_chr; scan_optional_equals();
@@ -16097,7 +16116,7 @@ void alter_prev_graf()
 {
 	unsigned int p;
 	nest[nest_ptr] = cur_list; p = nest_ptr;
-	while (std::abs(nest[p].mode_field) != vmode)
+	while (myabs(nest[p].mode_field) != vmode)
 		decr(p);
 	scan_optional_equals();
 	scan_int();
@@ -16632,7 +16651,7 @@ trie_pointer trie_node(trie_pointer p)
 	trie_pointer h;
 	trie_pointer q;
 	trie_pointer retval;
-	h = std::abs(trie_c[p] + 1009 * trie_o[p] + 2718 * trie_l[p] + 3142 * trie_r[p]) % trie_size;
+	h = myabs(trie_c[p] + 1009 * trie_o[p] + 2718 * trie_l[p] + 3142 * trie_r[p]) % trie_size;
 	while (1) {
 		q = trie_hash[h];
 		if (q == 0) {
