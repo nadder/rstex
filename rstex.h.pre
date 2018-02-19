@@ -10,7 +10,7 @@ is strictly forbidden.
 This is a manual translation of tex.web version 3.14159265 into C++.
 Mostly it's a direct translation of the original pascal source with very minimal changes.
 The amount of C++ (that is not also C) used is very minimal. Notably I added an array
-class to keep the same indexing as in the orignal and to also get boundschecking.
+class to keep the same indexing as in the original and to also get boundschecking.
 With some work it's possible to use straight C arrays instead but this will make
 the code alot more cluttered. I also use the stream classes to print statistics,
 this can easily be changed to C format routines instead, if one wishes.
