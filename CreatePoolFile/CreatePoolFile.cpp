@@ -165,9 +165,9 @@ int main(int argc, char **argv)
 	}
 	pool_file << '\n';
 
-	// now that we have the checksum we need to scan the outfiles to see if there's the
+	// Now that we have the checksum we need to scan the outfiles to see if there's the
 	// special macro @$ which will be replaced by the checksum
-
+	// Limitation, only replaces the first @$ in the line.
 	for (int i = 2; i < argc; i++) {
 		std::string filename = argv[i];
 		filename += ".out";
@@ -181,6 +181,7 @@ int main(int argc, char **argv)
 		std::ifstream filein(filename);
 		std::string sline;
 
+		
 		while (std::getline(filein, sline)) {
 			size_t pos = sline.find("@$", 0);
 			if (pos != std::string::npos)

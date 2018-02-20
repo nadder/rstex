@@ -2654,7 +2654,17 @@ void show_node_list(int p)
 							else print(TEX_STRING("< -"));
 							print_glue(20000 * unity, glue_order(p), 0);
 						}
-						else print_glue((scaled)round(unity*g), glue_order(p), 0);
+						else {
+							// Check for overflow
+							float ftemp = round(unity*g);
+							if(ftemp > INT_MAX || ftemp < INT_MIN) {
+								printf("Overflow in 186.");
+								exit(1);
+							}
+							/////////////////////////
+							
+							print_glue((scaled)ftemp, glue_order(p), 0);
+						}
 					}
 					#pragma endregion
 					if (shift_amount(p) != 0) {
@@ -5387,10 +5397,32 @@ void fin_align()
 						s = link(s); v = glue_ptr(s); link(u) = new_glue(v); u = link(u); subtype(u) = tab_skip_code + 1;
 						t += width(v);
 						if (glue_sign(p) == stretching) {
-							if (stretch_order(v) == glue_order(p)) t += (scaled)round(_float(glue_set(p))*stretch(v));
+							if (stretch_order(v) == glue_order(p)) {
+							
+								// Check for overflow
+								float ftemp = round(_float(glue_set(p))*stretch(v));
+								if(ftemp > INT_MAX || ftemp < INT_MIN) {
+									printf("Overflow in 809.");
+									exit(1);
+								}
+								/////////////////////////
+								
+								t += (scaled)ftemp;
+							}
 						}
 						else if (glue_sign(p) == shrinking) {
-							if(shrink_order(v) == glue_order(p)) t -= (scaled)round(_float(glue_set(p))*shrink(v));
+							if(shrink_order(v) == glue_order(p)) {
+							
+								// Check for overflow
+								float ftemp = round(_float(glue_set(p))*shrink(v));
+								if(ftemp > INT_MAX || ftemp < INT_MIN) {
+									printf("Overflow in 809.");
+									exit(1);
+								}
+								/////////////////////////
+								
+								t -= (scaled)ftemp;
+							}
 						}
 						s = link(s); link(u) = new_null_box(); u = link(u); t += width(s);
 						if (mode == -vmode) width(u) = width(s);
@@ -8839,8 +8871,8 @@ void hlist_out()
 	scaled lx;
 	bool outer_doing_leaders;
 	scaled edge;
-	double glue_temp;
-	double cur_glue;
+	float glue_temp;
+	float cur_glue;
 	scaled cur_g;
 
 	cur_g = 0; cur_glue = 0.0f; this_box = temp_ptr; g_order = glue_order(this_box);
@@ -8907,12 +8939,30 @@ void hlist_out()
 					if (g_sign == stretching) {
 						if (stretch_order(g) == g_order) {
 							cur_glue += stretch(g); vet_glue(_float(glue_set(this_box))*cur_glue);
-							cur_g = (scaled)round(glue_temp);
+							
+							// Check for overflow
+							float ftemp = round(glue_temp);
+							if(ftemp > INT_MAX || ftemp < INT_MIN) {
+								printf("Overflow in 625.");
+								exit(1);
+							}
+							/////////////////////////
+							
+							cur_g = (scaled)ftemp;
 						}
 					}
 					else if (shrink_order(g) == g_order) {
 						cur_glue -= shrink(g); vet_glue(_float(glue_set(this_box))*cur_glue);
-						cur_g = (scaled)round(glue_temp);
+						
+						// Check for overflow
+						float ftemp = round(glue_temp);
+						if(ftemp > INT_MAX || ftemp < INT_MIN) {
+							printf("Overflow in 625.");
+							exit(1);
+						}
+						/////////////////////////
+												
+						cur_g = (scaled)ftemp;
 					}
 				}
 				rule_wd += cur_g;
@@ -9016,8 +9066,8 @@ void vlist_out()
 	scaled lx;
 	bool outer_doing_leaders;
 	scaled edge;
-	double glue_temp;
-	double cur_glue;
+	float glue_temp;
+	float cur_glue;
 	scaled cur_g;
 
 	cur_g = 0; cur_glue = 0.0f; this_box = temp_ptr; g_order = glue_order(this_box);
@@ -9062,12 +9112,30 @@ void vlist_out()
 					if (g_sign == stretching) {
 						if (stretch_order(g) == g_order) {
 							cur_glue += stretch(g); vet_glue(_float(glue_set(this_box))*cur_glue);
-							cur_g = (scaled)round(glue_temp);
+							
+							// Check for overflow
+							float ftemp = round(glue_temp);
+							if(ftemp > INT_MAX || ftemp < INT_MIN) {
+								printf("Overflow in 634.");
+								exit(1);
+							}
+							/////////////////////////
+							
+							cur_g = (scaled)ftemp;
 						}
 					}
 					else if (shrink_order(g) == g_order) {
 						cur_glue -= shrink(g); vet_glue(_float(glue_set(this_box))*cur_glue);
-						cur_g = (scaled)round(glue_temp);
+						
+						// Check for overflow
+						float ftemp = round(glue_temp);
+						if(ftemp > INT_MAX || ftemp < INT_MIN) {
+							printf("Overflow in 634.");
+							exit(1);
+						}
+						/////////////////////////
+						
+						cur_g = (scaled)ftemp;
 					}
 				}
 				rule_ht += cur_g;
@@ -14801,7 +14869,7 @@ void head_for_vmode()
 // 1123
 void make_accent()
 {
-	double s, t;
+	float s, t;
 	pointer p, q, r;
 	internal_font_number f;
 	scaled a, h, x, w, delta;
@@ -15512,7 +15580,7 @@ void post_line_break(int final_widow_penalty)
 		#pragma region <Put the rightskip glue after node q 886>
 		r = new_param_glue(right_skip_code); link(r) = link(q); link(q) = r; q = r;
 		#pragma endregion
-done:
+	done:
 		#pragma endregion
 
 		#pragma region <Put the leftskip glue at the left and detach this line 887>
@@ -15767,7 +15835,7 @@ void hyphenate()
 
 	#pragma region <Find hyphen locations for the word in hc, or return 923>
 	for (j = 0; j <= hn; j++) hyf[j] = 0;
-	#pragma region <Look for the word hc[1..hn] in the exceptoin table and goto found ...930>
+	#pragma region <Look for the word hc[1..hn] in the exception table and goto found ...930>
 	h = hc[1]; incr(hn); hc[hn] = cur_lang;
 	for (j = 2; j <= hn; j++) h = (h + h + hc[j]) % hyph_size;
 	while (1) {
@@ -15805,7 +15873,7 @@ not_found:
 		z = trie_link(cur_lang + 1) + hc[j]; l = j;
 		while (hc[l] == qo(trie_char(z))) {
 			if (trie_op(z) != min_quarterword)
-			#pragma region <Store maximum values in the hyf table 924>
+				#pragma region <Store maximum values in the hyf table 924>
 			{
 				v = trie_op(z);
 				do {
@@ -15814,7 +15882,7 @@ not_found:
 					v = hyf_next[v];
 				} while (!(v == min_quarterword));
 			}
-			#pragma endregion
+				#pragma endregion
 			incr(l); z = trie_link(z) + hc[l];
 		}
 	}
