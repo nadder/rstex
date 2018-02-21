@@ -28,17 +28,17 @@ one also hopefully gains some understanding of what the code does.
 Another aspect was that I was interested in knowing how long it would take
 to write the program. I didn't keep a stop watch at hand but a rough estimate is
 that it took about 30 hours to type the whole program in and more than twice that to
-fix all typos and other bugs introduced. Which was kind of what I expected except I 
-thought the debugging time would be on par with the time it took to type it in.
-Had I been more systematic in my approach and introduced more asserts and checks
-from the beginning the debugging time would have been considerably shorter.
+fix all typos and other bugs introduced before it finally passed the trip test.
+Which was kind of what I expected except I thought the debugging time would be on 
+par with the time it took to type it in. Had I been more systematic in my approach
+and introduced more asserts and checks from the beginning the debugging time would
+have been considerably shorter.
 
 The program consists of two files rstex.h.pre and rstex.cpp.pre.
 These two files must be preprocessed by another program which converts all
 special strings in the program to numbers (as the original tangle program does),
 and makes a string pool file.
-After this preprocessing we are left with three files rstex.h,
-rstex.cpp, and tex.pool.
+After this preprocessing we are left with three files rstex.h, rstex.cpp, and tex.pool.
 rstex.cpp can then be compiled by any non-ancient C++ compiler, and the executable can be run.
 
 Notable omissions:
@@ -2658,7 +2658,7 @@ void show_node_list(int p)
 							// Check for overflow
 							float ftemp = round(unity*g);
 							if(ftemp > INT_MAX || ftemp < INT_MIN) {
-								printf("Overflow in 186.");
+								printf("Overflow in 186.\n");
 								exit(1);
 							}
 							/////////////////////////
@@ -4846,10 +4846,11 @@ void make_math_accent(pointer q)
 
 			// overflow check
 			if (y > 255) {
-				printf("Overflow assignment\n");
+				printf("Overflow assignment 740\n");
 				exit(1);
 			}
 			//---------
+			
 			c = (quarterword)y;
 			
 		}
@@ -5402,7 +5403,7 @@ void fin_align()
 								// Check for overflow
 								float ftemp = round(_float(glue_set(p))*stretch(v));
 								if(ftemp > INT_MAX || ftemp < INT_MIN) {
-									printf("Overflow in 809.");
+									printf("Overflow in 809.\n");
 									exit(1);
 								}
 								/////////////////////////
@@ -5416,7 +5417,7 @@ void fin_align()
 								// Check for overflow
 								float ftemp = round(_float(glue_set(p))*shrink(v));
 								if(ftemp > INT_MAX || ftemp < INT_MIN) {
-									printf("Overflow in 809.");
+									printf("Overflow in 809.\n");
 									exit(1);
 								}
 								/////////////////////////
@@ -8806,11 +8807,14 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
 			qw = char_info(f, bchar);
 			if (char_exists(qw)) font_false_bchar[f] = non_char;
 		}
+
 	// overflow check
 	if (bc < 0 || bc > 255 || ec < 0 || ec > 255) {
 		printf("overflow in 576\n");
 		exit(1);
 	}
+	/////////////////
+	
 	font_name[f] = nom; font_area[f] = aire; font_bc[f] = (eight_bits)bc; font_ec[f] = (eight_bits)ec;
 	font_glue[f] = null; adjust(char_base); adjust(width_base); adjust(lig_kern_base);
 	adjust(kern_base); adjust(exten_base);
@@ -8943,7 +8947,7 @@ void hlist_out()
 							// Check for overflow
 							float ftemp = round(glue_temp);
 							if(ftemp > INT_MAX || ftemp < INT_MIN) {
-								printf("Overflow in 625.");
+								printf("Overflow in 625.\n");
 								exit(1);
 							}
 							/////////////////////////
@@ -8957,7 +8961,7 @@ void hlist_out()
 						// Check for overflow
 						float ftemp = round(glue_temp);
 						if(ftemp > INT_MAX || ftemp < INT_MIN) {
-							printf("Overflow in 625.");
+							printf("Overflow in 625.\n");
 							exit(1);
 						}
 						/////////////////////////
@@ -9116,7 +9120,7 @@ void vlist_out()
 							// Check for overflow
 							float ftemp = round(glue_temp);
 							if(ftemp > INT_MAX || ftemp < INT_MIN) {
-								printf("Overflow in 634.");
+								printf("Overflow in 634.\n");
 								exit(1);
 							}
 							/////////////////////////
@@ -9130,7 +9134,7 @@ void vlist_out()
 						// Check for overflow
 						float ftemp = round(glue_temp);
 						if(ftemp > INT_MAX || ftemp < INT_MIN) {
-							printf("Overflow in 634.");
+							printf("Overflow in 634.\n");
 							exit(1);
 						}
 						/////////////////////////
@@ -10958,10 +10962,14 @@ done:
 void new_interaction()
 {
 	print_ln();
+	
+	// Overflow check
 	if (cur_chr > 255) {
 		printf("overflow in 1265\n");
 		exit(1);
 	}
+	///////////////////
+	
 	interaction = (unsigned char)cur_chr;
 	#pragma region <Initialize the print selector based on interaction 75>
 	if (interaction == batch_mode) selector = no_print; else selector = term_only;
@@ -12213,12 +12221,14 @@ void append_glue()
 void append_kern()
 {
 	quarterword s;
+	
 	// overflow check
 	if (cur_chr > 255) {
 		printf("Overflow assignment append_kern\n");
 		exit(1);
 	}
 	//--------
+	
 	s = (quarterword)cur_chr;
 	scan_dimen(s == mu_glue, false, false); tail_append(new_kern(cur_val));
 	subtype(tail) = s;
@@ -12546,6 +12556,7 @@ void open_or_close_in()
 		exit(1);
 	}
 	// ----
+	
 	c = (unsigned char)cur_chr; scan_four_bit_int(); n = cur_val;
 	if (read_open[n] != closed) {
 		a_close(read_file[n]); read_open[n] = closed;
@@ -12569,10 +12580,11 @@ void issue_message()
 
 	// overflow check
 	if (cur_chr > 255) {
-		printf("Overflow assignment open_or_close_in\n");
+		printf("Overflow assignment issue_message\n");
 		exit(1);
 	}
-
+	//////////////////
+	
 	c = (unsigned char)cur_chr; link(garbage) = scan_toks(false, true); old_setting = selector;
 	selector = new_string; token_show(def_ref); selector = old_setting;
 	flush_list(def_ref); str_room(1);
@@ -12784,6 +12796,8 @@ void math_limit_switch()
 		printf("Overflow assignment math_limit_switch\n");
 		exit(1);
 	}
+	////////////////
+	
 	if(head!= tail)
 		if (type(tail) == op_noad) {
 			subtype(tail) = (quarterword)cur_chr;
@@ -13681,10 +13695,11 @@ bool fin_col()
 
 			//overflow check
 			if (n > 255) {
-				printf("overflow assignment fin_col\n");
+				printf("overflow assignment fin_col 796\n");
 				exit(1);
 			}
 			//--------------------------
+			
 			type(u) = (quarterword)unset_node; span_count(u) = (quarterword)n;
 			#pragma region <Determine the stretch order 659>
 			if (total_stretch[filll] != 0) o = filll;
@@ -14091,10 +14106,11 @@ reswitch:
 	case mmode+math_comp:
 		// overflow check
 		if (cur_chr > 255) {
-			printf("Overflow assignment open_or_close_in\n");
+			printf("Overflow assignment 1158\n");
 			exit(1);
 		}
-
+		//////////////////
+		
 		tail_append(new_noad()); type(tail) = (quarterword)cur_chr;
 		scan_math(nucleus(tail));
 		break;
@@ -14254,6 +14270,7 @@ main_loop:
 		printf("Overflow assignment 1034\n");
 		exit(1);
 	}
+	///////////////
 	
 	character(lig_stack) = (quarterword)cur_l;
 	cur_q = tail;
@@ -14281,18 +14298,26 @@ main_loop_move_plus1:
 
 main_loop_move_plus2:
 	if (cur_chr < font_bc[main_f] || cur_chr > font_ec[main_f]) {
+	
+		// Overflow check
 		if (cur_chr > 255) {
-			printf("overflow char warning\n");
+			printf("overflow char_warning1 1036\n");
 			exit(1);
 		}
+		//////////////
+		
 		char_warning(main_f, (eight_bits)cur_chr); free_avail(lig_stack); goto big_switch;
 	}
 	main_i = char_info(main_f, cur_l);
 	if (!char_exists(main_i)) {
+	
+		// Overflow check
 		if (cur_chr > 255) {
-			printf("overflow char warning\n");
+			printf("overflow char_warning2 1036\n");
 			exit(1);
 		}
+		////////////////
+		
 		char_warning(main_f, (eight_bits)cur_chr); free_avail(lig_stack); goto big_switch;
 	}
 	link(tail) = lig_stack; tail = lig_stack;
@@ -14322,6 +14347,8 @@ main_loop_lookahead_plus1:
 		printf("Overflow assignment 1038\n");
 		exit(1);
 	}
+	////////////////
+	
 	character(lig_stack) = (quarterword)cur_r;
 	if (cur_r == false_bchar) cur_r = non_char;
 
@@ -14366,9 +14393,10 @@ main_lig_loop_plus2:
 
 				// overflow check
 				if (cur_r > 255) {
-					printf("Overflow assignment 1040\n");
+					printf("Overflow assignment1 1040\n");
 					exit(1);
 				}
+				//////////////
 
 				if (lig_stack == null)
 				{
@@ -14384,9 +14412,11 @@ main_lig_loop_plus2:
 				cur_r = rem_byte(main_j);
 				// overflow check
 				if (cur_r > 255) {
-					printf("Overflow assignment 1040\n");
+					printf("Overflow assignment2 1040\n");
 					exit(1);
 				}
+				///////////////
+				
 				main_p = lig_stack; lig_stack = new_lig_item((quarterword)cur_r); link(lig_stack) = main_p;
 				break;
 			case qi(7):
@@ -14888,6 +14918,8 @@ void make_accent()
 				printf("Overflow assignment make_accent\n");
 				exit(1);
 			}
+			//////////////
+			
 			q = new_character(f, (quarterword)cur_chr);
 		}
 		else if (cur_cmd == char_num) {
@@ -14903,7 +14935,17 @@ void make_accent()
 			if (h != x) {
 				p = hpack(p, 0, additional); shift_amount(p) = x - h;
 			}
-			delta = scaled(round((w - a) / 2.0f + h * t - x * s)); r = new_kern(delta); subtype(r) = acc_kern;
+			
+			// Check for overflow
+			float ftemp = round((w - a) / 2.0f + h * t - x * s);
+			if(ftemp > INT_MAX || ftemp < INT_MIN) {
+				printf("Overflow in 1125.\n");
+				exit(1);
+			}
+			/////////////////////////			
+			
+			
+			delta = (scaled)ftemp; r = new_kern(delta); subtype(r) = acc_kern;
 			link(tail) = r; link(r) = p; tail = new_kern(-a - delta); subtype(tail) = acc_kern; link(p) = tail;
 			p = q;
 		}
@@ -15726,7 +15768,7 @@ mycontinue:
 
 							// overflow check
 							if (cur_r > 255) {
-								printf("Overflow assignment 911\n");
+								printf("Overflow assignment1 911\n");
 								exit(1);
 							}
 							if (lig_stack > null) character(lig_stack) = (quarterword)cur_r;
@@ -15736,10 +15778,13 @@ mycontinue:
 								else {
 									p = get_avail(); lig_ptr(lig_stack) = p; 
 
+									// overflow check
 									if (qi(hu[j + 1]) > 255) {
-										printf("overflow 911\n");
+										printf("overflow assignment2 911\n");
 										exit(1);
 									}
+									/////////////
+									
 									character(p) = (quarterword)qi(hu[j + 1]); 
 									font(p) = hf;
 								}
@@ -15749,9 +15794,11 @@ mycontinue:
 							cur_r = rem_byte(q);
 							// overflow check
 							if (cur_r > 255) {
-								printf("Overflow assignment 911\n");
+								printf("Overflow assignment3 911\n");
 								exit(1);
 							}
+							//////////////
+							
 							p = lig_stack; lig_stack = new_lig_item((quarterword)cur_r); link(lig_stack) = p;
 							break;
 						case qi(7):
@@ -15766,9 +15813,11 @@ mycontinue:
 							else {
 								// overflow check
 								if (cur_r > 255) {
-									printf("Overflow assignment open_or_close_in\n");
+									printf("Overflow assignment4 911\n");
 									exit(1);
 								}
+								/////////////
+								
 								append_charnode_to_t(quarterword(cur_r)); incr(j); set_cur_r;
 							}
 							break;

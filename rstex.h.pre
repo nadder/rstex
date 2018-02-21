@@ -84,7 +84,7 @@ private:
 };
 
 // 2
-#define banner "This is rsTeX, Version 1.0.1"
+#define banner "This is rsTeX, Version 1.1.0"
 
 // 36
 #define loc cur_input.loc_field
