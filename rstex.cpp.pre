@@ -242,11 +242,7 @@ void print(int s)
 			if (selector > pseudo) {
 				print_char(s); return;
 			}
-			if (
-				#pragma region <Character s is the current new-line character 244>
-				s == new_line_char
-				#pragma endregion
-				)
+			if (s == new_line_char) // <Character s is the current new-line character 244>
 				if (selector < pseudo) {
 					print_ln(); return;
 				}
@@ -650,7 +646,7 @@ void search_mem(pointer p)
 	}
 	#pragma endregion
 
-#	pragma region <Search save_stack for equivalents that point to p 285>
+	#pragma region <Search save_stack for equivalents that point to p 285>
 	if(save_ptr > 0)
 		for (q = 0; q <= save_ptr - 1; q++) {
 			if (equiv_field(save_stack[q]) == p) {
@@ -3342,7 +3338,10 @@ bool init_terminal(int argc, char **argv)
 		}
 		if(last > first) {
 			loc  = first;
-			return true;
+			while (loc < last && buffer[loc] == ' ')
+				incr(loc);
+			if (loc < last)
+				return true;
 		}
 	}
 	//////////////////////////////////////////////////////////
@@ -3915,7 +3914,7 @@ void movement(scaled w, eight_bits o)
 	q = get_node(movement_node_size);
 	width(q) = w;
 	location(q) = dvi_offset + dvi_ptr;
-	if (o == dvi_const::down1) {
+	if (o == dvi_op::down1) {
 		link(q) = down_ptr; down_ptr = q;
 	}
 	else {
@@ -3938,7 +3937,7 @@ void movement(scaled w, eight_bits o)
 				{
 					k = location(p) - dvi_offset;
 					if (k < 0) k += dvi_buf_size;
-					dvi_buf[k] += dvi_const::y1 - dvi_const::down1;
+					dvi_buf[k] += dvi_op::y1 - dvi_op::down1;
 					info(p) = y_here; goto found;
 				}
 					#pragma endregion
@@ -3952,7 +3951,7 @@ void movement(scaled w, eight_bits o)
 				{
 					k = location(p) - dvi_offset;
 					if (k < 0) k += dvi_buf_size;
-					dvi_buf[k] += dvi_const::z1 - dvi_const::down1;
+					dvi_buf[k] += dvi_op::z1 - dvi_op::down1;
 					info(p) = z_here; goto found;
 				}
 				#pragma endregion
@@ -4014,7 +4013,7 @@ found:
 	#pragma region <Generate a y0 or z0 command in order to reuse a previosu appearance of w 609>
 	 info(q) = info(p);
 	 if (info(q) == y_here) {
-		 dvi_out(o + dvi_const::y0 - dvi_const::down1);
+		 dvi_out(o + dvi_op::y0 - dvi_op::down1);
 		 while (link(q) != p) {
 			 q = link(q);
 			 switch (info(q)) {
@@ -4027,7 +4026,7 @@ found:
 		 }
 	 }
 	 else {
-		 dvi_out(o + dvi_const::z0 - dvi_const::down1);
+		 dvi_out(o + dvi_op::z0 - dvi_op::down1);
 		 while (link(q) != p) {
 			 q = link(q);
 			 switch (info(q)) {
@@ -8881,7 +8880,7 @@ void hlist_out()
 
 	cur_g = 0; cur_glue = 0.0f; this_box = temp_ptr; g_order = glue_order(this_box);
 	g_sign = glue_sign(this_box); p = list_ptr(this_box); incr(cur_s);
-	if (cur_s > 0) dvi_out(dvi_const::push);
+	if (cur_s > 0) dvi_out(dvi_op::push);
 	if (cur_s > max_push) max_push = cur_s;
 	save_loc = dvi_offset + dvi_ptr; base_line = cur_v; left_edge = cur_h;
 	while (p != null)
@@ -8899,14 +8898,14 @@ void hlist_out()
 					if (!font_used[f]) {
 						dvi_font_def(f); font_used[f] = true;
 					}
-					if (f <= 64 + font_base) dvi_out(f - font_base - 1 + dvi_const::fnt_num_0);
+					if (f <= 64 + font_base) dvi_out(f - font_base - 1 + dvi_op::fnt_num_0);
 					else {
-						dvi_out(dvi_const::fnt1); dvi_out(f - font_base - 1);
+						dvi_out(dvi_op::fnt1); dvi_out(f - font_base - 1);
 					}
 					dvi_f = f;
 				}
 					#pragma endregion
-				if (c >= qi(128)) dvi_out(dvi_const::set1);
+				if (c >= qi(128)) dvi_out(dvi_op::set1);
 				dvi_out(qo(c));
 				cur_h += char_width(f, char_info(f, c)); p = link(p);
 			} while (!(!is_char_node(p)));
@@ -9036,7 +9035,7 @@ fin_rule:
 			if (is_running(rule_dp)) rule_dp = depth(this_box);
 			rule_ht += rule_dp;
 			if (rule_ht > 0 && rule_wd > 0) {
-				synch_h; cur_v = base_line + rule_dp; synch_v; dvi_out(dvi_const::set_rule); dvi_four(rule_ht);
+				synch_h; cur_v = base_line + rule_dp; synch_v; dvi_out(dvi_op::set_rule); dvi_four(rule_ht);
 				dvi_four(rule_wd); cur_v = base_line; dvi_h += rule_wd;
 			}
 			#pragma endregion
@@ -9076,7 +9075,7 @@ void vlist_out()
 
 	cur_g = 0; cur_glue = 0.0f; this_box = temp_ptr; g_order = glue_order(this_box);
 	g_sign = glue_sign(this_box); p = list_ptr(this_box); incr(cur_s);
-	if (cur_s > 0) dvi_out(dvi_const::push);
+	if (cur_s > 0) dvi_out(dvi_op::push);
 	if (cur_s > max_push) max_push = cur_s;
 	save_loc = dvi_offset + dvi_ptr; left_edge = cur_h; cur_v = cur_v - height(this_box); top_edge = cur_v;
 	while (p != null)
@@ -9204,7 +9203,7 @@ void vlist_out()
 			rule_ht += rule_dp;
 			cur_v += rule_ht;
 			if (rule_ht > 0 && rule_wd > 0) {
-				synch_h; synch_v; dvi_out(dvi_const::put_rule); dvi_four(rule_ht); dvi_four(rule_wd);
+				synch_h; synch_v; dvi_out(dvi_op::put_rule); dvi_four(rule_ht); dvi_four(rule_wd);
 			}
 			goto next_p;
 		#pragma endregion
@@ -9273,7 +9272,7 @@ void ship_out(pointer p)
 	#pragma region <Initialize variables as ship_out begins 617>
 	dvi_h = 0; dvi_v = 0; cur_h = h_offset; dvi_f = null_font; ensure_dvi_open;
 	if (total_pages == 0) {
-		dvi_out(dvi_const::pre); dvi_out(id_byte);
+		dvi_out(dvi_op::pre); dvi_out(id_byte);
 		dvi_four(25400000); dvi_four(473628672);
 		prepare_mag(); dvi_four(mag);
 		old_setting = selector; selector = new_string; print(TEX_STRING(" TeX output ")); print_int(year);
@@ -9283,11 +9282,11 @@ void ship_out(pointer p)
 		pool_ptr = str_start[str_ptr];
 	}
 	#pragma endregion
-	page_loc = dvi_offset + dvi_ptr; dvi_out(dvi_const::bop);
+	page_loc = dvi_offset + dvi_ptr; dvi_out(dvi_op::bop);
 	for (k = 0; k <= 9; k++) dvi_four(count(k));
 	dvi_four(last_bop); last_bop = page_loc; cur_v = height(p) + v_offset; temp_ptr = p;
 	if (type(p) == vlist_node) vlist_out(); else hlist_out();
-	dvi_out(dvi_const::eop); incr(total_pages); cur_s = -1;
+	dvi_out(dvi_op::eop); incr(total_pages); cur_s = -1;
 done:
 
 	#pragma endregion
@@ -10244,14 +10243,14 @@ void dvi_pop(int l)
 	if (l == dvi_offset + dvi_ptr && dvi_ptr > 0)
 		decr(dvi_ptr);
 	else
-		dvi_out(dvi_const::pop);
+		dvi_out(dvi_op::pop);
 }
 
 // 602
 void dvi_font_def(internal_font_number f)
 {
 	pool_pointer k;
-	dvi_out(dvi_const::fnt_def1); dvi_out(f - font_base - 1);
+	dvi_out(dvi_op::fnt_def1); dvi_out(f - font_base - 1);
 	dvi_out(qo(font_check[f].b0)); dvi_out(qo(font_check[f].b1)); dvi_out(qo(font_check[f].b2));
 	dvi_out(qo(font_check[f].b3));
 	dvi_four(font_size[f]); dvi_four(font_dsize[f]);
@@ -10348,16 +10347,16 @@ void close_files_and_terminate()
 	#pragma region <Finish the DVI file 642>
 	while (cur_s > -1) {
 		if (cur_s > 0)
-			dvi_out(dvi_const::pop);
+			dvi_out(dvi_op::pop);
 		else {
-			dvi_out(dvi_const::eop); incr(total_pages);
+			dvi_out(dvi_op::eop); incr(total_pages);
 		}
 		decr(cur_s);
 	}
 	if (total_pages == 0)
 		print_nl(TEX_STRING("No pages of output."));
 	else {
-		dvi_out(dvi_const::post);
+		dvi_out(dvi_op::post);
 		dvi_four(last_bop); last_bop = dvi_offset + dvi_ptr - 5;
 		dvi_four(25400000); dvi_four(473628672);
 		prepare_mag(); dvi_four(mag);
@@ -10373,7 +10372,7 @@ void close_files_and_terminate()
 		}
 		#pragma endregion
 
-		dvi_out(dvi_const::post_post); dvi_four(last_bop); dvi_out(id_byte);
+		dvi_out(dvi_op::post_post); dvi_four(last_bop); dvi_out(id_byte);
 		k = 4 + ((dvi_buf_size - dvi_ptr) % 4);
 		while (k > 0) {
 			dvi_out(223);
@@ -13302,10 +13301,10 @@ void special_out(pointer p)
 	old_setting = selector; selector = new_string;
 	show_token_list(link(write_tokens(p)), null, pool_size - pool_ptr); selector = old_setting; str_room(1);
 	if (cur_length < 256) {
-		dvi_out(dvi_const::xxx1); dvi_out(cur_length);
+		dvi_out(dvi_op::xxx1); dvi_out(cur_length);
 	}
 	else {
-		dvi_out(dvi_const::xxx4); dvi_four(cur_length);
+		dvi_out(dvi_op::xxx4); dvi_four(cur_length);
 	}
 	for (k = str_start[str_ptr]; k <= pool_ptr - 1; k++)
 		dvi_out(so(str_pool[k]));
