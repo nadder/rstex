@@ -84,7 +84,7 @@ private:
 };
 
 // 2
-#define banner "This is rsTeX, Version 1.1.1" // printed when rsTeX starts
+#define banner "This is rsTeX, Version 1.1.2" // printed when rsTeX starts
 
 // 36
 #define loc cur_input.loc_field // location of first unread character in buffer
@@ -359,18 +359,8 @@ char help_ptr; // 0..6, the number of help lines present
 bool use_err_help; // should err_help list be shown?
 
 // 93
-#define succumb do{\
-	if(interaction == error_stop_mode)\
-		interaction = scroll_mode;\
-	if(log_opened)\
-		error();\
-/*debug*/\
-	if(interaction > batch_mode)\
-		debug_help();\
-/*gubed*/\
-	history = fatal_error_stop;\
-	jump_out();\
-} while(0)
+// NOTE: Made succumb a function instead
+
 
 // 96
 #define check_interrupt if(interrupt != 0) pause_for_instructions()
@@ -1015,10 +1005,12 @@ const int hi_mem_stat_usage = 14; // the number of one-word nodes always present
 
 // 165
 //debug
+#ifndef NO_DEBUG
 bool _free[mem_max  + 1]; // free cells
 bool was_free[mem_max  + 1]; // previously free cells
 pointer was_mem_end, was_lo_max, was_hi_min; // previous mem_end, lo_mem_max, and hi_mem_min
 bool panicking; // do we want to check memory constantly?
+#endif
 //gubed
 
 // 173
@@ -2419,24 +2411,27 @@ hyph_pointer hyph_count; // the number of words in the exception dictionary
 
 // 943
 //init
-
+#ifndef NO_INIT
 Array<unsigned, -trie_op_size, trie_op_size> trie_op_hash; // trie op codes for quadruples
 Array<quarterword, 0, 255> trie_used; // largest opcode used so far for this language
 Array<ASCII_code, 1, trie_op_size> trie_op_lang; // language part of a hashed quadruple
 Array<quarterword, 1, trie_op_size> trie_op_val; // opcode corresponding to a hashed quadruple
-
 int trie_op_ptr; // 0..trie_op_size, number of stored ops so far
+//tini
 
+#endif
 // 947
 #define trie_root trie_l[0] // root of the linked trie
 
 //init
+#ifndef NO_INIT
 Array<packed_ASCII_code, 0, trie_size> trie_c; // characters to match
 Array<packed_ASCII_code, 0, trie_size> trie_o; // operations to perform
 Array<trie_pointer, 0, trie_size> trie_l; // left subtrie links
 Array<trie_pointer, 0, trie_size> trie_r; // right subtrie links
 trie_pointer trie_ptr; // the number of nodes in the trie
 Array<trie_pointer, 0, trie_size> trie_hash; // used to identify equivalent subtries
+#endif
 //tini
 
 // 950
@@ -2444,10 +2439,12 @@ Array<trie_pointer, 0, trie_size> trie_hash; // used to identify equivalent subt
 #define trie_back(s) trie[s].union_t.lh // backward links in trie holes
 
 // init
+#ifndef NO_INIT
 Array<bool, 1, trie_size>  trie_taken; // does a family start here?
 Array<trie_pointer, 0, 255> trie_min; // the first possible slot for each character
 trie_pointer trie_max; // largest location used in trie
 bool trie_not_ready; // is the trie still in linked form?
+#endif
 // tini
 
 // 970
@@ -3047,5 +3044,5 @@ void normalize_selector();
 void search_mem(pointer p);
 void free_avail(pointer s);
 void do_final_end();
-
+void succumb();
 

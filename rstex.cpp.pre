@@ -424,7 +424,7 @@ void overflow(str_number s, int n)
 	print_int(n); print_char(']');
 	help2(TEX_STRING("If you really absolutely need more capacity,"),
 		TEX_STRING("you can ask a wizard to enlarge me."));
-	succumb;
+	succumb();
 }
 
 // 43
@@ -527,6 +527,7 @@ scaled mult_and_add(int n, scaled x, scaled y, scaled max_answer)
 
 //167
 //debug
+#ifndef NO_DEBUG
 void check_mem(bool print_locs)
 {
 	pointer q, p;
@@ -612,11 +613,13 @@ done2:
 		was_free[p] = _free[p];
 	was_mem_end = mem_end; was_lo_max = lo_mem_max; was_hi_min = hi_mem_min;
 }
+#endif
 //gubed
 
 
 //172
 //debug
+#ifndef NO_DEBUG
 void search_mem(pointer p)
 {
 	int q;
@@ -663,6 +666,7 @@ void search_mem(pointer p)
 	}
 	#pragma endregion
 }
+#endif
 //gubed
 
 
@@ -808,6 +812,7 @@ _exit:
 
 // 47
 //init
+#ifndef NO_INIT
 bool get_strings_started()
 {
 	int k, l; // 0..255
@@ -902,6 +907,7 @@ bool get_strings_started()
 	#pragma endregion
 
 }
+#endif
 //tini
 
 
@@ -1047,7 +1053,7 @@ void fatal_error(str_number s)
 	normalize_selector();
 	print_err(TEX_STRING("Emergency stop"));
 	help1(s);
-	succumb;
+	succumb();
 }
 
 // 106
@@ -1984,7 +1990,7 @@ void confusion(str_number s)
 		help2(TEX_STRING("One of your faux pas seems to have wounded me deeply..."),
 			TEX_STRING("in fact, I'm barely conscious. Please fix it and try again."));
 	}
-	succumb;
+	succumb();
 }
 
 // 123
@@ -1996,7 +2002,9 @@ void flush_list(pointer p)
 		do {
 			q = r; r = link(r);
 			//stat
+#ifndef NO_STAT
 			decr(dyn_used);
+#endif
 			//tats
 
 		} while (r != null);
@@ -2014,7 +2022,9 @@ void free_node(pointer p, halfword s)
 	llink(p) = q; rlink(p) = rover;
 	llink(rover) = p; rlink(q) = p;
 	//stat
+#ifndef NO_STAT
 	var_used -= s;
+#endif
 	//tats
 
 }
@@ -2191,7 +2201,9 @@ pointer get_avail()
 	}
 	link(p) = null;
 	//stat
+#ifndef NO_STAT
 	incr(dyn_used);
+#endif
 	//tats
 
 	return p;
@@ -2203,10 +2215,27 @@ void free_avail(pointer s)
 	link(s) = avail; 
 	avail = s;
 	/*stat*/
+#ifndef NO_STAT
 	decr(dyn_used);
+#endif
 	/*tats*/ 
 }
-
+// 93
+void succumb()
+{
+	if(interaction == error_stop_mode)
+		interaction = scroll_mode;
+	if(log_opened)
+		error();
+//debug
+#ifndef NO_DEBUG
+	if(interaction > batch_mode)
+		debug_help();
+#endif
+//gubed
+	history = fatal_error_stop;
+	jump_out();
+}
 
 // 98
 void pause_for_instructions()
@@ -2494,7 +2523,9 @@ restart:
 found:
 	link(r) = null;
 	//stat
+#ifndef NO_STAT
 	var_used = var_used + s;
+#endif
 	//tats
 
 	return r;
@@ -2652,14 +2683,14 @@ void show_node_list(int p)
 						}
 						else {
 							// Check for overflow
-							float ftemp = round(unity*g);
-							if(ftemp > INT_MAX || ftemp < INT_MIN) {
+							float ftemp = unity*g;
+							if(ftemp > 2147483583 || ftemp < -2147483583) {
 								printf("Overflow in 186.\n");
 								exit(1);
 							}
 							/////////////////////////
 							
-							print_glue((scaled)ftemp, glue_order(p), 0);
+							print_glue((scaled)round(ftemp), glue_order(p), 0);
 						}
 					}
 					#pragma endregion
@@ -5400,28 +5431,28 @@ void fin_align()
 							if (stretch_order(v) == glue_order(p)) {
 							
 								// Check for overflow
-								float ftemp = round(_float(glue_set(p))*stretch(v));
-								if(ftemp > INT_MAX || ftemp < INT_MIN) {
+								float ftemp = _float(glue_set(p)) * stretch(v);
+								if(ftemp > 2147483583 || ftemp < -2147483583) {
 									printf("Overflow in 809.\n");
 									exit(1);
 								}
 								/////////////////////////
 								
-								t += (scaled)ftemp;
+								t += (scaled)round(ftemp);
 							}
 						}
 						else if (glue_sign(p) == shrinking) {
 							if(shrink_order(v) == glue_order(p)) {
 							
 								// Check for overflow
-								float ftemp = round(_float(glue_set(p))*shrink(v));
-								if(ftemp > INT_MAX || ftemp < INT_MIN) {
+								float ftemp = _float(glue_set(p)) * shrink(v);
+								if(ftemp > 2147483583 || ftemp < -2147483583) {
 									printf("Overflow in 809.\n");
 									exit(1);
 								}
 								/////////////////////////
 								
-								t -= (scaled)ftemp;
+								t -= (scaled)round(ftemp);
 							}
 						}
 						s = link(s); link(u) = new_null_box(); u = link(u); t += width(s);
@@ -5616,7 +5647,9 @@ pointer id_lookup(int j, int l)
 				for (k = j; k <= j + l - 1; k++) append_char(buffer[k]);
 				text(p) = make_string(); pool_ptr = pool_ptr + d;
 				//stat
+#ifndef NO_STAT
 				incr(cs_count);
+#endif
 				//tats
 			}
 				#pragma endregion
@@ -5669,25 +5702,33 @@ void unsave()
 					if (eq_level(p) == level_one) {
 						eq_destroy(save_stack[save_ptr]);
 						//stat
+#ifndef NO_STAT
 						if (tracing_restores > 0) restore_trace(p, TEX_STRING("retaining"));
+#endif
 						//tats
 					}
 					else {
 						eq_destroy(eqtb[p]);
 						eqtb[p] = save_stack[save_ptr];
 						//stat
+#ifndef NO_STAT
 						if (tracing_restores > 0) restore_trace(p, TEX_STRING("restoring"));
+#endif
 						//tats
 					}
 				else if (xeq_level[p] != level_one) {
 					eqtb[p] = save_stack[save_ptr]; xeq_level[p] = l;
 					//stat
+#ifndef NO_STAT
 					if (tracing_restores > 0) restore_trace(p, TEX_STRING("restoring"));
+#endif
 					//tats
 				}
 				else {
 					//stat
+#ifndef NO_STAT
 					if (tracing_restores > 0) restore_trace(p, TEX_STRING("retaining"));
+#endif
 					//tats
 				}
 				#pragma endregion
@@ -5800,6 +5841,7 @@ void print_length_param(int n)
 
 //252
 //stat
+#ifndef NO_STAT
 void show_eqtb(pointer n)
 {
 	if (n < active_base) print_char(TEX_STRING("?"));
@@ -5921,15 +5963,16 @@ void show_eqtb(pointer n)
 		print_char(TEX_STRING("=")); print_scaled(eqtb[n].sc);
 		print(TEX_STRING("pt"));
 	}
-#pragma endregion
+	#pragma endregion
 	else print_char(TEX_STRING("?"));
 }
-
+#endif
 //tats
 
 
 
 //stat
+#ifndef NO_STAT
 void restore_trace(pointer p, str_number s)
 {
 	begin_diagnostic();
@@ -5939,6 +5982,7 @@ void restore_trace(pointer p, str_number s)
 	print_char(TEX_STRING("}"));
 	end_diagnostic(false);
 }
+#endif
 //tats
 
 
@@ -6149,7 +6193,7 @@ void handle_right_brace()
 
 //131
 //init
-
+#ifndef NO_INIT
 void sort_avail()
 {
 	pointer p, q, r;
@@ -6178,12 +6222,13 @@ void sort_avail()
 	}
 	rlink(p) = rover; llink(rover) = p;
 }
-
+#endif
 //tini
 
 
 // 264
 //init
+#ifndef NO_INIT
 void primitive(str_number s, quarterword c, halfword o)
 {
 	pool_pointer k;
@@ -6201,6 +6246,7 @@ void primitive(str_number s, quarterword c, halfword o)
 	}
 	eq_level(cur_val) = level_one; eq_type(cur_val) = c; equiv(cur_val) = o;
 }
+#endif
 //tini
 
 // 534
@@ -6326,10 +6372,12 @@ void initialize()
 
 	// 166
 	//debug
+#ifndef NO_DEBUG	
 	was_mem_end = mem_min;
 	was_lo_max = mem_min;
 	was_hi_min = mem_max;
 	panicking = false;
+#endif	
 	//gubed
 
 	// 215
@@ -6448,7 +6496,7 @@ void initialize()
 
 	#pragma region <initialize table entry done by INITEX only 164>
 	// init
-
+#ifndef NO_INIT
 	// 164
 	for (k = mem_bot + 1; k <= lo_mem_stat_max; k++) {
 		mem[k].sc = 0;
@@ -6590,7 +6638,7 @@ void initialize()
 	text(end_write) = TEX_STRING("endwrite"); eq_level(end_write) = level_one; eq_type(end_write) = outer_call;
 	equiv(end_write) = null;
 
-
+#endif
 //tini
 	#pragma endregion
 
@@ -6666,10 +6714,12 @@ mycontinue:
 					break;
 
 					//debug
+#ifndef NO_DEBUG					
 				case TEX_STRING("D"):
 					debug_help();
 					goto mycontinue;
 					break;
+#endif					
 					//gubed
 
 				case TEX_STRING("E"):
@@ -8106,6 +8156,8 @@ done:
 }
 
 // 944
+// init
+#ifndef NO_INIT
 quarterword new_trie_op(small_number d, small_number n, quarterword v)
 {
 	int h; //-trie_op_size..trie_op_size
@@ -8130,6 +8182,120 @@ quarterword new_trie_op(small_number d, small_number n, quarterword v)
 		if (h > -trie_op_size) decr(h); else h = trie_op_size;
 	}
 }
+
+
+// 948
+trie_pointer trie_node(trie_pointer p)
+{
+	trie_pointer h;
+	trie_pointer q;
+	trie_pointer retval;
+	h = myabs(trie_c[p] + 1009 * trie_o[p] + 2718 * trie_l[p] + 3142 * trie_r[p]) % trie_size;
+	while (1) {
+		q = trie_hash[h];
+		if (q == 0) {
+			trie_hash[h] = p; retval = p; return retval;
+		}
+		if (trie_c[q] == trie_c[p] && trie_o[q] == trie_o[p] && trie_l[q] == trie_l[p] && trie_r[q] == trie_r[p]) {
+			retval = q; return retval;
+		}
+		if (h > 0) decr(h); else h = trie_size;
+	}
+}
+
+// 949
+trie_pointer compress_trie(trie_pointer p)
+{
+	trie_pointer retval;
+	if (p == 0) retval = 0;
+	else {
+		trie_l[p] = compress_trie(trie_l[p]); trie_r[p] = compress_trie(trie_r[p]);
+		retval = trie_node(p);
+	}
+	return retval;
+}
+
+// 953
+void first_fit(trie_pointer p)
+{
+	trie_pointer h;
+	trie_pointer z;
+	trie_pointer q;
+	ASCII_code c;
+	trie_pointer l, r;
+	int ll; // 1..256
+
+	c = so(trie_c[p]); z = trie_min[c];
+	while (1) {
+		h = z - c;
+		#pragma region Ensure that trie_max >= h+256 954>
+		if (trie_max < h + 256) {
+			if (trie_size <= h + 256) overflow(TEX_STRING("pattern memory"), trie_size);
+			do {
+				incr(trie_max); trie_taken[trie_max] = false; trie_link(trie_max) = trie_max + 1;
+				trie_back(trie_max) = trie_max - 1;
+			} while (!(trie_max == h + 256));
+		}
+		#pragma endregion
+		if (trie_taken[h]) goto not_found;
+		#pragma region <If all characters of the family fit relative to h, then goto found otherwise goto not_found 955>
+		q = trie_r[p];
+		while (q > 0) {
+			if (trie_link(h + so(trie_c[q])) == 0) goto not_found;
+			q = trie_r[q];
+		}
+		goto found;
+		#pragma endregion
+
+	not_found:
+		z = trie_link(z);
+	}
+found:
+	#pragma region <Pack the family into trie relative to h 956>
+	trie_taken[h] = true; trie_ref[p] = h; q = p;
+	do {
+		z = h + so(trie_c[q]); l = trie_back(z); r = trie_link(z); trie_back(r) = l; trie_link(l) = r;
+		trie_link(z) = 0;
+		if (l < 256) {
+			if (z < 256) ll = z;
+			else ll = 256;
+			do {
+				trie_min[l] = r; incr(l);
+			} while (!(l == ll));
+		}
+		q = trie_r[q];
+	} while (!(q == 0));
+	#pragma endregion
+}
+
+// 957
+void trie_pack(trie_pointer p)
+{
+	trie_pointer q;
+	do {
+		q = trie_l[p];
+		if (q > 0 && trie_ref[q] == 0) {
+			first_fit(q); trie_pack(q);
+		}
+		p = trie_r[p];
+	} while (!(p == 0));
+}
+
+// 959
+void trie_fix(trie_pointer p)
+{
+	trie_pointer q;
+	ASCII_code c;
+	trie_pointer z;
+	z = trie_ref[p];
+	do {
+		q = trie_l[p]; c = so(trie_c[p]); trie_link(z + c) = trie_ref[q]; trie_char(z + c) = qi(c);
+		trie_op(z + c) = trie_o[p];
+		if (q > 0) trie_fix(q);
+		p = trie_r[p];
+	} while (!(p == 0));
+}
+
 
 //960
 void new_patterns()
@@ -8237,6 +8403,62 @@ void new_patterns()
 	}
 }
 
+
+// 966
+void init_trie()
+{
+	trie_pointer p;
+	int j, k, t;
+	trie_pointer r, s;
+	two_halves h;
+
+	#pragma region <Get ready to compress the trie 952>
+
+	#pragma region <Sort the hyphenation op tables into proper order 945>
+	op_start[0] = -min_quarterword;
+	for (j = 1; j <= 255; j++) op_start[j] = op_start[j - 1] + qo(trie_used[j - 1]);
+	for (j = 1; j <= trie_op_ptr; j++) trie_op_hash[j] = op_start[trie_op_lang[j]] + trie_op_val[j];
+	for (j = 1; j <= trie_op_ptr; j++)
+		while (trie_op_hash[j] > (unsigned)j) {
+			k = trie_op_hash[j];
+			t = hyf_distance[k]; hyf_distance[k] = hyf_distance[j]; hyf_distance[j] = t;
+			t = hyf_num[k]; hyf_num[k] = hyf_num[j]; hyf_num[j] = t;
+			t = hyf_next[k]; hyf_next[k] = hyf_next[j]; hyf_next[j] = t;
+			trie_op_hash[j] = trie_op_hash[k]; trie_op_hash[k] = k;
+		}
+	#pragma endregion
+
+	for (p = 0; p <= trie_size; p++) trie_hash[p] = 0;
+	trie_root = compress_trie(trie_root);
+	for (p = 0; p <= trie_ptr; p++) trie_ref[p] = 0;
+	for (p = 0; p <= 255; p++) trie_min[p] = p + 1;
+	trie_link(0) = 1; trie_max = 0;
+	#pragma endregion
+
+	if (trie_root != 0) {
+		first_fit(trie_root); trie_pack(trie_root);
+	}
+	#pragma region <Move the data into trie 958>
+	h.rh = 0; h.union_t.struct_t.b0 = min_quarterword; h.union_t.struct_t.b1 = min_quarterword;
+	if (trie_root == 0) {
+		for (r = 0; r <= 256; r++) trie[r] = h;
+		trie_max = 256;
+	}
+	else {
+		trie_fix(trie_root);
+		r = 0;
+		do {
+			s = trie_link(r); trie[r] = h; r = s;
+		} while (!(r > trie_max));
+	}
+	trie_char(0) = qi(TEX_STRING("?"));
+	#pragma endregion
+
+	trie_not_ready = false;
+}
+
+#endif
+// tini
 
 // 1215
 void get_r_token()
@@ -8941,31 +9163,15 @@ void hlist_out()
 				if (g_sign != normal) {
 					if (g_sign == stretching) {
 						if (stretch_order(g) == g_order) {
-							cur_glue += stretch(g); vet_glue(_float(glue_set(this_box))*cur_glue);
-							
-							// Check for overflow
-							float ftemp = round(glue_temp);
-							if(ftemp > INT_MAX || ftemp < INT_MIN) {
-								printf("Overflow in 625.\n");
-								exit(1);
-							}
-							/////////////////////////
-							
-							cur_g = (scaled)ftemp;
+							cur_glue += stretch(g);
+							vet_glue(_float(glue_set(this_box)) * cur_glue);
+							cur_g = (scaled)round(glue_temp);
 						}
 					}
 					else if (shrink_order(g) == g_order) {
-						cur_glue -= shrink(g); vet_glue(_float(glue_set(this_box))*cur_glue);
-						
-						// Check for overflow
-						float ftemp = round(glue_temp);
-						if(ftemp > INT_MAX || ftemp < INT_MIN) {
-							printf("Overflow in 625.\n");
-							exit(1);
-						}
-						/////////////////////////
-												
-						cur_g = (scaled)ftemp;
+						cur_glue -= shrink(g);
+						vet_glue(_float(glue_set(this_box)) * cur_glue);
+						cur_g = (scaled)round(glue_temp);
 					}
 				}
 				rule_wd += cur_g;
@@ -9114,31 +9320,15 @@ void vlist_out()
 				if (g_sign != normal) {
 					if (g_sign == stretching) {
 						if (stretch_order(g) == g_order) {
-							cur_glue += stretch(g); vet_glue(_float(glue_set(this_box))*cur_glue);
-							
-							// Check for overflow
-							float ftemp = round(glue_temp);
-							if(ftemp > INT_MAX || ftemp < INT_MIN) {
-								printf("Overflow in 634.\n");
-								exit(1);
-							}
-							/////////////////////////
-							
-							cur_g = (scaled)ftemp;
+							cur_glue += stretch(g);
+							vet_glue(_float(glue_set(this_box)) * cur_glue);
+							cur_g = (scaled)round(glue_temp);
 						}
 					}
 					else if (shrink_order(g) == g_order) {
-						cur_glue -= shrink(g); vet_glue(_float(glue_set(this_box))*cur_glue);
-						
-						// Check for overflow
-						float ftemp = round(glue_temp);
-						if(ftemp > INT_MAX || ftemp < INT_MIN) {
-							printf("Overflow in 634.\n");
-							exit(1);
-						}
-						/////////////////////////
-						
-						cur_g = (scaled)ftemp;
+						cur_glue -= shrink(g);
+						vet_glue(_float(glue_set(this_box)) * cur_glue);
+						cur_g = (scaled)round(glue_temp);
 					}
 				}
 				rule_ht += cur_g;
@@ -9295,17 +9485,21 @@ done:
 	dead_cycles = 0; update_terminal();
 	#pragma region <Flush the box from memory, showing statistics if requested 639>
 	//stat
+#ifndef NO_STAT
 	if (tracing_stats > 1) {
 		print_nl(TEX_STRING("Memory usage before: ")); print_int(var_used); print_char(TEX_STRING("&"));
 		print_int(dyn_used); print_char(TEX_STRING(";"));
 	}
+#endif
 	//tats
 	flush_node_list(p);
 	//stat
+#ifndef NO_STAT
 	if (tracing_stats > 1) {
 		print(TEX_STRING(" after: ")); print_int(var_used); print_char(TEX_STRING("&")); print_int(dyn_used);
 		print(TEX_STRING("; still untouched: ")); print_int(hi_mem_min - lo_mem_max - 1); print_ln();
 	}
+#endif
 	//tats
 	#pragma endregion
 
@@ -9910,13 +10104,16 @@ void try_break(int pi, small_number break_type)
 						{
 							q = get_node(passive_node_size); link(q) = passive; passive = q; cur_break(q) = cur_p;
 							//stat
+#ifndef NO_STAT
 							incr(pass_number); serial(q) = pass_number;
+#endif
 							//tats
 							prev_break(q) = best_place[fit_class];
 							q = get_node(active_node_size); break_node(q) = passive; line_number(q) = best_pl_line[fit_class] + 1;
 							fitness(q) = fit_class;  type(q) = break_type; total_demerits(q) = minimal_demerits[fit_class];
 							link(q) = r; link(prev_r) = q; prev_r = q;
 							//stat
+#ifndef NO_STAT							
 							if (tracing_paragraphs > 0)
 								#pragma region <Print symbolic description of the new break node 846>
 							{
@@ -9930,6 +10127,7 @@ void try_break(int pi, small_number break_type)
 								else print_int(serial(prev_break(passive)));
 							}
 								#pragma endregion
+#endif
 							//tats
 						}
 						#pragma endregion
@@ -10024,6 +10222,7 @@ void try_break(int pi, small_number break_type)
 			}
 				#pragma endregion
 			//stat
+#ifndef NO_STAT
 			if (tracing_paragraphs > 0)
 				#pragma region <Print a symbolic description of this feasible break 856>
 			{
@@ -10057,6 +10256,7 @@ void try_break(int pi, small_number break_type)
 				if (artificial_demerits) print_char(TEX_STRING("*")); else print_int(d);
 			}
 				#pragma endregion
+#endif
 			//tats
 			d += total_demerits(r);
 			if (d <= minimal_demerits[fit_class]) {
@@ -10096,6 +10296,7 @@ deactivate:
 
 myexit:
 	//stat
+#ifndef NO_STAT
 	#pragma region <Update the value of printed_node for symbolic displays 858>
 	if (cur_p == printed_node)
 		if (cur_p != null)
@@ -10106,6 +10307,7 @@ myexit:
 				}
 			}
 	#pragma endregion
+#endif
 	//tats
 }
 
@@ -10603,12 +10805,14 @@ void freeze_page_specs(small_number s)
 	page_depth = 0;
 	do_all_six(set_page_so_far_zero); least_page_cost = awful_bad;
 	//stat
+#ifndef NO_STAT
 	if (tracing_pages > 0) {
 		begin_diagnostic();
 		print_nl(TEX_STRING("%% goal height=")); print_scaled(page_goal);
 		print(TEX_STRING(", max depth=")); print_scaled(page_max_depth);
 		end_diagnostic(false);
 	}
+#endif
 	//tats
 }
 
@@ -10795,6 +10999,7 @@ void build_page()
 						w = dimen(n) - height(r);
 					q = vert_break(ins_ptr(p), w, depth(p)); height(r) += best_height_plus_depth;
 					//stat
+#ifndef NO_STAT
 					if (tracing_pages > 0)
 						#pragma region <Display the insertion split cost 1011>
 					{
@@ -10809,6 +11014,7 @@ void build_page()
 						end_diagnostic(false);
 					}
 						#pragma endregion
+#endif
 					//tats
 					if (count(n) != 1000)
 						best_height_plus_depth = x_over_n(best_height_plus_depth, 1000)*count(n);
@@ -10861,6 +11067,7 @@ void build_page()
 			if (insert_penalties >= 10000)
 				c = awful_bad;
 			//stat
+#ifndef NO_STAT
 			if (tracing_pages > 0) 
 				#pragma region <Display the page break cost 1006>
 			{
@@ -10885,6 +11092,7 @@ void build_page()
 				end_diagnostic(false);
 			}
 				#pragma endregion
+#endif
 			//tats
 			if (c <= least_page_cost) {
 				best_page_break = p; best_size = page_goal; least_page_cost = c;
@@ -11104,10 +11312,12 @@ common_ending:
 // 1338
 // skip implementing this for now
 // debug
+#ifndef NO_DEBUG
 void debug_help()
 {
 
 }
+#endif
 // gubed
 
 // 1284
@@ -11162,6 +11372,7 @@ void final_cleanup()
 	}
 	if (c == 1) {
 		// init
+#ifndef NO_INIT
 		for (c = top_mark_code; c <= split_bot_mark_code; c++) {
 			if (cur_mark[c] != null)
 				delete_token_ref(cur_mark[c]);
@@ -11172,6 +11383,7 @@ void final_cleanup()
 
 
 		return;
+#endif		
 		// tini
 		print_nl(TEX_STRING("(\dump is performed only by INITEX)"));
 		return;
@@ -11930,8 +12142,10 @@ void prefixed_command()
 	case hyph_data:
 		if (cur_chr == 1) {
 			//init
+#ifndef NO_INIT
 			new_patterns();
 			goto done;
+#endif
 			//tini
 			print_err(TEX_STRING("Patterns can be loaded only by INITEX"));
 			help0;
@@ -13208,13 +13422,17 @@ bool load_fmt_file()
 	}
 	undump_size(0, trie_size, "trie size", j);
 	//init
+#ifndef NO_INIT
 	trie_max = j;
+#endif
 	//tini
 
 	for (k = 0; k <= j; k++) undump_hh(&trie[k]);
 	undump_size(0, trie_op_size, "trie op size", j);
 	//init
+#ifndef NO_INIT
 	trie_op_ptr = j;
+#endif
 	//tini
 
 	for (k = 1; k <= j; k++) {
@@ -13222,19 +13440,25 @@ bool load_fmt_file()
 		undump(0, 63, hyf_num[k]); undump(min_quarterword, max_quarterword, hyf_next[k]);
 	}
 	//init
+#ifndef NO_INIT
 	for (k = 0; k <= 255; k++) trie_used[k] = min_quarterword;
+#endif
 	//tini
 	k = 256;
 	while (j > 0) {
 		undump(0, k - 1, k); undump(1, j, x);
 		//init
+#ifndef NO_INIT
 		trie_used[k] = qi(x);
+#endif
 		//tini
 
 		j = j - x; op_start[k] = qo(j);
 	}
 	//init
+#ifndef NO_INIT
 	trie_not_ready = false;
+#endif
 	//tini
 	#pragma endregion
 
@@ -13774,8 +13998,10 @@ reswitch:
 		}
 	}
 	//debug
+#ifndef NO_DEBUG
 	if (panicking)
 		check_mem(false);
+#endif		
 	//gubed
 	if (tracing_commands > 0)
 		show_cur_cmd_chr();
@@ -14389,14 +14615,6 @@ main_lig_loop_plus2:
 			case qi(2):
 			case qi(6):
 				cur_r = rem_byte(main_j);
-
-				// overflow check
-				if (cur_r > 255) {
-					printf("Overflow assignment1 1040\n");
-					exit(1);
-				}
-				//////////////
-
 				if (lig_stack == null)
 				{
 					lig_stack = new_lig_item((quarterword)cur_r); bchar = non_char;
@@ -14409,13 +14627,6 @@ main_lig_loop_plus2:
 
 			case qi(3):
 				cur_r = rem_byte(main_j);
-				// overflow check
-				if (cur_r > 255) {
-					printf("Overflow assignment2 1040\n");
-					exit(1);
-				}
-				///////////////
-				
 				main_p = lig_stack; lig_stack = new_lig_item((quarterword)cur_r); link(lig_stack) = main_p;
 				break;
 			case qi(7):
@@ -14560,46 +14771,46 @@ void init_math()
 			v = shift_amount(just_box) + 2 * quad(cur_font); w = -max_dimen; p = list_ptr(just_box);
 			while (p != null) {
 				#pragma region <Let d be the natural width of node p; if the node is visible.. 1147>
-				reswitch:
-						if (is_char_node(p)) {
-							f = font(p); d = char_width(f, char_info(f, character(p))); goto found;
-						}
-						switch (type(p)) {
-						case hlist_node:
-						case vlist_node:
-						case rule_node:
-							d = width(p); goto found;
-							break;
-						case ligature_node:
-							#pragma region <Make node p look like a char_node and goto reswitch 652>
-							mem[lig_trick] = mem[lig_char(p)]; link(lig_trick) = link(p); p = lig_trick;
-							goto reswitch;
-							#pragma endregion
-							break;
-						case kern_node:
-						case math_node:
-							d = width(p);
-							break;
-						case glue_node:
-							#pragma region <Let d be the natural width of this glue; if stretching or shrinking, .. 1148>
-							q = glue_ptr(p); d = width(q);
-							if (glue_sign(just_box) == stretching) {
-								if (glue_order(just_box) == stretch_order(q) && stretch(q) != 0) v = max_dimen;
-							}
-							else if (glue_sign(just_box) == shrinking) {
-								if (glue_order(just_box) == shrink_order(q) && shrink(q) != 0) v = max_dimen;
-							}
-							if (subtype(p) >= a_leaders) goto found;
-							#pragma endregion
-							break;
-						case whatsit_node:
-							#pragma region <Let d be the width of the whatsit p 1361>
-							d = 0;
-							#pragma endregion
-							break;
+			reswitch:
+				if (is_char_node(p)) {
+					f = font(p); d = char_width(f, char_info(f, character(p))); goto found;
+				}
+				switch (type(p)) {
+				case hlist_node:
+				case vlist_node:
+				case rule_node:
+					d = width(p); goto found;
+					break;
+				case ligature_node:
+					#pragma region <Make node p look like a char_node and goto reswitch 652>
+					mem[lig_trick] = mem[lig_char(p)]; link(lig_trick) = link(p); p = lig_trick;
+					goto reswitch;
+					#pragma endregion
+					break;
+				case kern_node:
+				case math_node:
+					d = width(p);
+					break;
+				case glue_node:
+					#pragma region <Let d be the natural width of this glue; if stretching or shrinking, .. 1148>
+					q = glue_ptr(p); d = width(q);
+					if (glue_sign(just_box) == stretching) {
+						if (glue_order(just_box) == stretch_order(q) && stretch(q) != 0) v = max_dimen;
+					}
+					else if (glue_sign(just_box) == shrinking) {
+						if (glue_order(just_box) == shrink_order(q) && shrink(q) != 0) v = max_dimen;
+					}
+					if (subtype(p) >= a_leaders) goto found;
+					#pragma endregion
+					break;
+				case whatsit_node:
+					#pragma region <Let d be the width of the whatsit p 1361>
+					d = 0;
+					#pragma endregion
+					break;
 
-						default: d = 0; break;
-						}
+				default: d = 0; break;
+				}
 				#pragma endregion
 				if (v < max_dimen) v += d;
 				goto not_found;
@@ -14610,7 +14821,7 @@ void init_math()
 				else {
 					w = max_dimen; goto done;
 				}
-			not_found:
+		not_found:
 				p = link(p);
 			}
 		done:
@@ -15162,9 +15373,11 @@ void line_break(int final_widow_penalty)
 	threshold = pretolerance;
 	if (threshold >= 0) {
 		//stat
+#ifndef NO_STAT
 		if (tracing_paragraphs > 0) {
 			begin_diagnostic(); print_nl(TEX_STRING("@firstpass"));
 		}
+#endif
 		//tats
 		second_pass = false; final_pass = false;
 	}
@@ -15172,7 +15385,9 @@ void line_break(int final_widow_penalty)
 		threshold = tolerance; second_pass = true;
 		final_pass = (emergency_stretch <= 0);
 		//stat
+#ifndef NO_STAT
 		if (tracing_paragraphs > 0) begin_diagnostic();
+#endif
 		//tats
 	}
 	while (1) {
@@ -15181,7 +15396,9 @@ void line_break(int final_widow_penalty)
 			#pragma region <Initialize for hyphenating a paragraph 891>
 		{
 			//init
+#ifndef NO_INIT
 			if (trie_not_ready) init_trie();
+#endif
 			//tini
 			cur_lang = init_cur_lang; l_hyf = init_l_hyf; r_hyf = init_r_hyf;
 		}
@@ -15484,22 +15701,28 @@ void line_break(int final_widow_penalty)
 
 		if (!second_pass) {
 			//stat
+#ifndef NO_STAT
 			if (tracing_paragraphs > 0) print_nl(TEX_STRING("@secondpass"));
+#endif
 			//tats
 			threshold = tolerance; second_pass = true; final_pass = (emergency_stretch <= 0);
 		}
 		else {
 			//stat
+#ifndef NO_STAT
 			if (tracing_paragraphs > 0) print_nl(TEX_STRING("@emergencypass"));
+#endif
 			//tats
 			background[2] += emergency_stretch; final_pass = true;
 		}
 	}
 done:
 	//stat
+#ifndef NO_STAT
 	if (tracing_paragraphs > 0) {
 		end_diagnostic(true); normalize_selector();
 	}
+#endif
 	//tats
 	#pragma endregion
 
@@ -15764,12 +15987,6 @@ mycontinue:
 						case qi(2):
 						case qi(6):
 							cur_r = rem_byte(q);
-
-							// overflow check
-							if (cur_r > 255) {
-								printf("Overflow assignment1 911\n");
-								exit(1);
-							}
 							if (lig_stack > null) character(lig_stack) = (quarterword)cur_r;
 							else {
 								lig_stack = new_lig_item((quarterword)cur_r);
@@ -15791,13 +16008,6 @@ mycontinue:
 							break;
 						case qi(3):
 							cur_r = rem_byte(q);
-							// overflow check
-							if (cur_r > 255) {
-								printf("Overflow assignment3 911\n");
-								exit(1);
-							}
-							//////////////
-							
 							p = lig_stack; lig_stack = new_lig_item((quarterword)cur_r); link(lig_stack) = p;
 							break;
 						case qi(7):
@@ -16290,6 +16500,7 @@ void alter_box_dimen()
 
 // 1336
 //init
+#ifndef NO_INIT
 void init_prim()
 {
 	no_new_control_sequence = false;
@@ -16722,6 +16933,7 @@ void init_prim()
 
 	no_new_control_sequence = true;
 }
+#endif
 //tini
 
 
@@ -16769,175 +16981,12 @@ void undump_qqqq(four_quarters *qqqq)
 	fread(qqqq, sizeof *qqqq, 1, fmt_file);
 }
 
-// 948
-trie_pointer trie_node(trie_pointer p)
-{
-	trie_pointer h;
-	trie_pointer q;
-	trie_pointer retval;
-	h = myabs(trie_c[p] + 1009 * trie_o[p] + 2718 * trie_l[p] + 3142 * trie_r[p]) % trie_size;
-	while (1) {
-		q = trie_hash[h];
-		if (q == 0) {
-			trie_hash[h] = p; retval = p; return retval;
-		}
-		if (trie_c[q] == trie_c[p] && trie_o[q] == trie_o[p] && trie_l[q] == trie_l[p] && trie_r[q] == trie_r[p]) {
-			retval = q; return retval;
-		}
-		if (h > 0) decr(h); else h = trie_size;
-	}
-}
-
-// 949
-trie_pointer compress_trie(trie_pointer p)
-{
-	trie_pointer retval;
-	if (p == 0) retval = 0;
-	else {
-		trie_l[p] = compress_trie(trie_l[p]); trie_r[p] = compress_trie(trie_r[p]);
-		retval = trie_node(p);
-	}
-	return retval;
-}
-
-// 953
-void first_fit(trie_pointer p)
-{
-	trie_pointer h;
-	trie_pointer z;
-	trie_pointer q;
-	ASCII_code c;
-	trie_pointer l, r;
-	int ll; // 1..256
-
-	c = so(trie_c[p]); z = trie_min[c];
-	while (1) {
-		h = z - c;
-		#pragma region Ensure that trie_max >= h+256 954>
-		if (trie_max < h + 256) {
-			if (trie_size <= h + 256) overflow(TEX_STRING("pattern memory"), trie_size);
-			do {
-				incr(trie_max); trie_taken[trie_max] = false; trie_link(trie_max) = trie_max + 1;
-				trie_back(trie_max) = trie_max - 1;
-			} while (!(trie_max == h + 256));
-		}
-		#pragma endregion
-		if (trie_taken[h]) goto not_found;
-		#pragma region <If all characters of the family fit relative to h, then goto found otherwise goto not_found 955>
-		q = trie_r[p];
-		while (q > 0) {
-			if (trie_link(h + so(trie_c[q])) == 0) goto not_found;
-			q = trie_r[q];
-		}
-		goto found;
-		#pragma endregion
-
-	not_found:
-		z = trie_link(z);
-	}
-found:
-	#pragma region <Pack the family into trie relative to h 956>
-	trie_taken[h] = true; trie_ref[p] = h; q = p;
-	do {
-		z = h + so(trie_c[q]); l = trie_back(z); r = trie_link(z); trie_back(r) = l; trie_link(l) = r;
-		trie_link(z) = 0;
-		if (l < 256) {
-			if (z < 256) ll = z;
-			else ll = 256;
-			do {
-				trie_min[l] = r; incr(l);
-			} while (!(l == ll));
-		}
-		q = trie_r[q];
-	} while (!(q == 0));
-	#pragma endregion
-}
-
-// 957
-void trie_pack(trie_pointer p)
-{
-	trie_pointer q;
-	do {
-		q = trie_l[p];
-		if (q > 0 && trie_ref[q] == 0) {
-			first_fit(q); trie_pack(q);
-		}
-		p = trie_r[p];
-	} while (!(p == 0));
-}
-
-
-void trie_fix(trie_pointer p)
-{
-	trie_pointer q;
-	ASCII_code c;
-	trie_pointer z;
-	z = trie_ref[p];
-	do {
-		q = trie_l[p]; c = so(trie_c[p]); trie_link(z + c) = trie_ref[q]; trie_char(z + c) = qi(c);
-		trie_op(z + c) = trie_o[p];
-		if (q > 0) trie_fix(q);
-		p = trie_r[p];
-	} while (!(p == 0));
-}
-
-// 966
-void init_trie()
-{
-	trie_pointer p;
-	int j, k, t;
-	trie_pointer r, s;
-	two_halves h;
-
-	#pragma region <Get ready to compress the trie 952>
-
-	#pragma region <Sort the hyphenation op tables into proper order 945>
-	op_start[0] = -min_quarterword;
-	for (j = 1; j <= 255; j++) op_start[j] = op_start[j - 1] + qo(trie_used[j - 1]);
-	for (j = 1; j <= trie_op_ptr; j++) trie_op_hash[j] = op_start[trie_op_lang[j]] + trie_op_val[j];
-	for (j = 1; j <= trie_op_ptr; j++)
-		while (trie_op_hash[j] > (unsigned)j) {
-			k = trie_op_hash[j];
-			t = hyf_distance[k]; hyf_distance[k] = hyf_distance[j]; hyf_distance[j] = t;
-			t = hyf_num[k]; hyf_num[k] = hyf_num[j]; hyf_num[j] = t;
-			t = hyf_next[k]; hyf_next[k] = hyf_next[j]; hyf_next[j] = t;
-			trie_op_hash[j] = trie_op_hash[k]; trie_op_hash[k] = k;
-		}
-	#pragma endregion
-
-	for (p = 0; p <= trie_size; p++) trie_hash[p] = 0;
-	trie_root = compress_trie(trie_root);
-	for (p = 0; p <= trie_ptr; p++) trie_ref[p] = 0;
-	for (p = 0; p <= 255; p++) trie_min[p] = p + 1;
-	trie_link(0) = 1; trie_max = 0;
-	#pragma endregion
-
-	if (trie_root != 0) {
-		first_fit(trie_root); trie_pack(trie_root);
-	}
-	#pragma region <Move the data into trie 958>
-	h.rh = 0; h.union_t.struct_t.b0 = min_quarterword; h.union_t.struct_t.b1 = min_quarterword;
-	if (trie_root == 0) {
-		for (r = 0; r <= 256; r++) trie[r] = h;
-		trie_max = 256;
-	}
-	else {
-		trie_fix(trie_root);
-		r = 0;
-		do {
-			s = trie_link(r); trie[r] = h; r = s;
-		} while (!(r > trie_max));
-	}
-	trie_char(0) = qi(TEX_STRING("?"));
-	#pragma endregion
-
-	trie_not_ready = false;
-}
 
 
 // 1302
 
 //init
+#ifndef NO_INIT
 void store_fmt_file()
 {
 	int j, k, l;
@@ -16949,7 +16998,7 @@ void store_fmt_file()
 	if (save_ptr != 0) {
 		print_err(TEX_STRING("You can't dump inside a group"));
 		help1(TEX_STRING("`{...\dump}' is a no-no."));
-		succumb;
+		succumb();
 	}
 	#pragma endregion
 
@@ -17168,6 +17217,7 @@ void store_fmt_file()
 
 	#pragma endregion
 }
+#endif
 //tini
 
 int main(int argc, char **argv)
@@ -17192,7 +17242,9 @@ int main(int argc, char **argv)
 
 	// 111
 	//init
+#ifndef NO_INIT	
 	if (mem_min != mem_bot || mem_max != mem_top) bad = 10;
+#endif
 	//tini
 	if (mem_min > mem_bot || mem_max < mem_top) bad = 10;
 	if (min_quarterword > 0 || max_quarterword < 127) bad = 11;
@@ -17223,10 +17275,12 @@ int main(int argc, char **argv)
 	}
 	initialize();
 	//init
+#ifndef NO_INIT
 	if (!get_strings_started())
 		goto final_end;
 	init_prim();
 	init_str_ptr = str_ptr; init_pool_ptr = pool_ptr; fix_date_and_time();
+#endif
 	//tini
 
 	ready_already = 314159;
