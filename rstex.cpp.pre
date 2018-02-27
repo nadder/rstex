@@ -44,8 +44,6 @@ rstex.cpp can then be compiled by any non-ancient C++ compiler, and the executab
 Notable omissions:
 * Currently no path searching is done so all files the program needs are supposed
   to exist in the current directory. (Maybe should add checking of a few locations given by env. vars).
-* No special defines for excluding init, stat, or debug code (most likely easy to add these),
-  although I don't think it hurts much to keep it in.
 * No other files needed for a complete system is included, i.e. fmt files, fonts, tfm files
   macro packages etc.
 
@@ -2683,14 +2681,14 @@ void show_node_list(int p)
 						}
 						else {
 							// Check for overflow
-							float ftemp = unity*g;
+							float ftemp = round(unity*g);
 							if(ftemp > 2147483583 || ftemp < -2147483583) {
 								printf("Overflow in 186.\n");
 								exit(1);
 							}
 							/////////////////////////
 							
-							print_glue((scaled)round(ftemp), glue_order(p), 0);
+							print_glue((scaled)ftemp, glue_order(p), 0);
 						}
 					}
 					#pragma endregion
@@ -4873,14 +4871,6 @@ void make_math_accent(pointer q)
 			y = rem_byte(i); i = char_info(f, y);
 			if (!char_exists(i)) goto done;
 			if (char_width(f, i) > w) goto done;
-
-			// overflow check
-			if (y > 255) {
-				printf("Overflow assignment 740\n");
-				exit(1);
-			}
-			//---------
-			
 			c = (quarterword)y;
 			
 		}
@@ -5431,28 +5421,28 @@ void fin_align()
 							if (stretch_order(v) == glue_order(p)) {
 							
 								// Check for overflow
-								float ftemp = _float(glue_set(p)) * stretch(v);
+								float ftemp = round(_float(glue_set(p)) * stretch(v));
 								if(ftemp > 2147483583 || ftemp < -2147483583) {
 									printf("Overflow in 809.\n");
 									exit(1);
 								}
 								/////////////////////////
 								
-								t += (scaled)round(ftemp);
+								t += (scaled)ftemp;
 							}
 						}
 						else if (glue_sign(p) == shrinking) {
 							if(shrink_order(v) == glue_order(p)) {
 							
 								// Check for overflow
-								float ftemp = _float(glue_set(p)) * shrink(v);
+								float ftemp = round(_float(glue_set(p)) * shrink(v));
 								if(ftemp > 2147483583 || ftemp < -2147483583) {
 									printf("Overflow in 809.\n");
 									exit(1);
 								}
 								/////////////////////////
 								
-								t -= (scaled)round(ftemp);
+								t -= (scaled)ftemp;
 							}
 						}
 						s = link(s); link(u) = new_null_box(); u = link(u); t += width(s);
@@ -7194,10 +7184,14 @@ void scan_dimen(bool mu, bool inf, bool shortcut)
 				}
 			done1:
 				for (kk = k; kk >= 1; kk--) {
+					
+					// overflow check
 					if (info(p) > 255) {
 						printf("overflow in 452\n");
 						exit(1);
 					}
+					//////////////////
+					
 					dig[kk - 1] = (unsigned char)info(p); q = p; p = link(p); free_avail(q);
 				}
 				f = round_decimals(k);
@@ -9625,7 +9619,7 @@ pointer vpackage(pointer p, scaled h, small_number m, scaled l)
 		else {
 			glue_sign(r) = normal; set_glue_ratio_zero(glue_set(r));
 		}
-		if(o==normal)
+		if(o == normal)
 			if (list_ptr(r) != null) 
 				#pragma region <Report an underfull vbox and goto common_ending, if this box is sufficiently bad 674>
 			{
@@ -10265,7 +10259,7 @@ void try_break(int pi, small_number break_type)
 			}
 			#pragma endregion
 			if (node_r_stays_active) goto mycontinue;
-deactivate:
+	deactivate:
 			#pragma region <Deactivate node r 860>
 			link(prev_r) = link(r); free_node(r, active_node_size);
 			if (prev_r == active)
@@ -10295,6 +10289,7 @@ deactivate:
 	}
 
 myexit:
+	; // need empty statement here if compiling without stat
 	//stat
 #ifndef NO_STAT
 	#pragma region <Update the value of printed_node for symbolic displays 858>
@@ -15148,11 +15143,11 @@ void make_accent()
 			
 			// Check for overflow
 			float ftemp = round((w - a) / 2.0f + h * t - x * s);
-			if(ftemp > INT_MAX || ftemp < INT_MIN) {
+			if(ftemp > 2147483583 || ftemp < -2147483583) {
 				printf("Overflow in 1125.\n");
 				exit(1);
 			}
-			/////////////////////////			
+			/////////////////////////
 			
 			
 			delta = (scaled)ftemp; r = new_kern(delta); subtype(r) = acc_kern;

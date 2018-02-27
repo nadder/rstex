@@ -44,8 +44,6 @@ rstex.cpp can then be compiled by any non-ancient C++ compiler, and the executab
 Notable omissions:
 * Currently no path searching is done so all files the program needs are supposed
   to exist in the current directory. (Maybe should add checking of a few locations given by env. vars).
-* No special defines for excluding init, stat, or debug code (most likely easy to add these),
-  although I don't think it hurts much to keep it in.
 * No other files needed for a complete system is included, i.e. fmt files, fonts, tfm files
   macro packages etc.
 
@@ -84,12 +82,12 @@ private:
 };
 
 // 2
-#define banner "This is rsTeX, Version 1.1.2" // printed when rsTeX starts
+#define banner "This is rsTeX, Version 1.1.4" // printed when rsTeX starts
 
 // 36
 #define loc cur_input.loc_field // location of first unread character in buffer
 
-// <The following paramters can be chnaged at compile time to extend or reduce rsTeX's capacity 11>
+// <The following parameters can be changed at compile time to extend or reduce rsTeX's capacity 11>
 const int mem_max = 30000; // Greatest index in rsTeX's internal mem array; must be strictly less than
                            // max_halfword; must be equal to mem_top in INITEX, otherise >= mem_top
 //const int mem_max = 3000; // triptex
