@@ -60,29 +60,29 @@ for those who want to understand how this complex software works.
 #pragma once
 #include <cstdio>
 #include <cassert>
+#include <array>
 
+#define array_size maxindex - minindex + 1
 template<typename T, int minindex, int maxindex>
-class Array
+struct Array
 {
-public:
-	Array()  {}
 	T& operator[](int x) {
 		assert(x >= minindex && x <= maxindex);
 		return _array[x - minindex];
 	}
 
 	T* get_c_str() {
-		assert(sizeof _array / sizeof *_array > 0);
-		_array[sizeof _array / sizeof *_array - 1] = T(0);
+		assert(array_size > 0);
+		_array[array_size - 1] = T(0);
 		return &_array[0];
 	}
-
-private:
-	T _array[maxindex - minindex + 1];
+	static const int _minindex = minindex;
+	static const int _maxindex = maxindex;	
+	std::array<T, array_size> _array;
 };
 
 // 2
-#define banner "This is rsTeX, Version 1.1.4" // printed when rsTeX starts
+#define banner "This is rsTeX, Version 1.1.5" // printed when rsTeX starts
 
 // 36
 #define loc cur_input.loc_field // location of first unread character in buffer
@@ -808,7 +808,8 @@ pointer lo_mem_max; // the largest location of variable-size memory in use
 pointer hi_mem_min; // the smallest location of one-word memory in use
 
 // 117
-int var_used, dyn_used; // how much memory is in use
+int var_used;
+int dyn_used; // how much memory is in use
 
 // 118
 #define link(n) mem[n].union_t.hh.rh // the link field of a memory word
@@ -1004,9 +1005,11 @@ const int hi_mem_stat_usage = 14; // the number of one-word nodes always present
 // 165
 //debug
 #ifndef NO_DEBUG
-bool _free[mem_max  + 1]; // free cells
-bool was_free[mem_max  + 1]; // previously free cells
-pointer was_mem_end, was_lo_max, was_hi_min; // previous mem_end, lo_mem_max, and hi_mem_min
+Array<bool, 0, mem_max> _free; // free cells
+Array<bool, 0, mem_max> was_free; // free cells
+pointer was_mem_end;
+pointer was_lo_max;
+pointer was_hi_min; // previous mem_end, lo_mem_max, and hi_mem_min
 bool panicking; // do we want to check memory constantly?
 #endif
 //gubed
@@ -1289,7 +1292,7 @@ enum group_code : quarterword
 	math_shift_group = 15, // code for `$...$'
 	math_left_group = 16, // code for `\left...\right'
 };
-unsigned char max_group_code = 16;
+const quarterword max_group_code = 16;
 
 // 271
 Array<memory_word, 0, save_size> save_stack;
@@ -1912,10 +1915,14 @@ int last_bop; // location of previous bop in the DVI output
 int dead_cycles; // recent outputs that didn't ship anything out
 bool doing_leaders; // are we inside a leader box?
 
-quarterword c, f; // character and font in current char_node
-scaled rule_ht, rule_dp, rule_wd; // size of current rule being output
+quarterword c;
+quarterword f; // character and font in current char_node
+scaled rule_ht;
+scaled rule_dp;
+scaled rule_wd; // size of current rule being output
 pointer g; // current glue specification
-int lq, lr; // quantities used in calculations for leaders
+int lq;
+int lr; // quantities used in calculations for leaders
 
 //594
 typedef int dvi_index; // 0..dvi_buf_size, an index into the output buffer
@@ -1940,7 +1947,8 @@ int dvi_gone; // the number of bytes already output to dvi_file
 const int movement_node_size = 3; // number of words per entry in the down and right stacks
 #define location(s) mem[s+2].union_t.an_int // DVI byte number for a movement command
 
-pointer down_ptr, right_ptr; // heads of down and right stacks
+pointer down_ptr;
+pointer right_ptr; // heads of down and right stacks
 
 // 608
 const int y_here = 1; // info when the movement entry points to a y command
@@ -1970,8 +1978,10 @@ const int z_seen = 12; // we have seen z_here but not y_here
 	}\
 } while(0)
 
-scaled dvi_h, dvi_v; // a DVI reader program thinks we are here
-scaled cur_h, cur_v; // rsTeX thinks we are here
+scaled dvi_h;
+scaled dvi_v; // a DVI reader program thinks we are here
+scaled cur_h;
+scaled cur_v; // rsTeX thinks we are here
 internal_font_number dvi_f; // the current font
 int cur_s; // current depth of output box nesting, initially -1
 
@@ -1992,7 +2002,8 @@ const int additional = 1; // a box dimension is increased from the natural one
 //#define natural 0,additional // shorthand for parameters to hpack and vpack; NOTE: Don't know how to define this in C++, is it possible?
 
 // 646
-Array<scaled, normal, filll> total_stretch, total_shrink; // glue found by hpack or vpack
+Array<scaled, normal, filll> total_stretch;
+Array<scaled, normal, filll> total_shrink; // glue found by hpack or vpack
 int last_badness; // badness of the most recently packaged box
 
 // 647
@@ -2149,7 +2160,8 @@ pointer cur_align; // current position in preamble list
 pointer cur_span; // start of currently spanned columns in preamble list
 pointer cur_loop; // place to copy when extending a periodic preamble
 pointer align_ptr; // most recently pushed-down alignment stack node
-pointer cur_head, cur_tail; // adjustment list pointers
+pointer cur_head;
+pointer cur_tail; // adjustment list pointers
 
 // 780
 const int span_code = 256; // distinct from any character
@@ -2295,13 +2307,18 @@ int line_diff; // the difference between the current line number and the optimum
 // 892
 Array<int, 0, 65> hc; // word to be hyphenated
 small_number hn; // the number of positions occupied in hc
-pointer ha, hb; // nodes ha..hb should be replaced by the hyphenated result
+pointer ha;
+pointer hb; // nodes ha..hb should be replaced by the hyphenated result
 internal_font_number hf; // font number of the letters in hc
 Array<int, 0, 63> hu; // like hc, before conversion to lowercase
 
 int hyf_char; // hyphen character of the relevant font
-ASCII_code cur_lang, init_cur_lang; // current hyphenation table of interest
-int l_hyf, r_hyf, init_l_hyf, init_r_hyf; // limits on fragment sizes
+ASCII_code cur_lang;
+ASCII_code init_cur_lang; // current hyphenation table of interest
+int l_hyf;
+int r_hyf;
+int init_l_hyf;
+int init_r_hyf; // limits on fragment sizes
 halfword hyf_bchar; // boundary character after c_n
 
 // 900
@@ -2314,11 +2331,13 @@ bool init_lft; // if so, did the ligature invovle a left boundary?
 small_number hyphen_passed; // first hyphen in a ligature, if any
 
 // 907
-halfword cur_l, cur_r; // characters before and after the cursor
+halfword cur_l;
+halfword cur_r; // characters before and after the cursor
 pointer cur_q; // where a ligature should be detached
 pointer lig_stack; // unfinished business to the right of the cursor
 bool ligature_present; // should a ligature node be made for cur_l?
-bool lft_hit, rt_hit; // did we hit a ligature with a boundary character?
+bool lft_hit;
+bool rt_hit; // did we hit a ligature with a boundary character?
 
 // 908
 #define append_charnode_to_t(s) do{\
@@ -2546,9 +2565,9 @@ do{\
 			incr(subtype(main_p));\
 			rt_hit = false;\
 		}\
-	link(cur_q) = main_p; \
-	tail = main_p; \
-	ligature_present = false; \
+	link(cur_q) = main_p;\
+	tail = main_p;\
+	ligature_present = false;\
 } while (0)
 
 #define wrapup(s) do{\
@@ -2675,7 +2694,7 @@ word_file fmt_file;
 
 // 1310
 #define undump_four_ASCII do{\
-undump_qqqq(&w);\
+	undump_qqqq(&w);\
 	str_pool[k] = si(qo(w.b0));\
 	str_pool[k+1] = si(qo(w.b1));\
 	str_pool[k+2] = si(qo(w.b2));\
