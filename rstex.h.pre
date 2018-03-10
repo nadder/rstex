@@ -1870,7 +1870,7 @@ Array<quarterword, int_base, eqtb_size> xeq_level;
 // NOTE: string length of filenames and such could probably be cleaned up a bit,
 // but I leave this for now until/if I put in some path searching.
 const int format_default_length = 9; // length of TEX_format_default string ; NOTE: used to be 20
-const int format_area_length = 11; // length of its area part
+const int format_area_length = 0; // length of its area part NOTE: used to be 11
 const int format_ext_length = 4; // length of its `.fmt' part
 #define format_extension TEX_STRING(".fmt") // the extension as a WEB constant
 Array<char, 1, format_default_length+1> TEX_format_default;

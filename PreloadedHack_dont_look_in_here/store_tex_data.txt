@@ -16,7 +16,7 @@ std::ostream& operator<<(std::ostream& os, const memory_word& wd)
 
 std::ostream& operator<<(std::ostream& os, const list_state_record& ls)
 {
-	os << "list_state_record{" << "(mode_type)" << ls.mode_field << "," << ls.head_field << "," << ls.tail_field << "," <<
+	os << "list_state_record{" << "(mode_type)" << (int)ls.mode_field << "," << ls.head_field << "," << ls.tail_field << "," <<
 		ls.pg_field << "," << ls.ml_field << "," << ls.aux_field << "}";
 	return os;
 }
