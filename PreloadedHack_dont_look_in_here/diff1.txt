@@ -1,5 +1,5 @@
 *** rstex_unmodified.cpp	2018-03-11 14:35:14.039865200 +0100
---- rstex.cpp	2018-03-11 15:28:04.003675500 +0100
+--- rstex.cpp	2018-03-11 15:33:52.047348500 +0100
 ***************
 *** 56,62 ****
   for those who want to understand how this complex software works.
@@ -76,7 +76,7 @@
 + 	for (int i = ary._minindex; i <= ary._maxindex; i++) {
 + 		if (count != 0)
 + 			oss << ",";
-+ 		if (i % 10 == 0 && i != 0)
++ 		if (count % 10 == 0 && count != 0)
 + 			oss << "\\\n";
 + 		oss << ary[i];
 + 		count++;
