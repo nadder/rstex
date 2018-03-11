@@ -82,7 +82,7 @@ struct Array
 };
 
 // 2
-#define banner "This is rsTeX, Version 1.1.5" // printed when rsTeX starts
+#define banner "This is rsTeX, Version 1.1.6" // printed when rsTeX starts
 
 // 36
 #define loc cur_input.loc_field // location of first unread character in buffer
@@ -1999,7 +1999,7 @@ int cur_s; // current depth of output box nesting, initially -1
 const int exactly = 0; // a box dimension is pre-specified
 const int additional = 1; // a box dimension is increased from the natural one
 
-//#define natural 0,additional // shorthand for parameters to hpack and vpack; NOTE: Don't know how to define this in C++, is it possible?
+#define natural 0,additional // shorthand for parameters to hpack and vpack
 
 // 646
 Array<scaled, normal, filll> total_stretch;
@@ -2014,7 +2014,8 @@ int pack_begin_line; // source file line where the current paragraph or alignmen
                      // value denotes alignment
 
 // 668
-#define vpack(s, t, u) vpackage(s, t, u, max_dimen) // special case of unconstrained depth
+// NOTE: made vpack a function instead
+//#define vpack(s, t, u) vpackage(s, t, u, max_dimen) // special case of unconstrained depth
 
 // 681
 const int noad_size = 4; // number of words in a normal noad
@@ -3062,4 +3063,4 @@ void search_mem(pointer p);
 void free_avail(pointer s);
 void do_final_end();
 void succumb();
-
+pointer vpack(halfword aa, scaled bb, small_number cc);

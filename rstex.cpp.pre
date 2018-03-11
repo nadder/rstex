@@ -4153,7 +4153,7 @@ pointer overbar(pointer b, scaled k, scaled t)
 {
 	pointer p, q;
 	p = new_kern(k); link(p) = b; q = fraction_rule(t); link(q) = p; p = new_kern(t); link(p) = q;
-	return vpack(p, 0, additional);
+	return vpack(p, natural);
 }
 
 
@@ -4298,7 +4298,7 @@ pointer rebox(pointer b, scaled w)
 	scaled v;
 
 	if (width(b) != w && list_ptr(b) != null) {
-		if (type(b) == vlist_node) b = hpack(b, 0, additional);
+		if (type(b) == vlist_node) b = hpack(b, natural);
 		p = list_ptr(b);
 		if (is_char_node(p) && link(p) == null) {
 			f = font(p); v = char_width(f, char_info(f, character(p)));
@@ -4391,9 +4391,9 @@ pointer clean_box(pointer p, small_number s)
 	cur_mu = x_over_n(math_quad(cur_size), 18);
 	#pragma endregion
 found:
-	if (is_char_node(q) || q == null) x = hpack(q, 0, additional);
+	if (is_char_node(q) || q == null) x = hpack(q, natural);
 	else if (link(q) == null && type(q) <= vlist_node && shift_amount(q) == 0) x = q;
-	else x = hpack(q, 0, additional);
+	else x = hpack(q, natural);
 
 	#pragma region <Simplify a trivial box 721>
 		 q = list_ptr(x);
@@ -4621,7 +4621,7 @@ void mlist_to_hlist()
 				else cur_size = 16 * ((cur_style - text_style) / 2);
 				cur_mu = x_over_n(math_quad(cur_size), 18);
 				#pragma endregion
-				p = hpack(link(temp_head), 0, additional);
+				p = hpack(link(temp_head), natural);
 				break;
 			default:
 				confusion(TEX_STRING("mlist2"));
@@ -4634,7 +4634,7 @@ void mlist_to_hlist()
 
 		#pragma endregion
 	check_dimensions:
-		z = hpack(new_hlist(q), 0, additional);
+		z = hpack(new_hlist(q), natural);
 		if (height(z) > max_h) max_h = height(z);
 		if (depth(z) > max_d) max_d = depth(z);
 		free_node(z, box_node_size);
@@ -4784,7 +4784,7 @@ void make_under(pointer q)
 	scaled delta;
 
 	x = clean_box(nucleus(q), cur_style); p = new_kern(3 * default_rule_thickness); link(x) = p;
-	link(p) = fraction_rule(default_rule_thickness); y = vpack(x, 0, additional);
+	link(p) = fraction_rule(default_rule_thickness); y = vpack(x, natural);
 	delta = height(y) + depth(y) + default_rule_thickness; height(y) = height(x);
 	depth(y) = delta - height(y); info(nucleus(q)) = y; math_type(nucleus(q)) = sub_box;
 }
@@ -4818,7 +4818,7 @@ void make_radical(pointer q)
 	delta = depth(y) - (height(x) + depth(x) + clr);
 	if (delta > 0) clr += half(delta);
 	shift_amount(y) = -(height(x) + clr); link(y) = overbar(x, clr, height(y));
-	info(nucleus(q)) = hpack(y, 0, additional); math_type(nucleus(q)) = sub_box;
+	info(nucleus(q)) = hpack(y, natural); math_type(nucleus(q)) = sub_box;
 }
 
 
@@ -4891,7 +4891,7 @@ void make_math_accent(pointer q)
 			}
 				#pragma endregion
 		y = char_box(f, c); shift_amount(y) = s + half(w - width(y)); width(y) = 0; p = new_kern(-delta);
-		link(p) = x; link(y) = p; y = vpack(y, 0, additional); width(y) = width(x);
+		link(p) = x; link(y) = p; y = vpack(y, natural); width(y) = width(x);
 		if (height(y) < h)
 			#pragma region <Make the height of box y equal to h 739>
 		{
@@ -4970,7 +4970,7 @@ void make_fraction(pointer q)
 	else delta = delim2(cur_size);
 	x = var_delimiter(left_delimiter(q), cur_size, delta); link(x) = v;
 	z = var_delimiter(right_delimiter(q), cur_size, delta); link(v) = z;
-	new_hlist(q) = hpack(x, 0, additional);
+	new_hlist(q) = hpack(x, natural);
 	#pragma endregion
 
 
@@ -5121,7 +5121,7 @@ void make_scripts(pointer q, scaled delta)
 		shift_up = 0; shift_down = 0;
 	}
 	else {
-		z = hpack(p, 0, additional);
+		z = hpack(p, natural);
 		if (cur_style < script_style) t = script_size; else t = script_script_size;
 		shift_up = height(z) - sup_drop(t); shift_down = depth(z) + sub_drop(t); free_node(z, box_node_size);
 	}
@@ -5163,7 +5163,7 @@ void make_scripts(pointer q, scaled delta)
 			}
 			shift_amount(x) = delta;
 			p = new_kern((shift_up - depth(x)) - (height(y) - shift_down)); link(x) = p; link(p) = y;
-			x = vpack(x, 0, additional); shift_amount(x) = shift_down;
+			x = vpack(x, natural); shift_amount(x) = shift_down;
 		}
 			#pragma endregion
 
@@ -9515,6 +9515,9 @@ void extra_right_brace()
 	case math_left_group:
 		print_esc(TEX_STRING("right"));
 		break;
+		// NOTE: added default case here to prevent compiler warning
+	default:
+		break;
 	}
 	help5(TEX_STRING("I've deleted a group-closing symbol because it seems to be"),
 		TEX_STRING("spurious, as in `$x}$'. But perhaps the } is legitimate and"),
@@ -9698,6 +9701,12 @@ common_ending:
 _exit:
 	return r;
 }
+
+pointer vpack(halfword aa, scaled bb, small_number cc)
+{
+	return vpackage(aa, bb, cc, max_dimen);
+}
+
 
 // 645
 void scan_spec(group_code c, bool three_codes)

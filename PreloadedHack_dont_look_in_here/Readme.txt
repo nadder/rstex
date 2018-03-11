@@ -20,7 +20,7 @@ There are basically two ways to go about doing this on modern operating systems.
 binary route. You take a memory dump using a debugger or similar tool and then try to recreate
 the executable directly from this memory dump. This is very difficult to do and of course extremely
 system dependent but in principle it should be possible. Another way and the one I'm using here, is
-to enter the data at the source level. We modify the tex program so that it dumps out all its data
+to enter the data at the source level. We modify the program so that it dumps out all its data
 after it has loaded the format file. Then we enter this data as initialization values into the
 source file. After that we can recompile and the data is now preloaded.
 

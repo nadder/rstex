@@ -30,14 +30,12 @@ std::ostream& operator<<(std::ostream& os, const in_state_record& is)
 
 std::ostream& operator<<(std::ostream& os, const two_halves& hh)
 {
-	//os << *(unsigned int *)&hh;
 	os << "two_halves{" << hh.rh << "," << hh.union_t.lh << "}";
 	return os;
 }
 
 std::ostream& operator<<(std::ostream& os, const four_quarters& qqqq)
 {
-	//os << *(unsigned int *)&qqqq;
 	os << "four_quarters{" << (int)qqqq.b0 << "," << (int)qqqq.b1 << "," << (int)qqqq.b2 << "," << (int)qqqq.b3 << "}";
 	return os;
 }
