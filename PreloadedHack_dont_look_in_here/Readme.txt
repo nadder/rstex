@@ -25,14 +25,14 @@ after it has loaded the format file. Then we enter this data as initialization v
 source file. After that we can recompile and the data is now preloaded.
 
 The procedure is as follows.
-1. Ensure you have rstex.cpp, rstex.h, diff1.txt, and plain.fmt in the same directory.
+1. Ensure you have rstex.cpp, rstex.h, diff_win.txt, and plain.fmt in the same directory.
 2. Make sure you're compiling with NO_INIT defined.
-3. Apply the patch, patch -i -c rstex.cpp diff1.txt
+3. Apply the patch, patch -i -c rstex.cpp diff_win.txt
 4. Recompile rstex.cpp. If this does not work you may have to enter the new code
    manually, refer to store_tex_data.txt
 5. Run rstex. And enter
    **&plain \end
-6. Run patch -i -c -R rstex.cpp diff1.txt
+6. Run patch -i -c -R rstex.cpp diff_win.txt
    This removes the code added previously which is no longer needed.
 7. Run ./texdata.sh <rstex.h >rstex.h.2
    This will run a sed script which inserts the dumped data into rstex.h.2.
