@@ -974,7 +974,7 @@ bool b_open_out(FILE **f)
 bool w_open_in(FILE **f)
 {
 	if (test_access(format_file_path))
-		*f = fopen(name_of_file.get_c_str(), "rb");
+		*f = fopen(real_name_of_file.get_c_str(), "rb");
 	else
 		return false;
 	return *f;
@@ -17476,12 +17476,16 @@ int main(int argc, char **argv)
 		}
 
 		strcpy(name_of_file.get_c_str(), formatname);
-		if (w_open_in(&fmt_file))
-			if (!load_fmt_file()) {
-				w_close(fmt_file);
-				goto final_end;
-			}
-	}	
+		bool fmt_loaded = false;
+		if (w_open_in(&fmt_file)) {
+			fmt_loaded = load_fmt_file();
+			w_close(fmt_file);
+		}
+		if (!fmt_loaded) {
+			printf("! Error loading format file %s\n", formatname);
+			goto final_end;
+		}
+	}
 	
 	// 61
 	wterm_s(banner);
