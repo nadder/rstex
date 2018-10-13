@@ -75,7 +75,7 @@ float myabs(float x)
 int myabs(int x)
 {
 	// overflow check
-	if (x == INT_MIN) {
+	if (x == INT_MIN && -(INT_MIN + 1) == INT_MAX) {
 		printf("Overflow myabs.\n");
 		exit(1);
 	}
