@@ -6,5 +6,7 @@ Path to success,
 3. Compile rstex.cpp to get rstex.exe or similar.
 4. Make sure all files the program needs, including tex.pool
    are located in the same directory as the program itself.
+   (Note: see win/unix specific versions to avoid having all files in the same directory)
 5. Run the command rstex.exe.
 6. Celebrate!
+
