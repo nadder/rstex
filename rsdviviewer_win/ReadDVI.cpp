@@ -839,7 +839,7 @@ void define_font(int e) //{|e| is an external font number}
 		if (!open_gf_file())
 		{
 			char cmd_string[256];
-			sprintf(cmd_string, "mf -base=plain \\mode=localfont; mag=%f; input %s", real_res/200.0, basename);
+			sprintf(cmd_string, "rsMetaFont -base=plain \\mode=localfont; mag=%f; input %s", real_res/200.0, basename);
 			int ret = system(cmd_string);
 			if (!open_gf_file())
 				return;

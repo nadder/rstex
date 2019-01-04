@@ -127,7 +127,7 @@ void DrawPage(HWND hwnd, HDC hdc)
 		int x_offset = i.pFontChar->min_m;
 		int y_offset = -i.pFontChar->max_n-1;
 		HBITMAP hOld = (HBITMAP)SelectObject(hdcBitmap, i.pFontChar->hBitmap);
-		BitBlt(hdc, i.x+x_offset,i.y+y_offset, bm.bmWidth, bm.bmHeight, hdcBitmap, 0, 0, SRCCOPY);
+		BitBlt(hdc, i.x+x_offset,i.y+y_offset, bm.bmWidth, bm.bmHeight, hdcBitmap, 0, 0, SRCAND);
 		SelectObject(hdcBitmap, hOld);
 		DeleteDC(hdcBitmap);
 	}
@@ -209,24 +209,57 @@ BOOL CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		case WM_INITDIALOG:
 			// initialize dialog controls
 		{
-			sprintf(buf, "%.1f", resolution);
+			sprintf(buf, "%.2f", resolution);
 			SetDlgItemText(hwndDlg, IDC_EDIT1, buf);
-
-
 		}
 			return TRUE;
 
 		case WM_COMMAND:
 			switch(LOWORD(wParam)) {
-
-
 				case IDOK:
 					{
-						BOOL translated;
 						GetDlgItemText(hwndDlg, IDC_EDIT1, buf, sizeof buf);
 						double dtmp = strtod(buf, NULL);
 						if (dtmp != 0.0)
 							resolution = dtmp;
+
+					}
+				// fall through
+
+				case IDCANCEL:
+					EndDialog(hwndDlg, wParam);
+					return TRUE;
+			}
+	}
+	return FALSE;
+}
+BOOL CALLBACK MyDialogProc2(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	static char buf[256];
+	switch(msg) {
+		case WM_INITDIALOG:
+			// initialize dialog controls
+		{
+			sprintf(buf, "%.2f", page_size_width);
+			SetDlgItemText(hwndDlg, IDC_EDIT_WIDTH, buf);
+			sprintf(buf, "%.2f", page_size_height);
+			SetDlgItemText(hwndDlg, IDC_EDIT_HEIGHT, buf);
+		}
+			return TRUE;
+
+		case WM_COMMAND:
+			switch(LOWORD(wParam)) {
+				case IDOK:
+					{
+						GetDlgItemText(hwndDlg, IDC_EDIT_WIDTH, buf, sizeof buf);
+						double dtmp = strtod(buf, NULL);
+						if (dtmp != 0.0)
+							page_size_width = dtmp;
+
+						GetDlgItemText(hwndDlg, IDC_EDIT_HEIGHT, buf, sizeof buf);
+						dtmp = strtod(buf, NULL);
+						if (dtmp != 0.0)
+							page_size_height = dtmp;
 
 					}
 				// fall through
@@ -551,6 +584,27 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					PostQuitMessage(0);
 					break;
 
+				case ID_FILE_SETPAGESIZE:
+					if (DialogBox(ghInst, MAKEINTRESOURCE(IDD_SETPAGESIZE),
+								hwnd, MyDialogProc2) == IDOK) {
+						SCROLLINFO si = {0};
+						si.cbSize = sizeof si;
+						si.fMask = SIF_RANGE;
+						si.nMin = yMinScroll;
+						si.nMax = (page_size_height*resolution*zoom_factor+2*minimum_margin);
+						SetScrollInfo(hwndDVIView, SB_VERT, &si, TRUE);
+
+						si.cbSize = sizeof si;
+						si.fMask = SIF_RANGE;
+						si.nMin = xMinScroll;
+						si.nMax = (page_size_width*resolution*zoom_factor+2*minimum_margin);
+						SetScrollInfo(hwndDVIView, SB_HORZ, &si, TRUE);
+
+						InvalidateRect(hwndDVIView, NULL, TRUE);
+
+					}
+					break;
+
 				case ID_FILE_NEXTPAGE:
 					if (PageCharVector.size() > viewing_page + 1) {
 						viewing_page++;
@@ -569,8 +623,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					if (DialogBox(ghInst, MAKEINTRESOURCE(IDD_SETRESOLUTION),
 								hwnd, MyDialogProc) == IDOK) {
 						ReadDVIFile(cur_dvi_filename);
-						RECT rc;
-						GetWindowRect(hwndDVIView, &rc);
 						SCROLLINFO si = {0};
 						si.cbSize = sizeof si;
 						si.fMask = SIF_RANGE;
