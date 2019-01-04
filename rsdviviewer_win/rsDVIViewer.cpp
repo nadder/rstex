@@ -588,16 +588,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					if (DialogBox(ghInst, MAKEINTRESOURCE(IDD_SETPAGESIZE),
 								hwnd, MyDialogProc2) == IDOK) {
 						SCROLLINFO si = {0};
+						RECT rc;
+						GetClientRect(hwndDVIView, &rc);
+
+						yMaxScroll = max(page_size_height*resolution*zoom_factor+2*minimum_margin - rc.bottom, 0);
+						yCurrentScroll = min(yCurrentScroll, yMaxScroll);
+						xMaxScroll = max(page_size_width*resolution*zoom_factor+2*minimum_margin - rc.right, 0);
+						xCurrentScroll = min(xCurrentScroll, xMaxScroll);
+
 						si.cbSize = sizeof si;
-						si.fMask = SIF_RANGE;
+						si.fMask = SIF_RANGE|SIF_POS;
 						si.nMin = yMinScroll;
 						si.nMax = (page_size_height*resolution*zoom_factor+2*minimum_margin);
+						si.nPos = yCurrentScroll;
 						SetScrollInfo(hwndDVIView, SB_VERT, &si, TRUE);
 
 						si.cbSize = sizeof si;
-						si.fMask = SIF_RANGE;
+						si.fMask = SIF_RANGE|SIF_POS;
 						si.nMin = xMinScroll;
 						si.nMax = (page_size_width*resolution*zoom_factor+2*minimum_margin);
+						si.nPos = xCurrentScroll;
 						SetScrollInfo(hwndDVIView, SB_HORZ, &si, TRUE);
 
 						InvalidateRect(hwndDVIView, NULL, TRUE);
@@ -622,18 +632,30 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				case ID_FILE_SETRESOLUTION:
 					if (DialogBox(ghInst, MAKEINTRESOURCE(IDD_SETRESOLUTION),
 								hwnd, MyDialogProc) == IDOK) {
+						RECT rc;
+						GetClientRect(hwndDVIView, &rc);
+						int cxClient = rc.right - rc.left;
+						int cyClient = rc.bottom - rc.top;
 						ReadDVIFile(cur_dvi_filename);
 						SCROLLINFO si = {0};
+
+						yMaxScroll = max(page_size_height*resolution*zoom_factor+2*minimum_margin - rc.bottom, 0);
+						yCurrentScroll = min(yCurrentScroll, yMaxScroll);
+						xMaxScroll = max(page_size_width*resolution*zoom_factor+2*minimum_margin - rc.right, 0);
+						xCurrentScroll = min(xCurrentScroll, xMaxScroll);
+
 						si.cbSize = sizeof si;
-						si.fMask = SIF_RANGE;
+						si.fMask = SIF_RANGE|SIF_POS;
 						si.nMin = yMinScroll;
 						si.nMax = (page_size_height*resolution*zoom_factor+2*minimum_margin);
+						si.nPos = yCurrentScroll;
 						SetScrollInfo(hwndDVIView, SB_VERT, &si, TRUE);
 
 						si.cbSize = sizeof si;
-						si.fMask = SIF_RANGE;
+						si.fMask = SIF_RANGE|SIF_POS;
 						si.nMin = xMinScroll;
 						si.nMax = (page_size_width*resolution*zoom_factor+2*minimum_margin);
+						si.nPos = xCurrentScroll;
 						SetScrollInfo(hwndDVIView, SB_HORZ, &si, TRUE);
 
 						InvalidateRect(hwndDVIView, NULL, TRUE);
@@ -648,10 +670,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					GetClientRect(hwndDVIView, &rc);
 					zoom_factor *=2;
 					SCROLLINFO si = {0};
+
 					yMaxScroll = max(page_size_height*resolution*zoom_factor+2*minimum_margin - rc.bottom, 0);
 					yCurrentScroll = min(yCurrentScroll, yMaxScroll);
 					xMaxScroll = max(page_size_width*resolution*zoom_factor+2*minimum_margin - rc.right, 0);
 					xCurrentScroll = min(xCurrentScroll, xMaxScroll);
+
 					si.cbSize = sizeof si;
 					si.fMask = SIF_RANGE|SIF_POS;
 					si.nMin = yMinScroll;
@@ -674,20 +698,28 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				case ID_FILE_ZOOMOUT:
 				{
 					RECT rc;
-					GetWindowRect(hwndDVIView, &rc);
+					GetClientRect(hwndDVIView, &rc);
 					zoom_factor /= 2;
 					SCROLLINFO si = {0};
+
+					yMaxScroll = max(page_size_height*resolution*zoom_factor+2*minimum_margin - rc.bottom, 0);
+					yCurrentScroll = min(yCurrentScroll, yMaxScroll);
+					xMaxScroll = max(page_size_width*resolution*zoom_factor+2*minimum_margin - rc.right, 0);
+					xCurrentScroll = min(xCurrentScroll, xMaxScroll);
+
 					si.cbSize = sizeof si;
-					si.fMask = SIF_RANGE;
+					si.fMask = SIF_RANGE|SIF_POS;
 					si.nMin = yMinScroll;
 					si.nMax = (page_size_height*resolution*zoom_factor+2*minimum_margin);
+					si.nPos = yCurrentScroll;
 					SetScrollInfo(hwndDVIView, SB_VERT, &si, TRUE);
 
 
 					si.cbSize = sizeof si;
-					si.fMask = SIF_RANGE;
+					si.fMask = SIF_RANGE|SIF_POS;
 					si.nMin = xMinScroll;
 					si.nMax = (page_size_width*resolution*zoom_factor+2*minimum_margin);
+					si.nPos = xCurrentScroll;
 					SetScrollInfo(hwndDVIView, SB_HORZ, &si, TRUE);
 
 					InvalidateRect(hwndDVIView, NULL, TRUE);
