@@ -724,7 +724,7 @@ bool test_access(int filepath)
 ///////////////////////////////////////////////////////////////////////////
 
 
-bool open_gf_file() //{prepares to read packed bytes in |tfm_file|}
+bool open_gf_file() 
 {
 	gf_file = NULL;
 	if (test_access(font_file_path))
@@ -739,7 +739,7 @@ bool open_gf_file() //{prepares to read packed bytes in |tfm_file|}
 	return true;
 }
 
-bool open_dvi_file() //{prepares to write packed bytes in |dvi_file|}
+bool open_dvi_file() 
 {
 	dvi_file = NULL;
 	if (test_access(no_file_path)) {
@@ -839,7 +839,7 @@ void define_font(int e) //{|e| is an external font number}
 		if (!open_gf_file())
 		{
 			char cmd_string[256];
-			sprintf(cmd_string, "rsMetaFont -base=plain \\mode=localfont; mag=%f; input %s", real_res/200.0, basename);
+			sprintf(cmd_string, "mf -base=plain \\mode=localfont; mag=%f; input %s", real_res/200.0, basename);
 			int ret = system(cmd_string);
 			if (!open_gf_file())
 				return;

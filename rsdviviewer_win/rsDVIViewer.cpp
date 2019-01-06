@@ -25,6 +25,8 @@ HWND hwndDVIView;
 HDC ghDC;
 HWND hwndStatus;
 extern float resolution; // dpi
+int dlg_new_viewing_page;
+
 int WINAPI WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPSTR     lpCmdLine,
@@ -71,8 +73,8 @@ int status_bar_width;
 
 double zoom_factor = 1.0;
 
-double page_size_width = 8.5; // inches
-double page_size_height = 11; // inches
+double page_size_width = 8.27; // inches
+double page_size_height = 11.69; // inches
 int page_pixel_width;
 int page_pixel_height;
 int page_pixel_offset_x;
@@ -95,11 +97,14 @@ int yMaxScroll = 0;
 int minimum_margin = 0; // fix upper left corner at (minimum_margin,minimum_margin)
 int viewing_page = 0;
 
-void DrawPage(HWND hwnd, HDC hdc)
+void DrawPage(HWND hwnd, 
+	HDC hdc, 
+	int page_num, // 0 based page number
+	bool draw_border)
 {
 	BITMAP bm;
 	RECT rc;
-	POINT pt[1];
+
 
 
 	SetMapMode(hdc, MM_ISOTROPIC);
@@ -112,14 +117,15 @@ void DrawPage(HWND hwnd, HDC hdc)
 
 	SetViewportOrgEx(hdc, -xCurrentScroll, -yCurrentScroll, NULL);
 
-	Rectangle(hdc, 0, 0, page_pixel_width, page_pixel_height);
+	if (draw_border)
+		Rectangle(hdc, 0, 0, page_pixel_width, page_pixel_height);
 	HRGN hRgn = CreateRectRgn(0,0, page_pixel_width*zoom_factor, page_pixel_height*zoom_factor);
 	SelectClipRgn(hdc, hRgn);
 
 	if (PageCharVector.size() == 0)
 	return;
 
-	std::vector<Character> &char_page = PageCharVector[viewing_page];
+	std::vector<Character> &char_page = PageCharVector[page_num];
 
 	for (auto& i : char_page) {
 		GetObject(i.pFontChar->hBitmap, sizeof bm, &bm);
@@ -132,7 +138,7 @@ void DrawPage(HWND hwnd, HDC hdc)
 		DeleteDC(hdcBitmap);
 	}
 	
-	std::vector<Rule> &rule_page = PageRuleVector[viewing_page];
+	std::vector<Rule> &rule_page = PageRuleVector[page_num];
 	for (auto& i : rule_page) {
 		RECT rc;
 		rc.left = i.x;
@@ -223,6 +229,37 @@ BOOL CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						if (dtmp != 0.0)
 							resolution = dtmp;
 
+					}
+				// fall through
+
+				case IDCANCEL:
+					EndDialog(hwndDlg, wParam);
+					return TRUE;
+			}
+	}
+	return FALSE;
+}
+
+BOOL CALLBACK MyDialogProc3(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	static char buf[256];
+	switch(msg) {
+		case WM_INITDIALOG:
+			// initialize dialog controls
+		{
+			sprintf(buf, "%.2f", resolution);
+			SetDlgItemInt(hwndDlg, IDC_EDIT_PAGE, viewing_page+1, TRUE);
+		}
+			return TRUE;
+
+		case WM_COMMAND:
+			switch(LOWORD(wParam)) {
+				case IDOK:
+					{
+						BOOL translated = FALSE;
+						int temp = GetDlgItemInt(hwndDlg, IDC_EDIT_PAGE, &translated, TRUE);
+						if (translated)
+							dlg_new_viewing_page = temp;
 					}
 				// fall through
 
@@ -571,7 +608,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
 			FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW+2));
-			DrawPage(hwnd, hdc);
+			DrawPage(hwnd, hdc, viewing_page, true);
 			EndPaint(hwnd, &ps);
 		}
 		else {
@@ -583,6 +620,72 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				case ID_FILE_EXIT:
 					PostQuitMessage(0);
 					break;
+
+				case ID_FILE_PRINT:
+				{
+						DOCINFO di = {sizeof (DOCINFO), "DVIViewer Print"};
+						HDC hdcPrinter;
+						PRINTDLG pd = {0};
+						pd.lStructSize = sizeof(pd);
+						pd.hwndOwner = hwnd;
+						pd.Flags = PD_RETURNDC;
+						pd.nMinPage = 1;
+						pd.nMaxPage = PageCharVector.size();
+						
+						if (!PrintDlg(&pd)) break;;
+						hdcPrinter = pd.hDC;
+						int logPixelsX = GetDeviceCaps(hdcPrinter, LOGPIXELSX);
+
+						if (fabs((double)logPixelsX - resolution) > 1.0) {
+							resolution = (double)logPixelsX;
+							ReadDVIFile(cur_dvi_filename);
+							SCROLLINFO si = {0};
+							RECT rc;
+							GetClientRect(hwndDVIView, &rc);
+
+							yMaxScroll = max(page_size_height*resolution*zoom_factor+2*minimum_margin - rc.bottom, 0);
+							yCurrentScroll = min(yCurrentScroll, yMaxScroll);
+							xMaxScroll = max(page_size_width*resolution*zoom_factor+2*minimum_margin - rc.right, 0);
+							xCurrentScroll = min(xCurrentScroll, xMaxScroll);
+
+							si.cbSize = sizeof si;
+							si.fMask = SIF_RANGE|SIF_POS;
+							si.nMin = yMinScroll;
+							si.nMax = (page_size_height*resolution*zoom_factor+2*minimum_margin);
+							si.nPos = yCurrentScroll;
+							SetScrollInfo(hwndDVIView, SB_VERT, &si, TRUE);
+
+							si.cbSize = sizeof si;
+							si.fMask = SIF_RANGE|SIF_POS;
+							si.nMin = xMinScroll;
+							si.nMax = (page_size_width*resolution*zoom_factor+2*minimum_margin);
+							si.nPos = xCurrentScroll;
+							SetScrollInfo(hwndDVIView, SB_HORZ, &si, TRUE);
+
+							InvalidateRect(hwndDVIView, NULL, TRUE);
+
+						}
+						StartDoc(hdcPrinter, &di);
+						for (int i = pd.nFromPage; i <= pd.nToPage; i++) {
+							StartPage(hdcPrinter);
+							DrawPage(hwndDVIView, hdcPrinter, i-1, false);
+							EndPage(hdcPrinter);
+						}
+						EndDoc(hdcPrinter);
+						DeleteDC(hdcPrinter);
+				}
+					break;
+
+				case ID_FILE_GOTOPAGE:
+					if (DialogBox(ghInst, MAKEINTRESOURCE(IDD_GOTOPAGE),
+								hwnd, MyDialogProc3) == IDOK) {
+						if (dlg_new_viewing_page <= PageCharVector.size() &&  dlg_new_viewing_page >= 1) {
+							viewing_page = dlg_new_viewing_page - 1;
+							InvalidateRect(hwndDVIView, NULL, TRUE);
+						}
+					}
+					break;
+
 
 				case ID_FILE_SETPAGESIZE:
 					if (DialogBox(ghInst, MAKEINTRESOURCE(IDD_SETPAGESIZE),
