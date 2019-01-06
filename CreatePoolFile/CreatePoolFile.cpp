@@ -9,6 +9,121 @@ Please excuse the crudity of this program. I didn't have time to make it robust 
 #include <algorithm>
 #include <iterator>
 
+
+// local char set to ``ascii''
+char local_to_ascii[256];
+
+void init_charset()
+{
+	for (int i = 0; i <= 255; i++) {
+		local_to_ascii[i] = i;
+	}
+	local_to_ascii[' '] = 32;
+	local_to_ascii['!'] = 33;
+	local_to_ascii['\"'] = 34;
+	local_to_ascii['#'] = 35;
+	local_to_ascii['$'] = 36;
+	local_to_ascii['%'] = 37;
+	local_to_ascii['&'] = 38;
+	local_to_ascii['\''] = 39;
+	local_to_ascii['('] = 40;
+	local_to_ascii[')'] = 41;
+	local_to_ascii['*'] = 42;
+	local_to_ascii['+'] = 43;
+	local_to_ascii[','] = 44;
+	local_to_ascii['-'] = 45;
+	local_to_ascii['.'] = 46;
+	local_to_ascii['/'] = 47;
+	local_to_ascii['0'] = 48;
+	local_to_ascii['1'] = 49;
+	local_to_ascii['2'] = 50;
+	local_to_ascii['3'] = 51;
+	local_to_ascii['4'] = 52;
+	local_to_ascii['5'] = 53;
+	local_to_ascii['6'] = 54;
+	local_to_ascii['7'] = 55;
+	local_to_ascii['8'] = 56;
+	local_to_ascii['9'] = 57;
+	local_to_ascii[':'] = 58;
+	local_to_ascii[';'] = 59;
+	local_to_ascii['<'] = 60;
+	local_to_ascii['='] = 61;
+	local_to_ascii['>'] = 62;
+	local_to_ascii['?'] = 63;
+	local_to_ascii['@'] = 64;
+	local_to_ascii['A'] = 65;
+	local_to_ascii['B'] = 66;
+	local_to_ascii['C'] = 67;
+	local_to_ascii['D'] = 68;
+	local_to_ascii['E'] = 69;
+	local_to_ascii['F'] = 70;
+	local_to_ascii['G'] = 71;
+	local_to_ascii['H'] = 72;
+	local_to_ascii['I'] = 73;
+	local_to_ascii['J'] = 74;
+	local_to_ascii['K'] = 75;
+	local_to_ascii['L'] = 76;
+	local_to_ascii['M'] = 77;
+	local_to_ascii['N'] = 78;
+	local_to_ascii['O'] = 79;
+	local_to_ascii['P'] = 80;
+	local_to_ascii['Q'] = 81;
+	local_to_ascii['R'] = 82;
+	local_to_ascii['S'] = 83;
+	local_to_ascii['T'] = 84;
+	local_to_ascii['U'] = 85;
+	local_to_ascii['V'] = 86;
+	local_to_ascii['W'] = 87;
+	local_to_ascii['X'] = 88;
+	local_to_ascii['Y'] = 89;
+	local_to_ascii['Z'] = 90;
+	local_to_ascii['['] = 91;
+	local_to_ascii['\\'] = 92;
+	local_to_ascii[']'] = 93;
+	local_to_ascii['^'] = 94;
+	local_to_ascii['_'] = 95;
+	local_to_ascii['`'] = 96;
+	local_to_ascii['a'] = 97;
+	local_to_ascii['b'] = 98;
+	local_to_ascii['c'] = 99;
+	local_to_ascii['d'] = 100;
+	local_to_ascii['e'] = 101;
+	local_to_ascii['f'] = 102;
+	local_to_ascii['g'] = 103;
+	local_to_ascii['h'] = 104;
+	local_to_ascii['i'] = 105;
+	local_to_ascii['j'] = 106;
+	local_to_ascii['k'] = 107;
+	local_to_ascii['l'] = 108;
+	local_to_ascii['m'] = 109;
+	local_to_ascii['n'] = 110;
+	local_to_ascii['o'] = 111;
+	local_to_ascii['p'] = 112;
+	local_to_ascii['q'] = 113;
+	local_to_ascii['r'] = 114;
+	local_to_ascii['s'] = 115;
+	local_to_ascii['t'] = 116;
+	local_to_ascii['u'] = 117;
+	local_to_ascii['v'] = 118;
+	local_to_ascii['w'] = 119;
+	local_to_ascii['x'] = 120;
+	local_to_ascii['y'] = 121;
+	local_to_ascii['z'] = 122;
+	local_to_ascii['{'] = 123;
+	local_to_ascii['|'] = 124;
+	local_to_ascii['}'] = 125;
+	local_to_ascii['~'] = 126;
+}
+
+std::string to_ascii(std::string s)
+{
+	std::string asciistring;
+	for (size_t i = 0; i < s.size(); i++) {
+		asciistring.append(1, local_to_ascii[s[i]]);
+	}
+	return asciistring;
+}
+
 int main(int argc, char **argv)
 {
 	// first argument should be a string e.g. TEX_STRING
@@ -23,6 +138,9 @@ int main(int argc, char **argv)
 
 	int pool_check_sum = 271828;
 	int check_sum_prime = 536870839;
+
+	init_charset();
+
 
 	std::string replace_text(argv[1]);
 	replace_text += "(\"";
@@ -102,16 +220,17 @@ int main(int argc, char **argv)
 				size_t index_of_string;
 
 				if (replacement.size() != 1) {
-					auto it = std::find(pool_table.begin(), pool_table.end(), replacement);
+					std::string replacement_ascii = to_ascii(replacement);
+					auto it = std::find(pool_table.begin(), pool_table.end(), replacement_ascii);
 
 					if (it == pool_table.end())
 					{
-						pool_table.push_back(replacement);
-						pool_check_sum += pool_check_sum + replacement.size();
+						pool_table.push_back(replacement_ascii);
+						pool_check_sum += pool_check_sum + replacement_ascii.size();
 						while (pool_check_sum > check_sum_prime)
 							pool_check_sum -= check_sum_prime;
-						for (size_t i = 0; i < replacement.size(); i++) {
-							pool_check_sum += pool_check_sum + replacement[i];
+						for (size_t i = 0; i < replacement_ascii.size(); i++) {
+							pool_check_sum += pool_check_sum + replacement_ascii[i];
 							while (pool_check_sum > check_sum_prime)
 								pool_check_sum -= check_sum_prime;
 						}
@@ -122,7 +241,7 @@ int main(int argc, char **argv)
 					}
 				}
 				else {
-					index_of_string = replacement[0];// just use the character code in case of a one character string
+					index_of_string = local_to_ascii[replacement[0]];// just use the character code in case of a one character string
 				}
 				// Put the text in as a comment next to the number
 				// If the text contains */ we're in trouble, better check that
@@ -147,17 +266,17 @@ int main(int argc, char **argv)
 	auto it = pool_table.begin();
 	for (; it != pool_table.end(); ++it) {
 		int len = it->size();
-		char first_digit = '0'+len / 10;
-		char second_digit = '0'+len % 10;
+		char first_digit = local_to_ascii['0']+len / 10;
+		char second_digit = local_to_ascii['0']+len % 10;
 		pool_file << first_digit << second_digit << *it << '\n';
 		
 	}
 
 	// finish off with the checksum
-	pool_file << '*';
+	pool_file << local_to_ascii['*'];
 	char check_digits[10] = { 0 }; // 9 digits
 	for (int k = 0; k < 9; k++) {
-		check_digits[k] = '0' + pool_check_sum % 10;
+		check_digits[k] = local_to_ascii['0'] + pool_check_sum % 10;
 		pool_check_sum /= 10;
 	}
 	for (int k = 8; k >= 0; k--) {
