@@ -665,13 +665,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							InvalidateRect(hwndDVIView, NULL, TRUE);
 
 						}
-						StartDoc(hdcPrinter, &di);
-						for (int i = pd.nFromPage; i <= pd.nToPage; i++) {
-							StartPage(hdcPrinter);
-							DrawPage(hwndDVIView, hdcPrinter, i-1, false);
-							EndPage(hdcPrinter);
+						
+						if (pd.Flags & PD_PAGENUMS) {
+							StartDoc(hdcPrinter, &di);
+							for (int i = pd.nFromPage; i <= pd.nToPage; i++) {
+								StartPage(hdcPrinter);
+								DrawPage(hwndDVIView, hdcPrinter, i-1, false);
+								EndPage(hdcPrinter);
+							}
+							EndDoc(hdcPrinter);
 						}
-						EndDoc(hdcPrinter);
+						else if (pd.Flags & PD_SELECTION)
+						{
+							// what to do here?
+						}
+						else {
+							// print all pages
+							StartDoc(hdcPrinter, &di);
+							for (int i = 1; i <= PageCharVector.size(); i++) {
+								StartPage(hdcPrinter);
+								DrawPage(hwndDVIView, hdcPrinter, i-1, false);
+								EndPage(hdcPrinter);
+							}
+							EndDoc(hdcPrinter);
+						}
+						
 						DeleteDC(hdcPrinter);
 				}
 					break;

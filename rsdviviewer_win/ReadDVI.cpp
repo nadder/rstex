@@ -396,14 +396,11 @@ bool ReadGFFile(int q)
 				// initialize character array
 				g_min_m = min_m;
 				ci.init(min_n, max_n, min_m, max_m);
-				std::cout << "New char " << (int)character << " m: " << (int)min_m << " -> " << (int)max_m << " n: " << (int)min_n << " -> " << (int)max_n << std::endl;
+				//std::cout << "New char " << (int)character << " m: " << (int)min_m << " -> " << (int)max_m << " n: " << (int)min_n << " -> " << (int)max_n << std::endl;
 				
 				fc_cur.min_m = min_m;
 				fc_cur.max_n = max_n;
 				fc_cur.char_code = character;
-				//f.FontChar[current_char].min_m = min_m;
-				//f.FontChar[current_char].max_n = max_n;
-				//f.FontChar[current_char].char_code = character;
 				m = min_m;
 				n = max_n;
 				paint_switch = pw_white;
@@ -435,11 +432,8 @@ bool ReadGFFile(int q)
 					}
 
 					ci.init(min_n, max_n, min_m, max_m);
-					std::cout << "New char " << (int)character << " m: " << (int)min_m << " -> " << (int)max_m << " n: " << (int)min_n << " -> " << (int)max_n << std::endl;
+					//std::cout << "New char " << (int)character << " m: " << (int)min_m << " -> " << (int)max_m << " n: " << (int)min_n << " -> " << (int)max_n << std::endl;
 
-					//f.FontChar[current_char].min_m = min_m;
-					//f.FontChar[current_char].max_n = max_n;
-					//f.FontChar[current_char].char_code = character;
 					fc_cur.min_m = min_m;
 					fc_cur.max_n = max_n;
 					fc_cur.char_code = character;
@@ -456,12 +450,9 @@ bool ReadGFFile(int q)
 					std::stringstream ss;
 					ss << "Letter_" << std::setw(3) << std::setfill('0') << cur_char++ << ".bmp";
 					HBITMAP hBitmap = ci.WriteToBmp(ss.str());
-					//f.FontChar[current_char].hBitmap = hBitmap;
 					fc_cur.hBitmap = hBitmap;
 					f.Char.push_back(fc_cur);
 					//std::cout << "End of character " << (cur_char - 1) << std::endl;
-					//current_char++;
-					//f.num_chars++;
 				}
 				break;
 
@@ -561,9 +552,6 @@ bool ReadGFFile(int q)
 					int max_m = signed_quad(gf_file, &gf_cur_loc);
 					int min_n = signed_quad(gf_file, &gf_cur_loc);
 					int max_n = signed_quad(gf_file, &gf_cur_loc);
-					//f.hppp = hppp;
-					//f.vppp = vppp;
-					//f.design_size = ds;
 					f.hppp = hppp;
 					f.vppp = vppp;
 					tfm_design_size = (int)round(tfm_conv*ds);
@@ -582,9 +570,6 @@ bool ReadGFFile(int q)
 					int dy = signed_quad(gf_file, &gf_cur_loc);
 					int w = signed_quad(gf_file, &gf_cur_loc);
 					int p = signed_quad(gf_file, &gf_cur_loc);
-					//int index = index_from_charcode(&f, c);
-					//f.FontChar[index].chardx = dx;
-					//f.FontChar[index].rel_width = w;
 					pixel_width[width_ptr++] = dx;
 					for (size_t i = 0; i < f.Char.size(); i++) {
 						if (f.Char[i].char_code % 256 == c) {
@@ -602,9 +587,6 @@ bool ReadGFFile(int q)
 					int dx = dm*65536;
 					int w = signed_quad(gf_file, &gf_cur_loc);
 					int p = signed_quad(gf_file, &gf_cur_loc);
-					//int index = index_from_charcode(&f, c);
-					//f.FontChar[index].chardx = dx;
-					//f.FontChar[index].rel_width = w;
 					pixel_width[width_ptr++] = dx;
 					for (size_t i = 0; i < f.Char.size(); i++) {
 						if (f.Char[i].char_code % 256 == c) {
@@ -624,7 +606,6 @@ bool ReadGFFile(int q)
 						i = get_byte(gf_file, &gf_cur_loc);
 					}
 				}
-				//f.loaded = true;
 				done = true;
 				break;
 			case 250:
@@ -638,7 +619,6 @@ bool ReadGFFile(int q)
 			default:
 				// error
 				{
-					
 					int a = 10;
 					a++;
 					std::cout << "ERROR: Unhandled instruction\n";
@@ -784,21 +764,21 @@ void define_font(int e) //{|e| is an external font number}
 		return;
 	}
 	font_name[nf+1]=font_name[nf]+n+p;
-	//if (showing) 
-	//	print(": ");
+	if (showing) 
+		;//print(": ");
 	//{when |showing| is true, the font number has already been printed}
-	//else {
-	//	sprintf(temp_buf, "Font %d: ", e); 
-	//	print(temp_buf);
-	//}
+	else {
+		sprintf(temp_buf, "Font %d: ", e); 
+		//print(temp_buf);
+	}
 	if (n+p==0) 
 		;//print("null font name!");
 	else for (k=font_name[nf]; k<=font_name[nf+1]-1; k++) {
 		names[k]=get_byte(dvi_file, &dvi_cur_loc);
 	}
 	//print_font(nf);
-	//if (!showing) 
-	//	if (m!=1000) {sprintf(temp_buf, " scaled %d", m); print(temp_buf);}
+	if (!showing) 
+		if (m!=1000) {sprintf(temp_buf, " scaled %d", m); /*print(temp_buf);*/}
 	//@<Read the font parameters into position for font |nf|, and print the font name@>;
 	
 	if ((/*(out_mode==the_works) && in_postamble)|| ((out_mode<the_works)&& */!in_postamble))
@@ -833,8 +813,6 @@ void define_font(int e) //{|e| is an external font number}
 		cur_name[r+1] = 0;
 		strcpy(basename, cur_name.get_c_str());
 		strcat(cur_name.get_c_str(), font_name_ending);
-		//cur_name[r+1]='.'; cur_name[r+2]='t'; cur_name[r+3]='f'; cur_name[r+4]='m';
-		//cur_name[r+5] = 0;
 		//@<Move font name into the |cur_name| string@>;
 		if (!open_gf_file())
 		{
