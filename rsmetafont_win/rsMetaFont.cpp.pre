@@ -2013,7 +2013,7 @@ int take_fraction(int q, fraction f)
 	}
 	if (q < 0)
 	{
-		negate(q); negative = not negative;
+		negate(q); negative = !negative;
 	}
 	#pragma endregion
 	
@@ -2026,7 +2026,7 @@ int take_fraction(int q, fraction f)
 		}
 	}
 	f = f + fraction_one;
-	#pragma region <Compute $p=lfloor qf/2^{28}+{1over2}rfloor-q$>
+	#pragma region <Compute... 111>
 	p = fraction_half; //{that's $2^{27}$; the invariants hold now with $k=28$}
 	if (q < fraction_four)
 		do {
@@ -2078,7 +2078,7 @@ int take_scaled(int q, scaled f)
 		}
 	}
 	f = f + unity;
-	#pragma region <Compute $p=lfloor qf/2^{16}+{1over2}rfloor-q$>
+	#pragma region <Compute... 113>
 	p = half_unit; //{that's $2^{15}$; the invariants hold now with $k=16$}
 	if (q < fraction_four)
 		do {
@@ -2128,7 +2128,7 @@ scaled make_scaled(int p, int q)
 	}
 	else { 
 		n = (n - 1) * unity;
-		#pragma region <Compute $f=lfloor 2^{16}(1+p/q)+{1over2}rfloor$>
+		#pragma region <Compute... 115>
 		f = 1;
 		do {
 			be_careful = p - q; p = be_careful + p;
@@ -2366,7 +2366,7 @@ int pyth_sub(int a, int b)
 		else {
 			a = half(a); b = half(b); big = true;
 		}
-		#pragma region <Replace |a| by an approximation to $psqrt{a^2-b^2}$>
+		#pragma region <Replace |a| by an approximation to... 127>
 		while (true) {
 			r = make_fraction(b,a);
 			r = take_fraction(r,r); //{now $r\approx b^2/a^2$}
@@ -2407,7 +2407,7 @@ scaled m_log(scaled x)
 		} //{$2^{27}\ln2\approx 93032639.74436163$ and $2^{16}\times.74436163\approx 48782$}
 		y = y + (z / unity); k = 2;
 		while (x > fraction_four + 4)
-			#pragma region <Increase |k| until |x| can be multiplied by a factor of $2^{-k}$, and adjust $y$ accordingly>
+			#pragma region <Increase |k| until |x| can be multiplied by a factor of... 133>
 		{ 
 			z = ((x - 1) / two_to_the[k]) + 1; //{$z=\lceil x/2^k\rceil$}
 			while (x < fraction_four + z)
@@ -2445,7 +2445,7 @@ scaled m_exp(scaled x)
 			else z = 8 * (174436200 - x); //{|z| is always nonnegative}
 			y = el_gordo;
 		}
-		#pragma region <Multiply |y| by $exp(-z/2^{27})$>
+		#pragma region <Multiply |y| by...136>
 		k = 1;
 		while (z > 0)
 		{ 
@@ -4368,8 +4368,8 @@ void solve_choices(pointer p, pointer q, halfword n)
 			#pragma endregion
 		else switch(left_type(s)) {
 			case end_cycle: case _open_:
-				#pragma region <Set up equation to match mock curvatures at $z_k$; then |goto found| with $theta_n$ adjusted to equal $theta_0$, if a cycle has ended>
-				#pragma region <Calculate the values ${aa}=A_k/B_k$, ${bb}=D_k/C_k$, ${dd}=(3-alpha_{k-1})d_{k,k+1}$, ${ee}=(3-betak)d_{k-1,k}$, and ${cc}=(B_k-u_{k-1}A_k)/B_k$>
+				#pragma region <Set up equation to match mock curvatures ... 287>
+				#pragma region <Calculate the values ... 288>
 				if (myabs(right_tension(r)) == unity)
 				{ 
 					aa = fraction_half; dd = 2 * delta[k];
@@ -4389,7 +4389,7 @@ void solve_choices(pointer p, pointer q, halfword n)
 				cc = fraction_one - take_fraction(uu[k - 1],aa);
 				#pragma endregion
 
-				#pragma region <Calculate the ratio ${ff}=C_k/(C_k+B_k-u_{k-1}A_k)$>
+				#pragma region <Calculate the ratio... 289>
 				dd = take_fraction(dd,cc); lt = myabs(left_tension(s)); rt = myabs(right_tension(s));
 				if (lt != rt) //{$\beta_k^{-1}\ne\alpha_k^{-1}$}
 					if (lt < rt)
