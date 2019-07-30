@@ -34,7 +34,6 @@ BOOL OnMouseWheel(HWND hwnd, UINT nFlags, short zDelta, POINT pt);
 void OnHScroll(HWND hwnd, UINT nSBCode, UINT nPos);
 void OnVScroll(HWND hwnd, UINT nSBCode, UINT nPos);
 void OnSize(HWND hwnd, int cx, int cy);
-void ScrollToBottom(HWND hwnd);
 HWND g_hwndToolbar;
 HWND g_hwndStatusbar;
 HWND g_hwnd;
@@ -175,7 +174,6 @@ void HandleZoom(int z)
 		GetClientRect(hwndView, &rc);
 		OnSize(hwndView, rc.right, rc.bottom);
 		InvalidateRect(hwndView, NULL, TRUE);
-		ScrollToBottom(hwndView);
 	}
 }
 
@@ -397,7 +395,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 							RECT rc;
 							GetClientRect(hwndView, &rc);
 							OnSize(hwndView, rc.right, rc.bottom);
-							ScrollToBottom(hwndView);
 							InvalidateRect(hWnd, NULL, TRUE);
 						}
 					}
@@ -548,17 +545,6 @@ void OnSize(HWND hwnd, int cx, int cy)
 	si.nPos = xCurrentScroll;
 	SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
 }
-
-void ScrollToBottom(HWND hwnd)
-{
-	yCurrentScroll = yMaxScroll;
-	SCROLLINFO si = {0};
-	si.cbSize = sizeof si;
-	si.fMask = SIF_POS;
-	si.nPos = yCurrentScroll;
-	SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
-}
-
 
 // Message handler for about box.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
