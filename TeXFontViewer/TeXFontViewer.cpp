@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "TeXFontViewer.h"
-
+#include <vector>
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
@@ -25,10 +25,12 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 HWND CreateToolbar(HWND hWndParent);
 HWND CreateStatusBar(HWND hwndParent, int idStatus, HINSTANCE hinst);
 void read_pk_file(wchar_t const * filename);
+void ReadGFFile(wchar_t const *filename);
+void ReadPXLFile(wchar_t const *filename);
 bool wstr_ends_with(const wchar_t * str, const wchar_t * suffix);
 
-void set_image_raster_bit(bool set, int bit_offset, eight_bits *raster);
-bool get_image_raster_bit(int bit_offset, eight_bits *raster);
+void set_image_raster_bit(bool set, int bit_offset, std::vector<eight_bits>&raster);
+bool get_image_raster_bit(int bit_offset, std::vector<eight_bits>&raster);
 void MyCreateImageList();
 BOOL OnMouseWheel(HWND hwnd, UINT nFlags, short zDelta, POINT pt);
 void OnHScroll(HWND hwnd, UINT nSBCode, UINT nPos);
@@ -42,10 +44,11 @@ HWND hwndView;
 RECT usableClientRect;
 int cur_char = -1;
 extern char_raster_info char_info[256];
-extern eight_bits *image_raster[256];
+//extern eight_bits *image_raster[256];
+extern std::vector<std::vector<eight_bits>> image_raster;
 extern int num_chars;
 void render_raster(HDC hdc, int x, int y);
-void zoom_raster(int zoom_factor, int width, int height, eight_bits *raster, eight_bits **out_raster);
+void zoom_raster(int zoom_factor, int width, int height, std::vector<eight_bits>&raster, std::vector<eight_bits>&out_raster);
 void UpdateStatusBar();
 int zoom_factor = 4;
 bool show_chardx;
@@ -344,7 +347,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					ofn.hwndOwner = hWnd  ;
 					ofn.lpstrFile = the_filename ;
 					ofn.nMaxFile = sizeof the_filename  / sizeof *the_filename;
-					ofn.lpstrFilter = L"Fonts (gf,pk,mf)\0*.*gf;*.*pk;*.mf\0"
+					ofn.lpstrFilter = L"Fonts (gf,pk,mf,pxl)\0*.*gf;*.*pk;*.mf;*.*pxl\0"
 						              "All Files (*.*)\0*.*\0";
 					ofn.nFilterIndex =1;
 					ofn.lpstrFileTitle = NULL ;
@@ -356,8 +359,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					{
 						// if user selects mf file we try to run mf and gftopk and then open the pk file
 						bool mf_file = wstr_ends_with(the_filename, L".mf") || wstr_ends_with(the_filename, L".MF");
-						bool gf_file = wstr_ends_with(the_filename, L"gf") || wstr_ends_with(the_filename, L"GF");
-						if (mf_file || gf_file) {
+						if (mf_file) {
 							wchar_t cmd[512];
 							if (mf_file) {
 								
@@ -367,14 +369,57 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 								the_filename[wcslen(the_filename)-2] = 0;
 								wcscat(the_filename, L"600gf");
 							}
-							wchar_t out_name[512];
-							wcscpy(out_name, the_filename);
-							out_name[wcslen(out_name)-2] = 0;
-							wcscat(out_name, L"pk");
-							_swprintf(cmd, L"gftopk %s %s", the_filename, out_name);
-							_wsystem(cmd);
-							wcscpy(the_filename, out_name);
+							//wchar_t out_name[512];
+							//wcscpy(out_name, the_filename);
+							//out_name[wcslen(out_name)-2] = 0;
+							//wcscat(out_name, L"pk");
+							//_swprintf(cmd, L"gftopk %s %s", the_filename, out_name);
+							//_wsystem(cmd);
+							//wcscpy(the_filename, out_name);
 							
+						}
+
+						
+						
+
+						if (wstr_ends_with(the_filename, L"pxl") || wstr_ends_with(the_filename, L"PXL")) {
+							cur_char = -1;
+							try {
+								ReadPXLFile(the_filename);
+							}
+							catch(...) {
+								break;
+							}
+							wchar_t buf[512];
+							_swprintf(buf, L"%s - %s", szTitle, the_filename);
+							SetWindowText(hWnd, buf);
+							if (num_chars > 0)
+								cur_char = 0;
+							UpdateStatusBar();
+							RECT rc;
+							GetClientRect(hwndView, &rc);
+							OnSize(hwndView, rc.right, rc.bottom);
+							InvalidateRect(hWnd, NULL, TRUE);
+						}
+
+						if (wstr_ends_with(the_filename, L"gf") || wstr_ends_with(the_filename, L"GF")) {
+							cur_char = -1;
+							try {
+								ReadGFFile(the_filename);
+							}
+							catch(...) {
+								break;
+							}
+							wchar_t buf[512];
+							_swprintf(buf, L"%s - %s", szTitle, the_filename);
+							SetWindowText(hWnd, buf);
+							if (num_chars > 0)
+								cur_char = 0;
+							UpdateStatusBar();
+							RECT rc;
+							GetClientRect(hwndView, &rc);
+							OnSize(hwndView, rc.right, rc.bottom);
+							InvalidateRect(hWnd, NULL, TRUE);
 						}
 
 						if (wstr_ends_with(the_filename, L"pk") || wstr_ends_with(the_filename, L"PK"))
@@ -590,8 +635,10 @@ HWND CreateStatusBar(HWND hwndParent, int idStatus, HINSTANCE hinst)
 
 		GetClientRect(hwndParent, &rcClient);
 		hloc = LocalAlloc(LHND, sizeof(int) * cParts);
+		if (!hloc)
+			return NULL;
 		paParts = (PINT)LocalLock(hloc);
-
+		if (!paParts) return NULL;
 		paParts[0] = 100;
 		paParts[1] = 260;
 		paParts[2] = 550;
@@ -624,7 +671,7 @@ void UpdateStatusBar()
 		_swprintf(buffer, L"designsize pt: %.2f", char_info[cur_char].design_size);
 		SendMessage(g_hwndStatusbar, SB_SETTEXT, 4 | (SBT_NOBORDERS << 8), (LPARAM)buffer);
 
-		_swprintf(buffer, L"xoff:%d, yoff:%d", char_info[cur_char].x_off, char_info[cur_char].y_off);
+		_swprintf(buffer, L"xoff:%d, yoff:%d, w:%d, h:%d", char_info[cur_char].x_off, char_info[cur_char].y_off, char_info[cur_char].width, char_info[cur_char].height);
 		SendMessage(g_hwndStatusbar, SB_SETTEXT, 5 | (SBT_NOBORDERS << 8), (LPARAM)buffer);
 
 
@@ -740,24 +787,26 @@ void render_raster(HDC hdc, int x, int y)
 	int height = char_info[cur_char].height;
 	if (width == 0 && height == 0)
 		return; // empty raster
-	unsigned char *praster = image_raster[cur_char];
+	//unsigned char *praster = image_raster[cur_char];
 	int x_off = char_info[cur_char].x_off;
 	int y_off = char_info[cur_char].y_off;
 
 	// zoom bitmap
 	
-	eight_bits *zoomed_buf;
-	zoom_raster(zoom_factor, width, height, praster, &zoomed_buf);
+	std::vector<eight_bits> zoomed_buf;
+	//eight_bits *zoomed_buf;
+	zoom_raster(zoom_factor, width, height, image_raster[cur_char], zoomed_buf);
 	width *= zoom_factor;
 	height *= zoom_factor;
 
 	// monochrome bitmap needs to have each scan line word aligned
 	const int nfill = (16 - width % 16)%16;
-	unsigned char *bitmap_buf = zoomed_buf;
-	
+	unsigned char *bitmap_buf = zoomed_buf.data();
+	std::vector<eight_bits> new_buf;
 	if (nfill > 0) {
 		const int new_size = 2*((width+15)/16)*height;
-		char unsigned * const new_buf = (unsigned char *)malloc(new_size);
+		//char unsigned * const new_buf = (unsigned char *)malloc(new_size);
+		new_buf.resize(new_size);
 		for (int yy = 0; yy < height; yy++) {
 			for (int xx = 0; xx < width; xx++) {
 				bool bitval = get_image_raster_bit(xx + yy*width, zoomed_buf);
@@ -767,8 +816,8 @@ void render_raster(HDC hdc, int x, int y)
 				set_image_raster_bit(0, (width+nfill)*yy + width + pp, new_buf);
 			}
 		}
-		free(zoomed_buf);
-		bitmap_buf = new_buf;
+		//free(zoomed_buf);
+		bitmap_buf = new_buf.data();
 	}
 	
 
@@ -801,13 +850,13 @@ void render_raster(HDC hdc, int x, int y)
 	SelectObject(hdcMem, hOld);
 	DeleteObject(hBm);
 	DeleteObject(hdcMem);
-	free(bitmap_buf);
+	//free(bitmap_buf);
 
 
 	// draw marker tfm_width to the right of origin
-	int ppx = round(origin_x + char_info[cur_char].tfm_width*zoom_factor);
+	int ppx = (int)round(origin_x + char_info[cur_char].tfm_width*zoom_factor);
 	int ppy = origin_y;
-	int ppx_esc = round(origin_x + char_info[cur_char].horz_esc*zoom_factor);
+	int ppx_esc = (int)round(origin_x + char_info[cur_char].horz_esc*zoom_factor);
 	bool width_diff = char_info[cur_char].tfm_width - char_info[cur_char].horz_esc > 0.5 || char_info[cur_char].tfm_width - char_info[cur_char].horz_esc < -0.5;
 
 	// grid
@@ -828,7 +877,7 @@ void render_raster(HDC hdc, int x, int y)
 		LineTo(hdc, ppx_esc, up_left_y);
 		LineTo(hdc, ppx_esc, up_left_y + char_info[cur_char].height*zoom_factor);
 		LineTo(hdc, origin_x, up_left_y + char_info[cur_char].height*zoom_factor);
-		LineTo(hdc, origin_x, up_left_y);
+		LineTo(hdc, origin_x, up_left_y-1);
 		SelectPen(hdc, hPenOld);
 		DeletePen(hPen);
 	}
@@ -843,7 +892,7 @@ void render_raster(HDC hdc, int x, int y)
 		LineTo(hdc, ppx, up_left_y);
 		LineTo(hdc, ppx, up_left_y + char_info[cur_char].height*zoom_factor);
 		LineTo(hdc, origin_x, up_left_y + char_info[cur_char].height*zoom_factor);
-		LineTo(hdc, origin_x, up_left_y);
+		LineTo(hdc, origin_x, up_left_y-1);
 		SelectPen(hdc, hPenOld);
 		DeletePen(hPen);
 	}
@@ -883,7 +932,7 @@ void OnVScroll(HWND hwnd, UINT nSBCode, UINT nPos)
 		RECT rc;
 		SCROLLINFO si = {0};
 		int iVertPos;
-		int yNewPos;
+		int yNewPos = 0;
 		int yDelta;
 		int xDelta = 0;
 		GetClientRect(hwnd, &rc);

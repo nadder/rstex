@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "TeXFontViewer.h"
-
+#include <vector>
 extern HWND g_hwnd;
+
+#define incr(s) (s)++
 
 void myabort(wchar_t const*msg) 
 {
@@ -36,10 +38,23 @@ struct Array
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 //////////////////////////////////// pk file ////////////////////////////////////////
 
 
-eight_bits *image_raster[256];
+std::vector<std::vector<eight_bits>> image_raster(256);
+//eight_bits *image_raster[256];
 char_raster_info char_info[256];
 int num_chars;
 
@@ -204,7 +219,7 @@ int pk_packed_num()
 }
 
 
-void set_image_raster_bit(bool set, int bit_offset, eight_bits *raster)
+void set_image_raster_bit(bool set, int bit_offset, std::vector<eight_bits>& raster)
 {
 	int byte_index = bit_offset / 8;
 	int bit_index = 7 - bit_offset % 8; // bit_offset 0 is the most significant bit in the byte
@@ -214,7 +229,7 @@ void set_image_raster_bit(bool set, int bit_offset, eight_bits *raster)
 		raster[byte_index] &= ~(1 << bit_index);
 }
 
-bool get_image_raster_bit(int bit_offset, eight_bits *raster)
+bool get_image_raster_bit(int bit_offset, std::vector<eight_bits>& raster)
 {
 	int byte_index = bit_offset / 8;
 	int bit_index = 7 - bit_offset % 8; // bit_offset 0 is the most significant bit in the byte
@@ -222,7 +237,7 @@ bool get_image_raster_bit(int bit_offset, eight_bits *raster)
 }
 
 
-void copy_row(int width, int height, int row_to_copy, int n_rows_to_copy, eight_bits *raster)
+void copy_row(int width, int height, int row_to_copy, int n_rows_to_copy, std::vector<eight_bits>&raster)
 {
 	int src_offset;
 	int dst_offset;
@@ -237,19 +252,19 @@ void copy_row(int width, int height, int row_to_copy, int n_rows_to_copy, eight_
 	}
 }
 
-void zoom_raster(int zoom_factor, int width, int height, eight_bits *raster, eight_bits **out_raster)
+void zoom_raster(int zoom_factor, int width, int height, std::vector<eight_bits>& raster, std::vector<eight_bits>& out_raster)
 {
 	int new_size = (zoom_factor*width*zoom_factor*height+7)/8;
-	*out_raster = (eight_bits*)malloc(new_size);
+	out_raster.resize(new_size);
 	int src_offset = 0;
 	int dest_offset = 0;
 	for (int yy = 0; yy < height; yy++) {
 		for (int xx = 0; xx < width; xx++) {
 			int src_bit = get_image_raster_bit(src_offset++, raster);
 			for (int i = 0; i < zoom_factor; i++)
-				set_image_raster_bit(src_bit, dest_offset++,*out_raster);
+				set_image_raster_bit(src_bit, dest_offset++,out_raster);
 		}
-		copy_row(width*zoom_factor, height*zoom_factor, yy*zoom_factor, zoom_factor-1, *out_raster);
+		copy_row(width*zoom_factor, height*zoom_factor, yy*zoom_factor, zoom_factor-1, out_raster);
 		dest_offset += (zoom_factor-1)*zoom_factor*width;
 
 	}
@@ -344,12 +359,13 @@ void read_pk_file(wchar_t const * filename)
 		// store raster information in one long array of bytes, the byte has the value one for a black pixel
 		// and 0 for a white pixel
 
-		if (image_raster[raster_char_index]) {
-			free(image_raster[raster_char_index]);
-		}
+		//if (image_raster[raster_char_index]) {
+		//	free(image_raster[raster_char_index]);
+		//}
 		int storage_needed = ((height*width) + 7)/8; // in bytes aligned to word
 
-		image_raster[raster_char_index] = (eight_bits*)malloc(storage_needed);
+		//image_raster[raster_char_index] = (eight_bits*)malloc(storage_needed);
+		image_raster[raster_char_index].resize(storage_needed);
 		char_info[raster_char_index].code = car;
 		char_info[raster_char_index].width = width;
 		char_info[raster_char_index].height = height;
@@ -360,7 +376,7 @@ void read_pk_file(wchar_t const * filename)
 		char_info[raster_char_index].design_size = design_size/(1024.0*1024.0);
 		char_info[raster_char_index].hppp = hppp/(256.0*256.0);
 
-		eight_bits *cur_image_raster = image_raster[raster_char_index];
+		std::vector<eight_bits>& cur_image_raster = image_raster[raster_char_index];
 		raster_char_index++;
 		num_chars++;
 		int raster_offset = 0;
@@ -473,4 +489,485 @@ void read_pk_file(wchar_t const * filename)
 }
 
 
+
+
 ///////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////// gf file ////////////////////////////////////////
+
+#define three_cases(s) s: case s+1: case s+2
+#define four_cases(s) s: case s+1: case s+2: case s+3
+#define eight_cases(s) four_cases(s): case four_cases(s+4)
+#define sixteen_cases(s) eight_cases(s): case eight_cases(s+8)
+#define thirty_two_cases(s) sixteen_cases(s): case sixteen_cases(s+16)
+#define thirty_seven_cases(s) thirty_two_cases(s): case four_cases(s+32): case s+36
+#define sixty_four_cases(s) thirty_two_cases(s): case thirty_two_cases(s+32)
+
+
+const int paint_0=0; // beginning of the \\{paint} commands}
+const int paint1=64; // move right a given number of columns, then black${}\swap{}$white}
+const int boc=67; // beginning of a character}
+const int boc1=68; // abbreviated |boc|}
+const int eoc=69; // end of a character}
+const int skip0=70; // skip no blank rows}
+const int skip1=71; // skip over blank rows}
+const int new_row_0=74; // move down one row and then right}
+const int max_new_row=238; // move down one row and then right}
+const int xxx1=239; // for \&{special} strings}
+const int yyy=243; // for \&{numspecial} numbers}
+const int no_op=244; // no operation}
+const int char_loc=245; // character locators in the postamble}
+const int char_loc0=246; // character locators in the postamble}
+const int pre=247; // preamble}
+const int post=248; // postamble beginning}
+const int post_post=249; // postamble ending}
+#define undefined_commands 250:251:252:253:254:255
+const int gf_id_byte = 131;
+
+
+enum paint_color
+{
+	pw_white,
+	pw_black
+};
+
+
+FILE *gf_file;
+int gf_loc;
+int gf_len;
+
+void find_gf_length()
+{
+	fseek(gf_file, 0L, SEEK_END);
+	gf_len = ftell(gf_file);
+}
+
+void move_to_byte(int n)
+{
+	fseek(gf_file, n, SEEK_SET);
+	gf_loc=n;
+}
+
+
+int gf_byte() //{returns the next byte, unsigned}
+{
+	eight_bits b = 0;
+	if (myfeof(gf_file)) myabort(L"Unexpected end of file!");
+	else b = fgetc(gf_file);
+	gf_loc++;
+	return b;
+}
+	
+
+
+int gf_signed_quad() //{returns the next four bytes, signed}
+{
+	eight_bits a,b,c,d;
+	int ret;
+	a = fgetc(gf_file); b = fgetc(gf_file); c = fgetc(gf_file); d = fgetc(gf_file);
+	if (a<128) ret =  ((a*256+b)*256+c)*256+d;
+	else ret = (((a-256)*256+b)*256+c)*256+d;
+	gf_loc += 4;
+	return ret;
+}
+
+unsigned int read_big_endian_32bit(FILE *fp)
+{
+	unsigned char c[4];
+	for (int i = 0; i < 4; i++) {
+		int cc = fgetc(fp);
+		if (cc == EOF) {
+			return 0;
+		}
+		c[i] = (unsigned char) cc;
+	}
+	return c[3] + c[2]*256u + c[1]*256u*256u + c[0]*256u*256u*256u;
+}
+
+
+void ReadPXLFile(wchar_t const *filename)
+{
+	int raster_char_index = 0;
+	num_chars = 0;
+
+	FILE *pxl_file = _wfopen(filename, L"rb");
+	if (!pxl_file) {wchar_t buf[256]; _swprintf(buf, L"Error opening %s", filename); myabort(buf);}
+	log_file = _wfopen(L"TeXFontViewer.log", L"a");
+	fwprintf(log_file, L"Opening file %s\n", filename);
+
+	unsigned design_size, checksum;
+	unsigned magnification;
+	unsigned dir_pointer;
+	unsigned int sig1, sig2;
+	sig1 = read_big_endian_32bit(pxl_file);
+	if (sig1 != 1001) {
+		wchar_t buf[256]; _swprintf(buf, L"Not pxl file, sig1 not 1001"); myabort(buf);
+	}
+
+	fseek(pxl_file, -20, SEEK_END);
+
+	checksum = read_big_endian_32bit(pxl_file);
+	magnification = read_big_endian_32bit(pxl_file);
+	design_size = read_big_endian_32bit(pxl_file);
+	dir_pointer = read_big_endian_32bit(pxl_file);
+
+	sig2 = read_big_endian_32bit(pxl_file);
+	if (sig2 != 1001) {
+		wchar_t buf[256]; _swprintf(buf, L"Not pxl file, sig2 not 1001"); myabort(buf);
+	}
+
+	long file_size = ftell(pxl_file);
+	file_size /= 4;
+	if (dir_pointer != file_size - 512 - 5) {
+		wchar_t buf[256]; _swprintf(buf, L"The directory pointer should be %ld, not %u", file_size - 512 - 5, dir_pointer); myabort(buf);
+	}
+
+	// move to start of directory
+	fseek(pxl_file, dir_pointer*4, SEEK_SET);
+
+	unsigned int cc_info[4];
+	for (int cc = 0; cc < 128; cc++) {
+		for (int i = 0; i < 4; i++) {
+			cc_info[i] = read_big_endian_32bit(pxl_file);
+		}
+		if (cc_info[0] != 0 || cc_info[1] != 0 || cc_info[2] != 0 || cc_info[3] != 0) {
+			unsigned w = cc_info[0] >> 16;
+			unsigned h = cc_info[0] & 0xFFFFu;
+			short int xoff = (short int)(cc_info[1] >> 16);
+			short int yoff = (short int)(cc_info[1] & 0xFFFFu);
+			unsigned rasterpointer = cc_info[2];
+			double tfm_width_points = cc_info[3] / (double)design_size;
+			//fprintf(fpout, "Char (%d): w=%u, h=%u, xoff=%u, yoff=%u, raster_pointer=%u, tfmWidth=%u\n", cc, w, h, xoff, yoff, rasterpointer, cc_info[3]);
+			//fprintf(fpout, "\n\n\n");
+
+			// print the raster
+
+
+			// create bitmap raster
+			//if (image_raster[raster_char_index]) {
+			//	free(image_raster[raster_char_index]);
+			//}
+			int storage_needed = ((h*w) + 7)/8; // in bytes aligned to word
+
+			//image_raster[raster_char_index] = (eight_bits*)malloc(storage_needed);
+			image_raster[raster_char_index].resize(storage_needed);
+			char_info[raster_char_index].code = cc;
+			char_info[raster_char_index].width = w;
+			char_info[raster_char_index].height = h;
+			char_info[raster_char_index].horz_esc = 0; // what else could we put here?
+			char_info[raster_char_index].x_off = xoff;
+			char_info[raster_char_index].y_off = yoff;
+			char_info[raster_char_index].tfm_width = cc_info[3]/(1024.0*1024.0) * (design_size/(1024.0*1024.0)) * 200.0/72.27*magnification/1000.0;
+			char_info[raster_char_index].design_size = design_size/(1024.0*1024.0);
+			char_info[raster_char_index].hppp = 200.0/72.27*magnification/1000.0;
+
+
+			long cur_pos = ftell(pxl_file);
+			fseek(pxl_file, rasterpointer*4, SEEK_SET);
+			int words_per_row = (w+31)/32;
+			int num_raster_words = words_per_row * h;
+			for (int row = 0; row < h; row++) {
+				for (int row_word = 0; row_word < words_per_row; row_word++) {
+					unsigned int cur_word = read_big_endian_32bit(pxl_file);
+
+					for (unsigned bit = 31; bit < 32; bit--) {
+						int cur_bit = (cur_word >> bit) & 1u;
+						int col = row_word*32+31-bit;
+						if (col >= w)
+							break;
+						set_image_raster_bit(cur_bit, row*w+col, image_raster[raster_char_index]);
+						//if (cur_bit) fprintf(fpout, "*"); 
+						//else fprintf(fpout, ".");
+					}
+				}
+				//fprintf(fpout, "\n");
+			}
+
+			raster_char_index++;
+			num_chars++;
+
+
+			//fprintf(fpout, "\n\n\n");
+			fseek(pxl_file, cur_pos, SEEK_SET); // move back where we were before printing the raster
+		}
+	}
+
+
+
+
+
+
+
+}
+
+
+
+
+void ReadGFFile(wchar_t const *filename)
+{
+	int raster_char_index = 0;
+	int k;
+	int post_loc;
+	int q;
+	int design_size;
+	int check_sum;
+	int hppp;
+	int vppp;
+	int cur_char_tfm_width;
+	int cur_char_dx;
+	int cur_char_dy;
+	int m = 0, n = 0; // cur col, row - 0 - based
+	Array<int, 0, 8> power;
+	const int virgin = 0;
+	const int located = 1;
+	const int sent = 2;
+	eight_bits gf_com;
+	int gf_ch;
+	int max_n, min_n, max_m, min_m;
+	int g_max_n, g_min_n, g_max_m, g_min_m;
+	int cur_color = 0; // 0 = white
+	int n_cols, n_rows;
+	int max_m_seen = 0; // 0 .. 
+	int min_n_seen = 0; // 0 ..
+	int p;
+	int save_pos;
+	int save_com;
+
+	num_chars = 0;
+
+
+	for (i = 0; i < 256; i++) status[i] = virgin;
+
+	power[0] = 1;
+	for (i = 1; i <= 8; i++) power[i] = power[i-1] + power[i-1];
+
+	gf_file = _wfopen(filename, L"rb");
+	if (!gf_file) {wchar_t buf[256]; _swprintf(buf, L"Error opening %s", filename); myabort(buf);}
+	log_file = _wfopen(L"TeXFontViewer.log", L"a");
+	fwprintf(log_file, L"Opening file %s\n", filename);
+
+	if (gf_byte() != pre) myabort(L"First byte is not preamble");
+	if (gf_byte() != gf_id_byte) myabort(L"Identification byte is incorrect");
+
+	find_gf_length(); post_loc = gf_len - 4;
+	do {
+		if (post_loc == 0) myabort(L"all 223's");
+		move_to_byte(post_loc); k = gf_byte(); post_loc--;
+	} while (k == 223);
+
+	if (k != gf_id_byte) {wchar_t buf[256]; _swprintf(buf, L"ID byte is %d", k); myabort(buf);}
+
+	move_to_byte(post_loc - 3); q = gf_signed_quad();
+
+	if (q < 0 || q > post_loc - 3) {wchar_t buf[256]; _swprintf(buf, L"post pointer is %d", q); myabort(buf);}
+	move_to_byte(q); k = gf_byte();
+	if (k != post) {wchar_t buf[256]; _swprintf(buf, L"byte at %d is not post", q); myabort(buf);}
+	i = gf_signed_quad(); // skip over junk
+
+	design_size = gf_signed_quad(); check_sum = gf_signed_quad();
+	hppp = gf_signed_quad();
+	vppp = gf_signed_quad();
+	g_min_m = gf_signed_quad(); g_max_m = gf_signed_quad(); 
+	g_min_n = gf_signed_quad(); g_max_n = gf_signed_quad();
+	// allocate space large enough to hold raster of any character
+	// array indexed by [row][col], one byte per pixel
+	n_rows = g_max_n - g_min_n + 1;
+	n_cols = g_max_m - g_min_m + 1;
+
+	std::vector<std::vector<int>> raster_buffer(n_rows);
+	for (int o = 0; o < n_rows; o++) raster_buffer[o].resize(n_cols);
+	//unsigned char **raster_buffer = (unsigned char **)malloc(n_rows);
+	//for (int o = 0; o < n_rows; o++) raster_buffer[o] = (unsigned char *)malloc(n_cols);
+
+	do { 
+		gf_com = gf_byte();
+		switch (gf_com) {
+			case char_loc: case char_loc0:
+				gf_ch = gf_byte();
+				if (gf_com == char_loc) {
+					cur_char_dx = gf_signed_quad(); cur_char_dy = gf_signed_quad();
+				}
+				else {
+					cur_char_dx = gf_byte() * 65536; cur_char_dy = 0;
+				}
+				cur_char_tfm_width = gf_signed_quad(); p = gf_signed_quad();
+
+
+				// test with dingbat.600gf
+				save_pos = ftell(gf_file);
+				save_com = gf_com;
+				move_to_byte(p);
+				// go find linked list of characters
+				do {
+					gf_com = gf_byte();
+					switch (gf_com) {
+
+						case sixty_four_cases(paint_0):
+							assert(n > -1);
+							assert(m < max_m - min_m + 1);
+							for (int cc = 0; cc < gf_com; cc++) {
+								raster_buffer[n][m++] = cur_color;
+							}
+							if (cur_color == 1 && m - 1 > max_m_seen) max_m_seen = m - 1;
+							if (cur_color == 1 && n < min_n_seen) min_n_seen = n;
+							cur_color = !cur_color;
+							break;
+
+						case three_cases(paint1): {
+								assert(n > -1);
+								assert(m < max_m - min_m + 1);
+
+								i = 0;
+								for (j=0; j <= gf_com - paint1; j++) {
+									k = gf_byte(); i = i*256 + k;
+								}
+								for (int cc = 0; cc < i; cc++)
+									raster_buffer[n][m++] = cur_color;
+								if (cur_color == 1 && m - 1 > max_m_seen) max_m_seen = m - 1;
+								if (cur_color == 1 && n < min_n_seen) min_n_seen = n;
+								cur_color = !cur_color;
+
+							}
+							break;
+
+						case four_cases(xxx1): {
+							i = 0;
+							for (j=0; j <= gf_com - xxx1; j++) {
+								k = gf_byte(); i = i*256 + k;
+							}
+							for (j=1; j <= i; j++) gf_byte();
+							}
+							break;
+
+
+						case four_cases(skip0):
+							i = 0;
+							for (j=0; j <= gf_com - skip1; j++) {
+								k = gf_byte(); i = i*256 + k;
+							}
+							n -= i+1;
+							m = 0;
+							cur_color = 0;
+							break;
+
+						case sixty_four_cases(new_row_0):
+						case sixty_four_cases(new_row_0+64):
+						case thirty_seven_cases(new_row_0+128):
+							i = gf_com - new_row_0;
+							n--;
+							m = gf_com - new_row_0;
+							cur_color = 1; // black
+							break;
+
+						case yyy:
+							gf_signed_quad();
+							break;
+
+						case no_op:
+							break;
+
+						case boc:
+						case boc1: {
+							if (gf_com == boc) {
+								char_info[raster_char_index].code = gf_signed_quad();
+								p = gf_signed_quad();
+								min_m = gf_signed_quad(); max_m = gf_signed_quad(); min_n = gf_signed_quad(); max_n = gf_signed_quad();
+							}
+							else {
+								char_info[raster_char_index].code = gf_byte();
+								p = -1;
+								int del_m = gf_byte();
+								max_m = gf_byte();
+								int del_n = gf_byte();
+								max_n = gf_byte();
+								min_m = max_m - del_m;
+								min_n = max_n - del_n;
+							}
+							m = 0; // first col, we use 0 for this
+							n = max_n - min_n; // top row, bottom row is n = 0
+							cur_color = 0; // white
+							min_n_seen = n;
+							max_m_seen = m;
+							// set all pixels to white
+							for (int rr = min_n; rr <= max_n; rr++) {
+								for (int cc = min_m; cc <= max_m; cc++) {
+									raster_buffer[rr - min_n][cc - min_m] = 0;
+								}
+							}
+							break;
+						}
+
+						case eoc: {
+							int w = max_m_seen + 1;
+							int h = max_n - min_n - min_n_seen + 1;
+
+
+							int storage_needed = ((h*w) + 7)/8; // in bytes aligned to word
+
+							image_raster[raster_char_index].resize(storage_needed);
+							char_info[raster_char_index].width = w;
+							char_info[raster_char_index].height = h;
+							char_info[raster_char_index].horz_esc = cur_char_dx/(256.0*256.0);
+							char_info[raster_char_index].x_off = -min_m;
+							char_info[raster_char_index].y_off = max_n;
+							char_info[raster_char_index].tfm_width = cur_char_tfm_width/(1024.0*1024.0)*design_size/(1024.0*1024.0)*hppp/(256.0*256.0);
+							char_info[raster_char_index].design_size = design_size/(1024.0*1024.0);
+							char_info[raster_char_index].hppp = hppp/(256.0*256.0);
+
+							for (int rr = 0; rr < h; rr++) {
+								for (int cc = 0; cc < w; cc++) {
+									set_image_raster_bit(raster_buffer[h-rr-1][cc], rr*w+cc, image_raster[raster_char_index]);
+								}
+							}
+							raster_char_index++;
+							num_chars++;
+
+							if (p == -1)
+								goto done_char;
+							else move_to_byte(p);
+							break;
+						}
+					}
+				} while (true);
+				done_char:
+				fseek(gf_file, save_pos, SEEK_SET); // go back to postamble
+				gf_com = save_com;
+				break;
+
+			case four_cases(xxx1): {
+				i = 0;
+				for (j=0; j <= gf_com - xxx1; j++) {
+					k = gf_byte(); i = i*256 + k;
+				}
+				for (j=1; j <= i; j++) gf_byte();
+			}
+				break;
+
+			case yyy:
+				gf_signed_quad();
+				break;
+
+			case no_op:
+				break;
+
+
+			case post_post:
+				;
+				break;
+
+			default:
+				{
+					wchar_t buf[256]; _swprintf(buf, L"Unexpected %d in postamble", gf_com); myabort(buf);
+				}
+
+				break;
+
+		}
+	} while (gf_com != post_post);
+}
+
+
+
