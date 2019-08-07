@@ -21,7 +21,7 @@ void DrawingArea::sizeDrawingArea()
 
     int x_off = char_info[cur_char].x_off;
     int y_off = char_info[cur_char].y_off;
-    qDebug() << "x_off:" << x_off;
+
     int up_left_x = 0;
     int up_left_y = 0;
     int origin_x = up_left_x + x_off*zoom_factor;
@@ -35,12 +35,12 @@ void DrawingArea::sizeDrawingArea()
     xStart = yStart = 0;
     if (min_x < 0) {
         xStart = -min_x;
-        qDebug() << "xStart:" << xStart;
+
 
     }
     if (min_y < 0) {
         yStart = -min_y;
-        qDebug() << "yStart:" << yStart;
+
     }
 
     int drawingAreaWidth = max_x - min_x;

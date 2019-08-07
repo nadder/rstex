@@ -150,8 +150,9 @@ void MainWindow::on_actionOpen_triggered()
 
                 sprintf(cmd, "mf \"\\mode=localfont; input %s\"", qPrintable(the_filename));
                 system(cmd);
-                the_filename = the_filename.left(the_filename.length()-2);
-                the_filename.append("600gf");
+                QFileInfo fileinfo(the_filename);
+                the_filename = fileinfo.baseName();
+                the_filename.append(".600gf");
             }
         }
         if (the_filename.endsWith("pxl", Qt::CaseInsensitive)) {
