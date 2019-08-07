@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>888</width>
+    <height>536</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>TeXFontViewerQt</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>888</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>35</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionchardx"/>
+   <addaction name="actioncharwd"/>
+   <addaction name="actionref"/>
+   <addaction name="actiongrid"/>
+   <addaction name="actionright"/>
+   <addaction name="actionup"/>
+   <addaction name="actiondown"/>
+   <addaction name="actionleft"/>
+   <addaction name="actionzoomin"/>
+   <addaction name="actionzoomout"/>
+   <addaction name="actionnext"/>
+   <addaction name="actionprev"/>
+  </widget>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open...</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About...</string>
+   </property>
+  </action>
+  <action name="actionchardx">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/chardx.png</normaloff>:/new/prefix1/chardx.png</iconset>
+   </property>
+   <property name="text">
+    <string>chardx</string>
+   </property>
+  </action>
+  <action name="actioncharwd">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/charwd.png</normaloff>:/new/prefix1/charwd.png</iconset>
+   </property>
+   <property name="text">
+    <string>charwd</string>
+   </property>
+  </action>
+  <action name="actionref">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/ref.png</normaloff>:/new/prefix1/ref.png</iconset>
+   </property>
+   <property name="text">
+    <string>ref</string>
+   </property>
+  </action>
+  <action name="actiongrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/grid.png</normaloff>:/new/prefix1/grid.png</iconset>
+   </property>
+   <property name="text">
+    <string>grid</string>
+   </property>
+  </action>
+  <action name="actionright">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/right.png</normaloff>:/new/prefix1/right.png</iconset>
+   </property>
+   <property name="text">
+    <string>right</string>
+   </property>
+  </action>
+  <action name="actionup">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/up.png</normaloff>:/new/prefix1/up.png</iconset>
+   </property>
+   <property name="text">
+    <string>up</string>
+   </property>
+  </action>
+  <action name="actiondown">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/down.png</normaloff>:/new/prefix1/down.png</iconset>
+   </property>
+   <property name="text">
+    <string>down</string>
+   </property>
+  </action>
+  <action name="actionleft">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/left.png</normaloff>:/new/prefix1/left.png</iconset>
+   </property>
+   <property name="text">
+    <string>left</string>
+   </property>
+  </action>
+  <action name="actionzoomin">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/zoomin.png</normaloff>:/new/prefix1/zoomin.png</iconset>
+   </property>
+   <property name="text">
+    <string>zoomin</string>
+   </property>
+  </action>
+  <action name="actionzoomout">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/zoomout.png</normaloff>:/new/prefix1/zoomout.png</iconset>
+   </property>
+   <property name="text">
+    <string>zoomout</string>
+   </property>
+  </action>
+  <action name="actionnext">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/next.png</normaloff>:/new/prefix1/next.png</iconset>
+   </property>
+   <property name="text">
+    <string>next</string>
+   </property>
+  </action>
+  <action name="actionprev">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/prev.png</normaloff>:/new/prefix1/prev.png</iconset>
+   </property>
+   <property name="text">
+    <string>prev</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

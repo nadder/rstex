@@ -1,13 +1,20 @@
-#include "stdafx.h"
-#include "TeXFontViewer.h"
 #include <vector>
-extern HWND g_hwnd;
+#include <array>
+#include <QMessageBox>
+#include <QApplication>
+#include <mainwindow.h>
+#include <cmath>
+#include "read_fonts.h"
+
 
 #define incr(s) (s)++
 
-void myabort(wchar_t const*msg) 
+void myabort(char const*msg)
 {
-	MessageBox( g_hwnd, msg, L"Error", MB_OK|MB_ICONERROR); throw -1;
+
+    MainWindow * win = static_cast<MainWindow*>(QApplication::activeWindow());
+    QMessageBox::critical(win, "Error", msg);
+    throw -1;
 }
 
 bool myfeof(FILE *fp) {
@@ -158,21 +165,21 @@ void skip_specials()
 			switch (flag_byte) {
 				case 240: case 241: case 242: case 243:
 				{
-					fwprintf(log_file,L"%d:  Special: '",(pk_loc-1)) ;
+                    fprintf(log_file,"%d:  Special: '",(pk_loc-1)) ;
 					i=0 ;
 					for (j=240; j<=flag_byte; j++) i=256*i+pk_byte() ;
 					for (j=1; j<=i; j++) fputc(pk_byte(),log_file) ;
-					fwprintf(log_file,L"'\n") ;
+                    fprintf(log_file,"'\n") ;
 				}
 				break;
-				case 244: fwprintf(log_file,L"%d:  Num special: %d\n",pk_loc-1,get_32()) ;
+                case 244: fprintf(log_file,"%d:  Num special: %d\n",pk_loc-1,get_32()) ;
 					break;
-				case 245: fwprintf(log_file,L"%d:  Postamble\n",pk_loc-1) ;
+                case 245: fprintf(log_file,"%d:  Postamble\n",pk_loc-1) ;
 					break;
-				case 246: fwprintf(log_file,L"%d:  No op\n",(pk_loc-1));
+                case 246: fprintf(log_file,"%d:  No op\n",(pk_loc-1));
 					break;
 				case 247: case 248: case 249: case  250: case  251: case  252: case  253: case  254: case  255:
-				{wchar_t temp[256]; _swprintf(temp,L"Unexpected %d!",flag_byte); myabort(temp) ;}
+                {char temp[256]; sprintf(temp,"Unexpected %d!",flag_byte); myabort(temp) ;}
 				break;
 	//@.Unexpected bbb@>
 			}
@@ -186,11 +193,11 @@ void send_out(bool repeat_count,int value)
 	while (value>=i) { len++ ; i=i*10 ; }
 	if (repeat_count||!turn_on) len=len+2 ;
 	if (term_pos+len>78) {
-		term_pos=len+2 ; fwprintf(log_file,L" \n") ; fwprintf(log_file,L"  ") ;
+        term_pos=len+2 ; fprintf(log_file," \n") ; fprintf(log_file,"  ") ;
 	} else term_pos=term_pos+len ;
-	if (repeat_count) fwprintf(log_file,L"[%d]",value);
-	else if (turn_on) fwprintf(log_file,L"%d",value);
-	else fwprintf(log_file,L"(%d)",value);
+    if (repeat_count) fprintf(log_file,"[%d]",value);
+    else if (turn_on) fprintf(log_file,"%d",value);
+    else fprintf(log_file,"(%d)",value);
 }
 
 int pk_packed_num()
@@ -207,7 +214,7 @@ int pk_packed_num()
 	else if (i<14)
 		return (i-dyn_f-1)*16+get_nyb()+dyn_f+1;
 	else {
-		if (repeat_count!=0) myabort(L"Second repeat count for this row!") ;
+        if (repeat_count!=0) myabort("Second repeat count for this row!") ;
   //@.Second repeat count...@>
 		if (i==14)
 			repeat_count=pk_packed_num();
@@ -217,7 +224,6 @@ int pk_packed_num()
 		return pk_packed_num() ;
 	}
 }
-
 
 void set_image_raster_bit(bool set, int bit_offset, std::vector<eight_bits>& raster)
 {
@@ -271,31 +277,31 @@ void zoom_raster(int zoom_factor, int width, int height, std::vector<eight_bits>
 }
 
 
-void read_pk_file(wchar_t const * filename)
+void read_pk_file(char const * filename)
 {
 	int raster_char_index = 0;
 	num_chars = 0;
-	pk_file = _wfopen(filename, L"rb");
-	if (!pk_file) {wchar_t buf[256]; _swprintf(buf, L"Error opening %s", filename); myabort(buf);}
-	log_file = _wfopen(L"TeXFontViewer.log", L"a");
-	fwprintf(log_file, L"Opening file %s\n", filename);
+    pk_file = fopen(filename, "rb");
+    if (!pk_file) {char buf[256]; sprintf(buf, "Error opening %s", filename); myabort(buf);}
+    log_file = fopen("TeXFontViewer.log", "a");
+    fprintf(log_file, "Opening file %s\n", filename);
 	// Read preamble 38>
-	if (pk_byte()!=pk_pre) myabort(L"Bad PK file; pre command missing!");
-	if (pk_byte()!=pk_id) myabort(L"Wrong version of PK file!");
+    if (pk_byte()!=pk_pre) myabort("Bad PK file; pre command missing!");
+    if (pk_byte()!=pk_id) myabort("Wrong version of PK file!");
 
-	j=pk_byte(); fwprintf(log_file,L"'");
+    j=pk_byte(); fprintf(log_file,"'");
 	for (i=1; i<=j; i++) fputc(pk_byte(),log_file);
-	fwprintf(log_file,L"'\n"); design_size=get_32(); fwprintf(log_file,L"Design size = %d\n",design_size);
-	checksum=get_32(); fwprintf(log_file,L"Checksum = %d\n",checksum); hppp=get_32(); vppp=get_32();
-	fwprintf(log_file,L"Resolution: horizontal = %d  vertical = %d",hppp,vppp);
-	magnification=(int)round(hppp*72.27/65536); fwprintf(log_file,L"  (%d dpi)\n",magnification);
+    fprintf(log_file,"'\n"); design_size=get_32(); fprintf(log_file,"Design size = %d\n",design_size);
+    checksum=get_32(); fprintf(log_file,"Checksum = %d\n",checksum); hppp=get_32(); vppp=get_32();
+    fprintf(log_file,"Resolution: horizontal = %d  vertical = %d",hppp,vppp);
+    magnification=(int)round(hppp*72.27/65536); fprintf(log_file,"  (%d dpi)\n",magnification);
 	if (hppp!=vppp) printf("Warning:  aspect ratio not 1:1!\n");
 	// Read preamble
 
 	skip_specials();
 	while (flag_byte!=pk_post) {
 		// Unpack and write characters 40>
-		fwprintf(log_file,L"%d:  Flag byte = %d",pk_loc-1,flag_byte); dyn_f=flag_byte/16;
+        fprintf(log_file,"%d:  Flag byte = %d",pk_loc-1,flag_byte); dyn_f=flag_byte/16;
 		flag_byte=flag_byte%16; turn_on=flag_byte>=8;
 		if (turn_on) flag_byte=flag_byte-8;
 		if (flag_byte==7)
@@ -348,12 +354,12 @@ void read_pk_file(wchar_t const * filename)
 		}
 			// Read short character preamble 44
 
-		fwprintf(log_file,L"  Character = %d  Packet length = %d\n",car,packet_length);
-		fwprintf(log_file,L"  Dynamic packing variable = %d\n",dyn_f);
-		fwprintf(log_file,L"  TFM width = %d  dx = %d",tfm_width,dx);
-		if (dy!=0) fwprintf(log_file,L"  dy = %d\n",dy);
-		else fwprintf(log_file,L" \n");
-		fwprintf(log_file,L"  Height = %d  Width = %d  X-offset = %d  Y-offset = %d\n",
+        fprintf(log_file,"  Character = %d  Packet length = %d\n",car,packet_length);
+        fprintf(log_file,"  Dynamic packing variable = %d\n",dyn_f);
+        fprintf(log_file,"  TFM width = %d  dx = %d",tfm_width,dx);
+        if (dy!=0) fprintf(log_file,"  dy = %d\n",dy);
+        else fprintf(log_file," \n");
+        fprintf(log_file,"  Height = %d  Width = %d  X-offset = %d  Y-offset = %d\n",
 			height,width,x_off,y_off);
 
 		// store raster information in one long array of bytes, the byte has the value one for a black pixel
@@ -386,19 +392,19 @@ void read_pk_file(wchar_t const * filename)
 		   // Get raster by bits 49>
 		{
 			for (i=1; i<=height; i++) {
-				fwprintf(log_file,L"  ") ;
+                fprintf(log_file,"  ") ;
 				for (j=1; j<=width; j++) {
 					if (get_bit()) {
-						fwprintf(log_file,L"*"); 
+                        fprintf(log_file,"*");
 						set_image_raster_bit(true, raster_offset, cur_image_raster);
 					}
 					else {
-						fwprintf(log_file,L"."); 
+                        fprintf(log_file,".");
 						set_image_raster_bit(false, raster_offset, cur_image_raster);
 					}
 					raster_offset++;
 				}
-				fwprintf(log_file,L" \n") ;
+                fprintf(log_file," \n") ;
 			}
 		}
 			// Get raster by bits>
@@ -406,7 +412,7 @@ void read_pk_file(wchar_t const * filename)
 			// Create normally packed raster 50>
 		{
 			term_pos=2 ;
-			fwprintf(log_file,L"  ") ;
+            fprintf(log_file,"  ") ;
 			rows_left=height ;
 			h_bit=width ;
 			repeat_count=0 ;
@@ -448,9 +454,9 @@ void read_pk_file(wchar_t const * filename)
 				h_bit=h_bit-count ;
 				turn_on=!turn_on ;
 			}
-			fwprintf(log_file,L" \n") ;
+            fprintf(log_file," \n") ;
 			if (rows_left!=0||h_bit!=width)
-				myabort(L"Bad PK file: More bits than required!");
+                myabort("Bad PK file: More bits than required!");
 			 //@.More bits than required@>
 
 
@@ -459,7 +465,7 @@ void read_pk_file(wchar_t const * filename)
 			// Create normally packed raster>
 
 		// Read and translate raster description >
-		if (end_of_packet!=pk_loc) myabort(L"Bad PK file: Bad packet length!");
+        if (end_of_packet!=pk_loc) myabort("Bad PK file: Bad packet length!");
 
 
 
@@ -471,13 +477,13 @@ void read_pk_file(wchar_t const * filename)
 	while (!myfeof(pk_file)) {
 		i=pk_byte();
 		if (i!=pk_no_op) {
-			wchar_t temp[256];
-			_swprintf(temp,L"Bad byte at end of file: %d",i);
+            char temp[256];
+            sprintf(temp,"Bad byte at end of file: %d",i);
 			myabort(temp);
 		}
-		fwprintf(log_file,L"%d:  No op\n",pk_loc-1); j++;
+        fprintf(log_file,"%d:  No op\n",pk_loc-1); j++;
 	}
-	fwprintf(log_file,L"%d bytes read from packed file\n",pk_loc);
+    fprintf(log_file,"%d bytes read from packed file\n",pk_loc);
 //final_end:
 	fclose(pk_file);
 	fclose(log_file);
@@ -555,7 +561,7 @@ void move_to_byte(int n)
 int gf_byte() //{returns the next byte, unsigned}
 {
 	eight_bits b = 0;
-	if (myfeof(gf_file)) myabort(L"Unexpected end of file!");
+    if (myfeof(gf_file)) myabort("Unexpected end of file!");
 	else b = fgetc(gf_file);
 	gf_loc++;
 	return b;
@@ -588,15 +594,15 @@ unsigned int read_big_endian_32bit(FILE *fp)
 }
 
 
-void ReadPXLFile(wchar_t const *filename)
+void ReadPXLFile(char const *filename)
 {
 	int raster_char_index = 0;
 	num_chars = 0;
 
-	FILE *pxl_file = _wfopen(filename, L"rb");
-	if (!pxl_file) {wchar_t buf[256]; _swprintf(buf, L"Error opening %s", filename); myabort(buf);}
-	log_file = _wfopen(L"TeXFontViewer.log", L"a");
-	fwprintf(log_file, L"Opening file %s\n", filename);
+    FILE *pxl_file = fopen(filename, "rb");
+    if (!pxl_file) {char buf[256]; sprintf(buf, "Error opening %s", filename); myabort(buf);}
+    log_file = fopen("TeXFontViewer.log", "a");
+    fprintf(log_file, "Opening file %s\n", filename);
 
 	unsigned design_size, checksum;
 	unsigned magnification;
@@ -604,7 +610,7 @@ void ReadPXLFile(wchar_t const *filename)
 	unsigned int sig1, sig2;
 	sig1 = read_big_endian_32bit(pxl_file);
 	if (sig1 != 1001) {
-		wchar_t buf[256]; _swprintf(buf, L"Not pxl file, sig1 not 1001"); myabort(buf);
+        char buf[256]; sprintf(buf, "Not pxl file, sig1 not 1001"); myabort(buf);
 	}
 
 	fseek(pxl_file, -20, SEEK_END);
@@ -616,13 +622,13 @@ void ReadPXLFile(wchar_t const *filename)
 
 	sig2 = read_big_endian_32bit(pxl_file);
 	if (sig2 != 1001) {
-		wchar_t buf[256]; _swprintf(buf, L"Not pxl file, sig2 not 1001"); myabort(buf);
+        char buf[256]; sprintf(buf, "Not pxl file, sig2 not 1001"); myabort(buf);
 	}
 
 	long file_size = ftell(pxl_file);
 	file_size /= 4;
 	if (dir_pointer != file_size - 512 - 5) {
-		wchar_t buf[256]; _swprintf(buf, L"The directory pointer should be %ld, not %u", file_size - 512 - 5, dir_pointer); myabort(buf);
+        char buf[256]; sprintf(buf, "The directory pointer should be %ld, not %u", file_size - 512 - 5, dir_pointer); myabort(buf);
 	}
 
 	// move to start of directory
@@ -706,7 +712,7 @@ void ReadPXLFile(wchar_t const *filename)
 
 
 
-void ReadGFFile(wchar_t const *filename)
+void ReadGFFile(char const *filename)
 {
 	int raster_char_index = 0;
 	int k;
@@ -744,27 +750,27 @@ void ReadGFFile(wchar_t const *filename)
 	power[0] = 1;
 	for (i = 1; i <= 8; i++) power[i] = power[i-1] + power[i-1];
 
-	gf_file = _wfopen(filename, L"rb");
-	if (!gf_file) {wchar_t buf[256]; _swprintf(buf, L"Error opening %s", filename); myabort(buf);}
-	log_file = _wfopen(L"TeXFontViewer.log", L"a");
-	fwprintf(log_file, L"Opening file %s\n", filename);
+    gf_file = fopen(filename, "rb");
+    if (!gf_file) {char buf[256]; sprintf(buf, "Error opening %s", filename); myabort(buf);}
+    log_file = fopen("TeXFontViewer.log", "a");
+    fprintf(log_file, "Opening file %s\n", filename);
 
-	if (gf_byte() != pre) myabort(L"First byte is not preamble");
-	if (gf_byte() != gf_id_byte) myabort(L"Identification byte is incorrect");
+    if (gf_byte() != pre) myabort("First byte is not preamble");
+    if (gf_byte() != gf_id_byte) myabort("Identification byte is incorrect");
 
 	find_gf_length(); post_loc = gf_len - 4;
 	do {
-		if (post_loc == 0) myabort(L"all 223's");
+        if (post_loc == 0) myabort("all 223's");
 		move_to_byte(post_loc); k = gf_byte(); post_loc--;
 	} while (k == 223);
 
-	if (k != gf_id_byte) {wchar_t buf[256]; _swprintf(buf, L"ID byte is %d", k); myabort(buf);}
+    if (k != gf_id_byte) {char buf[256]; sprintf(buf, "ID byte is %d", k); myabort(buf);}
 
 	move_to_byte(post_loc - 3); q = gf_signed_quad();
 
-	if (q < 0 || q > post_loc - 3) {wchar_t buf[256]; _swprintf(buf, L"post pointer is %d", q); myabort(buf);}
+    if (q < 0 || q > post_loc - 3) {char buf[256]; sprintf(buf, "post pointer is %d", q); myabort(buf);}
 	move_to_byte(q); k = gf_byte();
-	if (k != post) {wchar_t buf[256]; _swprintf(buf, L"byte at %d is not post", q); myabort(buf);}
+    if (k != post) {char buf[256]; sprintf(buf, "byte at %d is not post", q); myabort(buf);}
 	i = gf_signed_quad(); // skip over junk
 
 	design_size = gf_signed_quad(); check_sum = gf_signed_quad();
@@ -960,7 +966,7 @@ void ReadGFFile(wchar_t const *filename)
 
 			default:
 				{
-					wchar_t buf[256]; _swprintf(buf, L"Unexpected %d in postamble", gf_com); myabort(buf);
+                    char buf[256]; sprintf(buf, "Unexpected %d in postamble", gf_com); myabort(buf);
 				}
 
 				break;

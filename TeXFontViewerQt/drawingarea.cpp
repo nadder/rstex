@@ -1,0 +1,176 @@
+#include <QPaintEvent>
+#include <QPainter>
+#include <QBitmap>
+#include <QDebug>
+#include <algorithm>
+#include <cmath>
+#include "drawingarea.h"
+
+using std::max;
+using std::min;
+
+DrawingArea::DrawingArea(QWidget *parent) : QWidget(parent),cur_char(-1),zoom_factor(1),
+    userxStart(10), useryStart(10), xStart(0), yStart(0), show_ref(false),
+    show_grid(false), show_chardx(false), show_charwd(false), width(0), height(0)
+{
+
+}
+
+void DrawingArea::sizeDrawingArea()
+{
+
+    int x_off = char_info[cur_char].x_off;
+    int y_off = char_info[cur_char].y_off;
+    qDebug() << "x_off:" << x_off;
+    int up_left_x = 0;
+    int up_left_y = 0;
+    int origin_x = up_left_x + x_off*zoom_factor;
+    int origin_y = up_left_y + (y_off+1)*zoom_factor;
+    int ppx_esc = (int)round(origin_x + char_info[cur_char].horz_esc*zoom_factor);
+
+    int min_x = std::min(origin_x, 0);
+    int max_x = std::max(width, ppx_esc);
+    int min_y = std::min(origin_y, 0);
+    int max_y = std::max(height, origin_y);
+    xStart = yStart = 0;
+    if (min_x < 0) {
+        xStart = -min_x;
+        qDebug() << "xStart:" << xStart;
+
+    }
+    if (min_y < 0) {
+        yStart = -min_y;
+        qDebug() << "yStart:" << yStart;
+    }
+
+    int drawingAreaWidth = max_x - min_x;
+    int drawingAreaHeight = max_y - min_y;
+
+    this->resize(drawingAreaWidth+userxStart+10, drawingAreaHeight+useryStart+10);
+
+}
+
+void DrawingArea::SetZoomBuf()
+{
+    zoomed_buf.clear();
+    width = char_info[cur_char].width;
+    height = char_info[cur_char].height;
+    if (width == 0 && height == 0)
+        return; // empty raster
+    zoom_raster(zoom_factor, width, height, image_raster[cur_char], zoomed_buf);
+    width *= zoom_factor;
+    height *= zoom_factor;
+
+    // monochrome bitmap needs to have each scan line byte aligned
+    const int nfill = (8 - width % 8)%8;
+    std::vector<eight_bits> new_buf;
+    if (nfill > 0) {
+        const int new_size = 1*((width+7)/8)*height;
+        //char unsigned * const new_buf = (unsigned char *)malloc(new_size);
+        new_buf.resize(new_size);
+        for (int yy = 0; yy < height; yy++) {
+            for (int xx = 0; xx < width; xx++) {
+                bool bitval = get_image_raster_bit(xx + yy*width, zoomed_buf);
+                set_image_raster_bit(bitval, xx + (width+nfill)*yy, new_buf);
+            }
+            for (int pp = 0; pp < nfill; pp++) { // fill with zeros to make the row multiple of 8
+                set_image_raster_bit(0, (width+nfill)*yy + width + pp, new_buf);
+            }
+        }
+        //free(zoomed_buf);
+        zoomed_buf = new_buf;
+    }
+
+
+    sizeDrawingArea();
+
+
+}
+
+
+
+void draw_grid(QPainter& painter, int start_x, int start_y, int end_x, int end_y, int grid_spacing)
+{
+    if (grid_spacing < 4) return;
+    QColor clr(122,122,122);
+    painter.setPen(clr);
+
+    int cur_y = start_y;
+    while (cur_y <= end_y) {
+        painter.drawLine(start_x, cur_y, end_x+1,cur_y);
+        cur_y += grid_spacing;
+    }
+
+    int cur_x = start_x;
+    while (cur_x <= end_x) {
+        painter.drawLine(cur_x, start_y, cur_x,end_y+1);
+        cur_x += grid_spacing;
+    }
+}
+
+
+void DrawingArea::paintEvent(QPaintEvent *event)
+{
+    QPainter painter(this);
+    // draw frame around this window
+    QRect rc = this->rect();
+
+    //painter.drawRect(0, 0, rc.width()-2, rc.height()-2);
+
+    if (num_chars < 1 || width == 0 && height == 0)
+        return;
+
+    QBitmap bitmap = QBitmap::fromData(QSize(width, height), zoomed_buf.data(), QImage::Format_Mono);
+    painter.drawPixmap(xStart+userxStart,yStart+useryStart,bitmap);
+
+    int x_off = char_info[cur_char].x_off;
+    int y_off = char_info[cur_char].y_off;
+    int up_left_x = xStart+userxStart;
+    int up_left_y = yStart+useryStart;
+    int origin_x = up_left_x + x_off*zoom_factor;
+    int origin_y = up_left_y + (y_off+1)*zoom_factor;
+
+    if (show_grid)
+    {
+        draw_grid(painter, up_left_x, up_left_y, up_left_x + char_info[cur_char].width *zoom_factor, up_left_y + char_info[cur_char].height*zoom_factor, zoom_factor);
+    }
+
+    int ppx_esc = (int)round(origin_x + char_info[cur_char].horz_esc*zoom_factor);
+
+    if (show_chardx) {
+
+        QColor escColor(0,0,0);
+        QPen pen;
+        pen.setWidth(2);
+        pen.setColor(escColor);
+        painter.setPen(pen);
+
+        painter.drawRect(origin_x,up_left_y, ppx_esc-origin_x, char_info[cur_char].height*zoom_factor);
+
+    }
+    int ppx = (int)round(origin_x + char_info[cur_char].tfm_width*zoom_factor);
+    if (show_charwd) {
+        QColor wdColor(30,220,10);
+        QPen pen;
+        pen.setStyle(Qt::DashLine);
+        pen.setColor(wdColor);
+        pen.setWidth(2);
+        painter.setPen(pen);
+        painter.drawRect(origin_x,up_left_y, ppx - origin_x, char_info[cur_char].height*zoom_factor);
+    }
+
+
+    if (show_ref) {
+        int circleWidth = 1*zoom_factor;
+        if (circleWidth < 7) circleWidth = 7;
+        if (circleWidth > 19) circleWidth = 19;
+        if (circleWidth % 2 == 0) circleWidth++;
+
+        painter.setBrush(Qt::red);
+        painter.setPen(Qt::red);
+        painter.drawEllipse(QPoint(origin_x, origin_y), circleWidth/2,circleWidth/2);
+
+    }
+
+
+}

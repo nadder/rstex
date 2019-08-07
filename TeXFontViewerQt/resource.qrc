@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>chardx.png</file>
+        <file>charwd.png</file>
+        <file>down.png</file>
+        <file>grid.png</file>
+        <file>left.png</file>
+        <file>next.png</file>
+        <file>prev.png</file>
+        <file>ref.png</file>
+        <file>right.png</file>
+        <file>up.png</file>
+        <file>zoomin.png</file>
+        <file>zoomout.png</file>
+    </qresource>
+</RCC>
