@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QMessageBox>
@@ -147,10 +147,12 @@ void MainWindow::on_actionOpen_triggered()
         if (mf_file) {
             char cmd[512];
             if (mf_file) {
-
+                // set current dir to the dir of the file
+                QFileInfo fileinfo(the_filename);
+                QDir dir = fileinfo.dir();
+                QDir::setCurrent(dir.absolutePath());
                 sprintf(cmd, "mf \"\\mode=localfont; input %s\"", qPrintable(the_filename));
                 system(cmd);
-                QFileInfo fileinfo(the_filename);
                 the_filename = fileinfo.baseName();
                 the_filename.append(".600gf");
             }

@@ -736,10 +736,11 @@ void ReadGFFile(char const *filename)
 	int g_max_n, g_min_n, g_max_m, g_min_m;
 	int cur_color = 0; // 0 = white
 	int n_cols, n_rows;
-    int max_m_seen = -100000000; // 0 ..
-    int min_n_seen = 100000000; // 0 ..
-    int min_m_seen = 100000000;
-    int max_n_seen = -100000000;
+    const int invalid_num = 100000000;
+    int max_m_seen = -invalid_num; // 0 ..
+    int min_n_seen = invalid_num; // 0 ..
+    int min_m_seen = invalid_num;
+    int max_n_seen = -invalid_num;
 	int p;
 	int save_pos;
 	int save_com;
@@ -946,8 +947,17 @@ void ReadGFFile(char const *filename)
 						}
 
 						case eoc: {
-                            int w = max_m_seen - min_m_seen + 1;
-                            int h = max_n_seen - min_n_seen + 1;
+                            int w,h;
+                            if (max_m_seen == -invalid_num ||
+                                min_n_seen == invalid_num ||
+                                min_m_seen == invalid_num ||
+                                max_n_seen == -invalid_num) {
+                                w = h = 0;
+                            }
+                            else {
+                                w = max_m_seen - min_m_seen + 1;
+                                h = max_n_seen - min_n_seen + 1;
+                            }
 
 							int storage_needed = ((h*w) + 7)/8; // in bytes aligned to word
 
@@ -961,11 +971,12 @@ void ReadGFFile(char const *filename)
 							char_info[raster_char_index].design_size = design_size/(1024.0*1024.0);
 							char_info[raster_char_index].hppp = hppp/(256.0*256.0);
 
-                            for (int rr = max_n_seen; rr >= min_n_seen; rr--) {
-                                for (int cc = min_m_seen; cc <= max_m_seen; cc++) {
-                                    set_image_raster_bit(raster_buffer[max_n - rr][cc-min_m], (max_n_seen - rr)*w + cc-min_m_seen, image_raster[raster_char_index]);
-								}
-							}
+                            if ( !(w == 0 && h == 0))
+                                for (int rr = max_n_seen; rr >= min_n_seen; rr--) {
+                                    for (int cc = min_m_seen; cc <= max_m_seen; cc++) {
+                                        set_image_raster_bit(raster_buffer[max_n - rr][cc-min_m], (max_n_seen - rr)*w + cc-min_m_seen, image_raster[raster_char_index]);
+                                    }
+                                }
 							raster_char_index++;
 							num_chars++;
 
