@@ -736,8 +736,10 @@ void ReadGFFile(char const *filename)
 	int g_max_n, g_min_n, g_max_m, g_min_m;
 	int cur_color = 0; // 0 = white
 	int n_cols, n_rows;
-	int max_m_seen = 0; // 0 .. 
-	int min_n_seen = 0; // 0 ..
+    int max_m_seen = -100000000; // 0 ..
+    int min_n_seen = 100000000; // 0 ..
+    int min_m_seen = 100000000;
+    int max_n_seen = -100000000;
 	int p;
 	int save_pos;
 	int save_com;
@@ -811,32 +813,50 @@ void ReadGFFile(char const *filename)
 					gf_com = gf_byte();
 					switch (gf_com) {
 
-						case sixty_four_cases(paint_0):
-                            assert(n > min_n - 1);
-                            assert(m < max_m + 1);
+                        case sixty_four_cases(paint_0): {
+                            int cur_col = m;
 							for (int cc = 0; cc < gf_com; cc++) {
-                                raster_buffer[max_n - n][m++] = cur_color;
+                                raster_buffer[max_n - n][cur_col++ - min_m] = cur_color;
 							}
-							if (cur_color == 1 && m - 1 > max_m_seen) max_m_seen = m - 1;
-							if (cur_color == 1 && n < min_n_seen) min_n_seen = n;
+                            if (cur_color == 1 && cur_col > m) { // something was painted
+                                if (n < min_n_seen) min_n_seen = n;
+                                if (n > max_n_seen) max_n_seen = n;
+                                if (m < min_m_seen) min_m_seen = m;
+                                if (cur_col - 1 > max_m_seen) max_m_seen = cur_col - 1;
+                            }
+                            m = cur_col;
+
 							cur_color = !cur_color;
+                            Q_ASSERT(m >= min_m);
+                            Q_ASSERT(n >= min_n);
+                            Q_ASSERT(m <= max_m);
+                            Q_ASSERT(n <= max_n);
 							break;
+                        }
 
 						case three_cases(paint1): {
-								assert(n > -1);
-								assert(m < max_m - min_m + 1);
-
+                                int cur_col = m;
 								i = 0;
 								for (j=0; j <= gf_com - paint1; j++) {
 									k = gf_byte(); i = i*256 + k;
 								}
 								for (int cc = 0; cc < i; cc++)
-                                    raster_buffer[max_n - n][m++] = cur_color;
-								if (cur_color == 1 && m - 1 > max_m_seen) max_m_seen = m - 1;
-								if (cur_color == 1 && n < min_n_seen) min_n_seen = n;
+                                    raster_buffer[max_n - n][cur_col++ - min_m] = cur_color;
+
+                                if (cur_color == 1 && cur_col > m) { // something was painted
+                                    if (n < min_n_seen) min_n_seen = n;
+                                    if (n > max_n_seen) max_n_seen = n;
+                                    if (m < min_m_seen) min_m_seen = m;
+                                    if (cur_col - 1 > max_m_seen) max_m_seen = cur_col - 1;
+                                }
+                                m = cur_col;
 								cur_color = !cur_color;
 
 							}
+                            Q_ASSERT(m >= min_m);
+                            Q_ASSERT(n >= min_n);
+                            Q_ASSERT(m <= max_m);
+                            Q_ASSERT(n <= max_n);
 							break;
 
 						case four_cases(xxx1): {
@@ -855,8 +875,12 @@ void ReadGFFile(char const *filename)
 								k = gf_byte(); i = i*256 + k;
 							}
 							n -= i+1;
-							m = 0;
+                            m = min_m;
 							cur_color = 0;
+                            Q_ASSERT(m >= min_m);
+                            Q_ASSERT(n >= min_n);
+                            Q_ASSERT(m <= max_m);
+                            Q_ASSERT(n <= max_n);
 							break;
 
 						case sixty_four_cases(new_row_0):
@@ -864,7 +888,11 @@ void ReadGFFile(char const *filename)
 						case thirty_seven_cases(new_row_0+128):
 							i = gf_com - new_row_0;
 							n--;
-							m = gf_com - new_row_0;
+                            m = min_m + gf_com - new_row_0;
+                            Q_ASSERT(m >= min_m);
+                            Q_ASSERT(n >= min_n);
+                            Q_ASSERT(m <= max_m);
+                            Q_ASSERT(n <= max_n);
 							cur_color = 1; // black
 							break;
 
@@ -892,11 +920,15 @@ void ReadGFFile(char const *filename)
 								min_m = max_m - del_m;
 								min_n = max_n - del_n;
 							}
-							m = 0; // first col, we use 0 for this
-                            n = max_n; // top row, bottom row is n = 0
+
+                            max_m_seen = -100000000; // 0 ..
+                            min_n_seen = 100000000; // 0 ..
+                            min_m_seen = 100000000;
+                            max_n_seen = -100000000;
+
+                            m = min_m;
+                            n = max_n;
 							cur_color = 0; // white
-							min_n_seen = n;
-							max_m_seen = m;
 
                             n_rows = max_n - min_n + 1;
                             n_cols = max_m - min_m + 1;
@@ -914,9 +946,8 @@ void ReadGFFile(char const *filename)
 						}
 
 						case eoc: {
-							int w = max_m_seen + 1;
-                            int h = max_n - min_n_seen + 1;
-
+                            int w = max_m_seen - min_m_seen + 1;
+                            int h = max_n_seen - min_n_seen + 1;
 
 							int storage_needed = ((h*w) + 7)/8; // in bytes aligned to word
 
@@ -930,9 +961,9 @@ void ReadGFFile(char const *filename)
 							char_info[raster_char_index].design_size = design_size/(1024.0*1024.0);
 							char_info[raster_char_index].hppp = hppp/(256.0*256.0);
 
-							for (int rr = 0; rr < h; rr++) {
-								for (int cc = 0; cc < w; cc++) {
-                                    set_image_raster_bit(raster_buffer[rr][cc], rr*w+cc, image_raster[raster_char_index]);
+                            for (int rr = max_n_seen; rr >= min_n_seen; rr--) {
+                                for (int cc = min_m_seen; cc <= max_m_seen; cc++) {
+                                    set_image_raster_bit(raster_buffer[max_n - rr][cc-min_m], (max_n_seen - rr)*w + cc-min_m_seen, image_raster[raster_char_index]);
 								}
 							}
 							raster_char_index++;
