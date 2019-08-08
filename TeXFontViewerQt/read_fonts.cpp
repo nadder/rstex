@@ -783,8 +783,8 @@ void ReadGFFile(char const *filename)
 	n_rows = g_max_n - g_min_n + 1;
 	n_cols = g_max_m - g_min_m + 1;
 
-	std::vector<std::vector<int>> raster_buffer(n_rows);
-	for (int o = 0; o < n_rows; o++) raster_buffer[o].resize(n_cols);
+    std::vector<std::vector<int>> raster_buffer;
+    //for (int o = 0; o < n_rows; o++) raster_buffer[o].resize(n_cols);
 	//unsigned char **raster_buffer = (unsigned char **)malloc(n_rows);
 	//for (int o = 0; o < n_rows; o++) raster_buffer[o] = (unsigned char *)malloc(n_cols);
 
@@ -812,10 +812,10 @@ void ReadGFFile(char const *filename)
 					switch (gf_com) {
 
 						case sixty_four_cases(paint_0):
-							assert(n > -1);
-							assert(m < max_m - min_m + 1);
+                            assert(n > min_n - 1);
+                            assert(m < max_m + 1);
 							for (int cc = 0; cc < gf_com; cc++) {
-								raster_buffer[n][m++] = cur_color;
+                                raster_buffer[max_n - n][m++] = cur_color;
 							}
 							if (cur_color == 1 && m - 1 > max_m_seen) max_m_seen = m - 1;
 							if (cur_color == 1 && n < min_n_seen) min_n_seen = n;
@@ -831,7 +831,7 @@ void ReadGFFile(char const *filename)
 									k = gf_byte(); i = i*256 + k;
 								}
 								for (int cc = 0; cc < i; cc++)
-									raster_buffer[n][m++] = cur_color;
+                                    raster_buffer[max_n - n][m++] = cur_color;
 								if (cur_color == 1 && m - 1 > max_m_seen) max_m_seen = m - 1;
 								if (cur_color == 1 && n < min_n_seen) min_n_seen = n;
 								cur_color = !cur_color;
@@ -893,10 +893,17 @@ void ReadGFFile(char const *filename)
 								min_n = max_n - del_n;
 							}
 							m = 0; // first col, we use 0 for this
-							n = max_n - min_n; // top row, bottom row is n = 0
+                            n = max_n; // top row, bottom row is n = 0
 							cur_color = 0; // white
 							min_n_seen = n;
 							max_m_seen = m;
+
+                            n_rows = max_n - min_n + 1;
+                            n_cols = max_m - min_m + 1;
+
+                            raster_buffer.resize(n_rows);
+                            for (int o = 0; o < n_rows; o++) raster_buffer[o].resize(n_cols);
+
 							// set all pixels to white
 							for (int rr = min_n; rr <= max_n; rr++) {
 								for (int cc = min_m; cc <= max_m; cc++) {
@@ -908,7 +915,7 @@ void ReadGFFile(char const *filename)
 
 						case eoc: {
 							int w = max_m_seen + 1;
-							int h = max_n - min_n - min_n_seen + 1;
+                            int h = max_n - min_n_seen + 1;
 
 
 							int storage_needed = ((h*w) + 7)/8; // in bytes aligned to word
@@ -925,7 +932,7 @@ void ReadGFFile(char const *filename)
 
 							for (int rr = 0; rr < h; rr++) {
 								for (int cc = 0; cc < w; cc++) {
-									set_image_raster_bit(raster_buffer[h-rr-1][cc], rr*w+cc, image_raster[raster_char_index]);
+                                    set_image_raster_bit(raster_buffer[rr][cc], rr*w+cc, image_raster[raster_char_index]);
 								}
 							}
 							raster_char_index++;
