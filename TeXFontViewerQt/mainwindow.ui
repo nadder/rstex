@@ -77,6 +77,8 @@
    <addaction name="actionzoomout"/>
    <addaction name="actionnext"/>
    <addaction name="actionprev"/>
+   <addaction name="actionbkcolor"/>
+   <addaction name="actionfgcolor"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -211,6 +213,27 @@
    </property>
    <property name="text">
     <string>prev</string>
+   </property>
+  </action>
+  <action name="actionbkcolor">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/bkcolor.png</normaloff>:/new/prefix1/bkcolor.png</iconset>
+   </property>
+   <property name="text">
+    <string>bkcolor</string>
+   </property>
+   <property name="toolTip">
+    <string>bkcolor</string>
+   </property>
+  </action>
+  <action name="actionfgcolor">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/bkcolor.png</normaloff>:/new/prefix1/bkcolor.png</iconset>
+   </property>
+   <property name="text">
+    <string>fgcolor</string>
    </property>
   </action>
  </widget>

@@ -12,5 +12,6 @@
         <file>up.png</file>
         <file>zoomin.png</file>
         <file>zoomout.png</file>
+        <file>bkcolor.png</file>
     </qresource>
 </RCC>

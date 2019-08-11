@@ -24,7 +24,9 @@ protected:
 private:
     std::vector<eight_bits> zoomed_buf;
     int width, height;
-
+public:
+    QColor curFgColor;
+private:
 signals:
 
 public slots:

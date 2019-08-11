@@ -123,7 +123,7 @@ void DrawingArea::paintEvent(QPaintEvent *event)
 
     QBitmap bitmap = QBitmap::fromData(QSize(width, height), zoomed_buf.data(), QImage::Format_Mono);
 
-    painter.setPen(Qt::black);
+    painter.setPen(curFgColor);
 
     painter.drawPixmap(xStart+userxStart,yStart+useryStart,bitmap);
 

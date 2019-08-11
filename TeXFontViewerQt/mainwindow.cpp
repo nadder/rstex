@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QResizeEvent>
 #include <QScrollBar>
+#include <QColorDialog>
 #include "aboutdialog.h"
 #include "read_fonts.h"
 
@@ -19,6 +20,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     scrollarea->viewport()->installEventFilter(this);
 
+    // set default background color to white
+    curBkColor = Qt::white;
+    QPalette pal = palette();
+    pal.setColor(QPalette::Background, curBkColor);
+    scrollarea->setAutoFillBackground(true);
+    scrollarea->setPalette(pal);
+
+    drawingarea->curFgColor = Qt::black;
     setCentralWidget(scrollarea);
     InitStatusbar();
 
@@ -149,8 +158,6 @@ void MainWindow::on_actionOpen_triggered()
             if (mf_file) {
                 // set current dir to the dir of the file
                 QFileInfo fileinfo(the_filename);
-                QDir dir = fileinfo.dir();
-                QDir::setCurrent(dir.absolutePath());
                 sprintf(cmd, "mf \"\\mode=localfont; input %s\"", qPrintable(the_filename));
                 system(cmd);
                 the_filename = fileinfo.baseName();
@@ -304,4 +311,25 @@ void MainWindow::on_actionAbout_triggered()
 {
     AboutDialog dlg(this);
     dlg.exec();
+}
+
+void MainWindow::on_actionbkcolor_triggered()
+{
+    QColor clr = QColorDialog::getColor(curBkColor);
+    if (clr.isValid()) {
+        curBkColor = clr;
+        QPalette pal = palette();
+        pal.setColor(QPalette::Background, curBkColor);
+        scrollarea->setAutoFillBackground(true);
+        scrollarea->setPalette(pal);
+    }
+}
+
+void MainWindow::on_actionfgcolor_triggered()
+{
+    QColor clr = QColorDialog::getColor(curBkColor);
+    if (clr.isValid()) {
+        drawingarea->curFgColor = clr;
+        drawingarea->update();
+    }
 }

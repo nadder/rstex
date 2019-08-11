@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QScrollArea>
 #include <QLabel>
+#include <QColor>
 #include "drawingarea.h"
 namespace Ui {
 class MainWindow;
@@ -52,6 +53,10 @@ private slots:
 
     void on_actionAbout_triggered();
 
+    void on_actionbkcolor_triggered();
+
+    void on_actionfgcolor_triggered();
+
 private:
     Ui::MainWindow *ui;
     QScrollArea *scrollarea;
@@ -62,6 +67,7 @@ private:
     QLabel *labelRes;
     QLabel *labelDsgSz;
     QLabel *labelOffset;
+    QColor curBkColor;
 };
 
 #endif // MAINWINDOW_H
