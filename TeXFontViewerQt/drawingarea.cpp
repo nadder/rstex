@@ -112,6 +112,7 @@ void draw_grid(QPainter& painter, int start_x, int start_y, int end_x, int end_y
 void DrawingArea::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
+     painter.setBackgroundMode(Qt::TransparentMode);
     // draw frame around this window
     QRect rc = this->rect();
 
@@ -121,6 +122,9 @@ void DrawingArea::paintEvent(QPaintEvent *event)
         return;
 
     QBitmap bitmap = QBitmap::fromData(QSize(width, height), zoomed_buf.data(), QImage::Format_Mono);
+
+    painter.setPen(Qt::black);
+
     painter.drawPixmap(xStart+userxStart,yStart+useryStart,bitmap);
 
     int x_off = char_info[cur_char].x_off;
@@ -141,7 +145,7 @@ void DrawingArea::paintEvent(QPaintEvent *event)
 
         QColor escColor(0,0,0);
         QPen pen;
-        pen.setWidth(2);
+        pen.setWidth(1);
         pen.setColor(escColor);
         painter.setPen(pen);
 
@@ -154,7 +158,7 @@ void DrawingArea::paintEvent(QPaintEvent *event)
         QPen pen;
         pen.setStyle(Qt::DashLine);
         pen.setColor(wdColor);
-        pen.setWidth(2);
+        pen.setWidth(1);
         painter.setPen(pen);
         painter.drawRect(origin_x,up_left_y, ppx - origin_x, char_info[cur_char].height*zoom_factor);
     }
