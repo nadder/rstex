@@ -9,13 +9,24 @@
 
 #define incr(s) (s)++
 
+
+
+FILE *pk_file;
+FILE *gf_file;
+FILE *pxl_file;
+FILE *log_file;
+
 void myabort(char const*msg)
 {
 
     MainWindow * win = static_cast<MainWindow*>(QApplication::activeWindow());
     QMessageBox::critical(win, "Error", msg);
+    if (log_file) {fclose(log_file); log_file = NULL;}
+    if (gf_file) {fclose(gf_file); gf_file = NULL;}
+    if (pk_file) {fclose(pk_file); pk_file = NULL;}
     throw -1;
 }
+
 
 bool myfeof(FILE *fp) {
 	int c=fgetc(fp);
@@ -44,19 +55,6 @@ struct Array
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //////////////////////////////////// pk file ////////////////////////////////////////
 
 
@@ -67,9 +65,9 @@ int num_chars;
 
 int term_pos; // current terminal position
 
-FILE *pk_file;
+
 int pk_loc;
-FILE *log_file;
+
 
 const int pk_id = 89; //{the version of \.{PK} file described}
 const int pk_xxx1 = 240; //{\&{special} commands}
@@ -487,7 +485,8 @@ void read_pk_file(char const * filename)
 //final_end:
 	fclose(pk_file);
 	fclose(log_file);
-
+    pk_file = NULL;
+    log_file = NULL;
 
 
 
@@ -541,7 +540,7 @@ enum paint_color
 };
 
 
-FILE *gf_file;
+
 int gf_loc;
 int gf_len;
 
@@ -599,7 +598,7 @@ void ReadPXLFile(char const *filename)
 	int raster_char_index = 0;
 	num_chars = 0;
 
-    FILE *pxl_file = fopen(filename, "rb");
+    pxl_file = fopen(filename, "rb");
     if (!pxl_file) {char buf[256]; sprintf(buf, "Error opening %s", filename); myabort(buf);}
     log_file = fopen("TeXFontViewer.log", "a");
     fprintf(log_file, "Opening file %s\n", filename);
@@ -701,8 +700,10 @@ void ReadPXLFile(char const *filename)
 		}
 	}
 
-
-
+    fclose(pxl_file);
+    pxl_file = NULL;
+    fclose(log_file);
+    log_file = NULL;
 
 
 
@@ -1022,6 +1023,11 @@ void ReadGFFile(char const *filename)
 
 		}
 	} while (gf_com != post_post);
+
+    fclose(gf_file);
+    fclose(log_file);
+    gf_file = NULL;
+    log_file = NULL;
 }
 
 

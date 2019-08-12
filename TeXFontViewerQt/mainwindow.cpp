@@ -5,6 +5,7 @@
 #include <QResizeEvent>
 #include <QScrollBar>
 #include <QColorDialog>
+#include <QDebug>
 #include "aboutdialog.h"
 #include "read_fonts.h"
 
@@ -152,16 +153,32 @@ void MainWindow::on_actionOpen_triggered()
         tr("Open Font"), "", tr("Font Files (*.*gf *.*pk *.*mf *.*pxl)"));
 
     if (the_filename.length() > 0) {
+        QString olddir = QDir::current().path();
         bool mf_file = the_filename.endsWith(".mf",Qt::CaseInsensitive);
         if (mf_file) {
             char cmd[512];
             if (mf_file) {
-                // set current dir to the dir of the file
+                qDebug() << "cwd: " << QDir::current().path();
                 QFileInfo fileinfo(the_filename);
                 sprintf(cmd, "mf \"\\mode=localfont; input %s\"", qPrintable(the_filename));
-                system(cmd);
+                int ret = system(cmd);
+                qDebug() << "ret is: " << ret;
                 the_filename = fileinfo.baseName();
                 the_filename.append(".600gf");
+                QFileInfo gfFileInfo(the_filename);
+
+                if (!gfFileInfo.exists()) {// failed for some reason, try changing current dir
+
+                    QDir::setCurrent(fileinfo.absolutePath());
+                    sprintf(cmd, "mf \"\\mode=localfont; input %s\"", qPrintable(fileinfo.baseName()));
+                    int ret = system(cmd);
+                    qDebug() << "ret is now: " << ret;
+                    if (!gfFileInfo.exists()) {
+                        QString msg("Metafont failed for some reason, try running Metafont manually to create a gf file.");
+                        QMessageBox::critical(this, "Error", msg);
+                        return;
+                    }
+                }
             }
         }
         if (the_filename.endsWith("pxl", Qt::CaseInsensitive)) {
@@ -194,7 +211,7 @@ void MainWindow::on_actionOpen_triggered()
             }
         }
 
-
+        QDir::setCurrent(olddir); // restore path
 
         QString sTitle;
         sTitle = QString("%1 - %2").arg(QApplication::applicationName()).arg(the_filename);
