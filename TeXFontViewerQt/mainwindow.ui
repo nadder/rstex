@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>888</width>
-    <height>536</height>
+    <width>1021</width>
+    <height>575</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>888</width>
+     <width>1021</width>
      <height>21</height>
     </rect>
    </property>
@@ -230,7 +230,7 @@
   <action name="actionfgcolor">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/new/prefix1/bkcolor.png</normaloff>:/new/prefix1/bkcolor.png</iconset>
+     <normaloff>:/new/prefix1/fgcolor.png</normaloff>:/new/prefix1/fgcolor.png</iconset>
    </property>
    <property name="text">
     <string>fgcolor</string>

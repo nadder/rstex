@@ -161,21 +161,24 @@ void MainWindow::on_actionOpen_triggered()
                 qDebug() << "cwd: " << QDir::current().path();
                 QFileInfo fileinfo(the_filename);
                 sprintf(cmd, "mf \"\\nonstopmode; mode=localfont; input %s\"", qPrintable(the_filename));
+                qDebug() << "cmd: " << cmd;
                 int ret = system(cmd);
                 qDebug() << "ret is: " << ret;
                 the_filename = fileinfo.baseName();
                 the_filename.append(".600gf");
+
                 QFileInfo gfFileInfo(the_filename);
 
                 if (!gfFileInfo.exists()) {// failed for some reason, try changing current dir
 
-                    QDir::setCurrent(fileinfo.absolutePath());
-                    sprintf(cmd, "mf \"\\nonstopmode; mode=localfont; input %s\"", qPrintable(fileinfo.baseName()));
+                    QDir::setCurrent(fileinfo.canonicalPath());
+                    sprintf(cmd, "mf \"\\nonstopmode; mode=localfont; input %s\"", qPrintable(fileinfo.fileName()));
+                    qDebug() << "cmd: " << cmd;
                     int ret = system(cmd);
                     qDebug() << "ret is now: " << ret;
                     if (!gfFileInfo.exists()) {
                         QString msg;
-                        msg.sprintf("Could not open %s, could be because the gf file is called something else or Metafont failed.", qPrintable(gfFileInfo.path()));
+                        msg.sprintf("Could not open '%s'.\nCould be because the gf file is called something else or Metafont failed.", qPrintable(gfFileInfo.fileName()));
                         QMessageBox::critical(this, "Error", msg);
                         return;
                     }

@@ -13,5 +13,6 @@
         <file>zoomin.png</file>
         <file>zoomout.png</file>
         <file>bkcolor.png</file>
+        <file>fgcolor.png</file>
     </qresource>
 </RCC>
