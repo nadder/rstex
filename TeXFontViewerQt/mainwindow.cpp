@@ -150,7 +150,7 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionOpen_triggered()
 {
     QString the_filename = QFileDialog::getOpenFileName(this,
-        tr("Open Font"), "", tr("Font Files (*.*gf *.*pk *.*mf *.*pxl)"));
+        tr("Open Font"), "", tr("Font Files (*.*gf *.*pk *.*mf *.*pxl *.*GF *.*PK *.*MF *.*PXL)"));
 
     if (the_filename.length() > 0) {
         QString olddir = QDir::current().path();
@@ -160,7 +160,7 @@ void MainWindow::on_actionOpen_triggered()
             if (mf_file) {
                 qDebug() << "cwd: " << QDir::current().path();
                 QFileInfo fileinfo(the_filename);
-                sprintf(cmd, "mf \"\\mode=localfont; input %s\"", qPrintable(the_filename));
+                sprintf(cmd, "mf \"\\nonstopmode; mode=localfont; input %s\"", qPrintable(the_filename));
                 int ret = system(cmd);
                 qDebug() << "ret is: " << ret;
                 the_filename = fileinfo.baseName();
@@ -170,11 +170,12 @@ void MainWindow::on_actionOpen_triggered()
                 if (!gfFileInfo.exists()) {// failed for some reason, try changing current dir
 
                     QDir::setCurrent(fileinfo.absolutePath());
-                    sprintf(cmd, "mf \"\\mode=localfont; input %s\"", qPrintable(fileinfo.baseName()));
+                    sprintf(cmd, "mf \"\\nonstopmode; mode=localfont; input %s\"", qPrintable(fileinfo.baseName()));
                     int ret = system(cmd);
                     qDebug() << "ret is now: " << ret;
                     if (!gfFileInfo.exists()) {
-                        QString msg("Metafont failed for some reason, try running Metafont manually to create a gf file.");
+                        QString msg;
+                        msg.sprintf("Could not open %s, could be because the gf file is called something else or Metafont failed.", qPrintable(gfFileInfo.path()));
                         QMessageBox::critical(this, "Error", msg);
                         return;
                     }
