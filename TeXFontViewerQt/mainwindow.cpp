@@ -6,6 +6,7 @@
 #include <QScrollBar>
 #include <QColorDialog>
 #include <QDebug>
+#include <QMimeData>
 #include "aboutdialog.h"
 #include "read_fonts.h"
 
@@ -31,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     drawingarea->curFgColor = Qt::black;
     setCentralWidget(scrollarea);
     InitStatusbar();
+
+    setAcceptDrops(true);
 
 }
 
@@ -66,6 +69,23 @@ void MainWindow::InitStatusbar()
 
     UpdateStatusbar();
 
+}
+
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *e)
+{
+    if (e->mimeData()->hasUrls()) {
+        e->acceptProposedAction();
+    }
+}
+
+void MainWindow::dropEvent(QDropEvent* e)
+{
+    foreach (const QUrl &url, e->mimeData()->urls()) {
+        QString fileName = url.toLocalFile();
+        qDebug() << "Dropped file:" << fileName;
+        do_open_filename(fileName);
+    }
 }
 
 
@@ -147,10 +167,9 @@ void MainWindow::on_actionExit_triggered()
     QApplication::quit();
 }
 
-void MainWindow::on_actionOpen_triggered()
+
+void MainWindow::do_open_filename(QString the_filename)
 {
-    QString the_filename = QFileDialog::getOpenFileName(this,
-        tr("Open Font"), "", tr("Font Files (*.*gf *.*pk *.*mf *.*pxl *.*GF *.*PK *.*MF *.*PXL)"));
 
     if (the_filename.length() > 0) {
         QString olddir = QDir::current().path();
@@ -229,6 +248,14 @@ void MainWindow::on_actionOpen_triggered()
         drawingarea->update();
         UpdateStatusbar();
     }
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+    QString the_filename = QFileDialog::getOpenFileName(this,
+        tr("Open Font"), "", tr("Font Files (*.*gf *.*pk *.*mf *.*pxl *.*GF *.*PK *.*MF *.*PXL)"));
+    do_open_filename(the_filename);
+
 
 }
 

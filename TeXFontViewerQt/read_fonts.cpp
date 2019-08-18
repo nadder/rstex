@@ -11,19 +11,19 @@
 
 
 
-FILE *pk_file;
-FILE *gf_file;
-FILE *pxl_file;
-FILE *log_file;
+static FILE *pk_file;
+static FILE *gf_file;
+static FILE *pxl_file;
+static FILE *log_file;
 
 void myabort(char const*msg)
 {
 
     MainWindow * win = static_cast<MainWindow*>(QApplication::activeWindow());
     QMessageBox::critical(win, "Error", msg);
-    if (log_file) {fclose(log_file); log_file = NULL;}
-    if (gf_file) {fclose(gf_file); gf_file = NULL;}
-    if (pk_file) {fclose(pk_file); pk_file = NULL;}
+    if (log_file) {fclose(log_file); log_file = nullptr;}
+    if (gf_file) {fclose(gf_file); gf_file = nullptr;}
+    if (pk_file) {fclose(pk_file); pk_file = nullptr;}
     throw -1;
 }
 
@@ -63,50 +63,50 @@ std::vector<std::vector<eight_bits>> image_raster(256);
 char_raster_info char_info[256];
 int num_chars;
 
-int term_pos; // current terminal position
+static int term_pos; // current terminal position
 
 
-int pk_loc;
+static int pk_loc;
 
 
 const int pk_id = 89; //{the version of \.{PK} file described}
-const int pk_xxx1 = 240; //{\&{special} commands}
-const int pk_yyy = 244; //{\&{numspecial} commands}
+//const int pk_xxx1 = 240; //{\&{special} commands}
+//const int pk_yyy = 244; //{\&{numspecial} commands}
 const int pk_post = 245; //{postamble}
 const int pk_no_op = 246; //{no operation}
 const int pk_pre = 247; //{preamble}
 
-int hppp, vppp;
-int design_size;
-int checksum;
-int magnification;
+static int hppp, vppp;
+static int design_size;
+static int checksum;
+static int magnification;
 
-int i, j; // {index pointers}
-int flag_byte; // {the byte that introduces the character definition}
-int end_of_packet; // {where we expect the end of the packet to be}
-int width, height; // {width and height of character}
-int x_off, y_off; // {x and y offsets of character}
-int tfm_width; // {character tfm width}
-Array<int, 0, 255> tfms; // : array [0..255] of integer ; {character tfm widths}
-int dx, dy; // {escapement values}
-Array<int, 0, 255> dxs, dys; // : array [0..255] of integer ; {escapement values}
-Array<bool, 0, 255> status; // : array[0..255] of boolean ; {has the character been seen?}
-int dyn_f; // {dynamic packing variable}
-int car; // {the character we are reading}
-int packet_length; // {the length of the character packet}
+static int i, j; // {index pointers}
+static int flag_byte; // {the byte that introduces the character definition}
+static int end_of_packet; // {where we expect the end of the packet to be}
+static int width, height; // {width and height of character}
+static int x_off, y_off; // {x and y offsets of character}
+static int tfm_width; // {character tfm width}
+//static Array<int, 0, 255> tfms; // : array [0..255] of integer ; {character tfm widths}
+static int dx, dy; // {escapement values}
+//static Array<int, 0, 255> dxs, dys; // : array [0..255] of integer ; {escapement values}
+static Array<bool, 0, 255> status; // : array[0..255] of boolean ; {has the character been seen?}
+static int dyn_f; // {dynamic packing variable}
+static int car; // {the character we are reading}
+static int packet_length; // {the length of the character packet}
 
 
 // 51
-int repeat_count; //{how many times to repeat the next row?}
-int rows_left; //{how many rows left?}
-bool turn_on; //{are we black here?}
-int h_bit; //{what is our horizontal position?}
-int count; //{how many bits of current color left?}
+static int repeat_count; //{how many times to repeat the next row?}
+static int rows_left; //{how many rows left?}
+static bool turn_on; //{are we black here?}
+static int h_bit; //{what is our horizontal position?}
+static int count; //{how many bits of current color left?}
 
 // 47
-eight_bits input_byte; // the byte we are currently decimating
-eight_bits bit_weight; // weight of the current bit
-eight_bits nybble; // the current nybble
+static eight_bits input_byte; // the byte we are currently decimating
+static eight_bits bit_weight; // weight of the current bit
+//static eight_bits nybble; // the current nybble
 
 // 33
 eight_bits pk_byte()
@@ -241,7 +241,7 @@ bool get_image_raster_bit(int bit_offset, std::vector<eight_bits>& raster)
 }
 
 
-void copy_row(int width, int height, int row_to_copy, int n_rows_to_copy, std::vector<eight_bits>&raster)
+void copy_row(int width, int /*height*/, int row_to_copy, int n_rows_to_copy, std::vector<eight_bits>&raster)
 {
 	int src_offset;
 	int dst_offset;
@@ -485,8 +485,8 @@ void read_pk_file(char const * filename)
 //final_end:
 	fclose(pk_file);
 	fclose(log_file);
-    pk_file = NULL;
-    log_file = NULL;
+    pk_file = nullptr;
+    log_file = nullptr;
 
 
 
@@ -520,7 +520,7 @@ const int eoc=69; // end of a character}
 const int skip0=70; // skip no blank rows}
 const int skip1=71; // skip over blank rows}
 const int new_row_0=74; // move down one row and then right}
-const int max_new_row=238; // move down one row and then right}
+//const int max_new_row=238; // move down one row and then right}
 const int xxx1=239; // for \&{special} strings}
 const int yyy=243; // for \&{numspecial} numbers}
 const int no_op=244; // no operation}
@@ -541,8 +541,8 @@ enum paint_color
 
 
 
-int gf_loc;
-int gf_len;
+static int gf_loc;
+static int gf_len;
 
 void find_gf_length()
 {
@@ -644,20 +644,8 @@ void ReadPXLFile(char const *filename)
 			short int xoff = (short int)(cc_info[1] >> 16);
 			short int yoff = (short int)(cc_info[1] & 0xFFFFu);
 			unsigned rasterpointer = cc_info[2];
-			double tfm_width_points = cc_info[3] / (double)design_size;
-			//fprintf(fpout, "Char (%d): w=%u, h=%u, xoff=%u, yoff=%u, raster_pointer=%u, tfmWidth=%u\n", cc, w, h, xoff, yoff, rasterpointer, cc_info[3]);
-			//fprintf(fpout, "\n\n\n");
+            int storage_needed = ((h*w) + 7)/8; // in bytes
 
-			// print the raster
-
-
-			// create bitmap raster
-			//if (image_raster[raster_char_index]) {
-			//	free(image_raster[raster_char_index]);
-			//}
-			int storage_needed = ((h*w) + 7)/8; // in bytes aligned to word
-
-			//image_raster[raster_char_index] = (eight_bits*)malloc(storage_needed);
 			image_raster[raster_char_index].resize(storage_needed);
 			char_info[raster_char_index].code = cc;
 			char_info[raster_char_index].width = w;
@@ -673,7 +661,6 @@ void ReadPXLFile(char const *filename)
 			long cur_pos = ftell(pxl_file);
 			fseek(pxl_file, rasterpointer*4, SEEK_SET);
 			int words_per_row = (w+31)/32;
-			int num_raster_words = words_per_row * h;
 			for (int row = 0; row < h; row++) {
 				for (int row_word = 0; row_word < words_per_row; row_word++) {
 					unsigned int cur_word = read_big_endian_32bit(pxl_file);
@@ -732,11 +719,11 @@ void ReadGFFile(char const *filename)
 	const int located = 1;
 	const int sent = 2;
 	eight_bits gf_com;
-	int gf_ch;
-	int max_n, min_n, max_m, min_m;
-	int g_max_n, g_min_n, g_max_m, g_min_m;
+    int gf_ch=0;
+    int max_n=0, min_n=0, max_m=0, min_m=0;
+    int g_max_n=0, g_min_n=0, g_max_m=0, g_min_m=0;
 	int cur_color = 0; // 0 = white
-	int n_cols, n_rows;
+    int n_cols=0, n_rows=0;
     const int invalid_num = 100000000;
     int max_m_seen = -invalid_num; // 0 ..
     int min_n_seen = invalid_num; // 0 ..
@@ -1026,8 +1013,8 @@ void ReadGFFile(char const *filename)
 
     fclose(gf_file);
     fclose(log_file);
-    gf_file = NULL;
-    log_file = NULL;
+    gf_file = nullptr;
+    log_file = nullptr;
 }
 
 

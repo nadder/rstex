@@ -27,9 +27,10 @@ void DrawingArea::sizeDrawingArea()
     int origin_x = up_left_x + x_off*zoom_factor;
     int origin_y = up_left_y + (y_off+1)*zoom_factor;
     int ppx_esc = (int)round(origin_x + char_info[cur_char].horz_esc*zoom_factor);
-
+    int ppx = (int)round(origin_x + char_info[cur_char].tfm_width*zoom_factor);
     int min_x = std::min(origin_x, 0);
     int max_x = std::max(width, ppx_esc);
+    max_x = std::max(max_x, ppx);
     int min_y = std::min(origin_y, 0);
     int max_y = std::max(height, origin_y);
     xStart = yStart = 0;
@@ -46,7 +47,7 @@ void DrawingArea::sizeDrawingArea()
     int drawingAreaWidth = max_x - min_x;
     int drawingAreaHeight = max_y - min_y;
 
-    this->resize(drawingAreaWidth+userxStart+10, drawingAreaHeight+useryStart+10);
+    this->resize(drawingAreaWidth+userxStart+20, drawingAreaHeight+useryStart+20);
 
 }
 

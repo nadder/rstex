@@ -5,6 +5,9 @@
 #include <QScrollArea>
 #include <QLabel>
 #include <QColor>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QString>
 #include "drawingarea.h"
 namespace Ui {
 class MainWindow;
@@ -56,6 +59,13 @@ private slots:
     void on_actionbkcolor_triggered();
 
     void on_actionfgcolor_triggered();
+
+    void dragEnterEvent(QDragEnterEvent *e);
+
+    void dropEvent(QDropEvent* e);
+
+    void do_open_filename(QString the_filename);
+
 
 private:
     Ui::MainWindow *ui;
