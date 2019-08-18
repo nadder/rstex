@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // set default background color to white
     curBkColor = Qt::white;
+    total_num_fonts_opened = 0;
     QPalette pal = palette();
     pal.setColor(QPalette::Background, curBkColor);
     scrollarea->setAutoFillBackground(true);
@@ -66,6 +67,9 @@ void MainWindow::InitStatusbar()
     labelOffset->setMinimumSize(labelOffset->sizeHint());
     pStatusBar->addWidget(labelOffset);
 
+    labelNumChars = new QLabel("");
+    labelNumChars->setMinimumSize(labelOffset->sizeHint());
+    pStatusBar->addWidget(labelNumChars);
 
     UpdateStatusbar();
 
@@ -94,19 +98,31 @@ void MainWindow::UpdateStatusbar()
 
     labelZoom->setText(QString::number(drawingarea->zoom_factor*100) + "%");
 
+    if (total_num_fonts_opened > 0) {
+        QString qs;
+        qs = QString::number(font_info.hppp*72.27, 'f', 2);
+        labelRes->setText(QString("ppi: ") + qs);
+        qs = QString::number(font_info.design_size, 'f', 2);
+        labelDsgSz->setText(QString("designsz:")+qs);
+        qs = QString::number(num_chars);
+        labelNumChars->setText(QString("nChars:")+qs);
+    }
+    else {
+        labelRes->setText("");
+        labelDsgSz->setText("");
+        labelNumChars->setText("");
+    }
+
+
+
     if (drawingarea->cur_char >= 0)
     {
         labelCharIndex->setText(QString("ord:%1, code:%2").arg(drawingarea->cur_char).arg(char_info[drawingarea->cur_char].code));
         QString qs;
         qs.sprintf("charwd: px:%.2f,pt:%.2f,chardx:%.0f", char_info[drawingarea->cur_char].tfm_width,
-                char_info[drawingarea->cur_char].tfm_width/char_info[drawingarea->cur_char].hppp,
+                char_info[drawingarea->cur_char].tfm_width/font_info.hppp,
                 char_info[drawingarea->cur_char].horz_esc);
         labelWidth->setText(qs);
-        qs = QString::number(char_info[drawingarea->cur_char].hppp*72.27, 'f', 2);
-
-        labelRes->setText(QString("ppi: ") + qs);
-        qs = QString::number(char_info[drawingarea->cur_char].design_size, 'f', 2);
-        labelDsgSz->setText(QString("designsz:")+qs);
         qs.sprintf("xoff:%d, yoff:%d, w:%d, h:%d", char_info[drawingarea->cur_char].x_off,
                    char_info[drawingarea->cur_char].y_off,
                    char_info[drawingarea->cur_char].width,
@@ -116,8 +132,6 @@ void MainWindow::UpdateStatusbar()
     else {
         labelCharIndex->setText("");
         labelWidth->setText("");
-        labelRes->setText("");
-        labelDsgSz->setText("");
         labelOffset->setText("");
     }
 
@@ -241,11 +255,14 @@ void MainWindow::do_open_filename(QString the_filename)
 
         setWindowTitle(sTitle);
 
-        if (num_chars > 0)
+        if (num_chars > 0) {
             drawingarea->cur_char = 0;
+        }
         drawingarea->SetZoomBuf(); // update current buffer
 
         drawingarea->update();
+
+        total_num_fonts_opened++;
         UpdateStatusbar();
     }
 }
@@ -288,7 +305,6 @@ void MainWindow::on_actionzoomin_triggered()
     drawingarea->SetZoomBuf(); // update current buffer
     drawingarea->update();
     UpdateStatusbar();
-    UpdateStatusbar();
 }
 
 void MainWindow::on_actionzoomout_triggered()
@@ -297,7 +313,6 @@ void MainWindow::on_actionzoomout_triggered()
     if (drawingarea->zoom_factor < 1) drawingarea->zoom_factor = 1;
     drawingarea->SetZoomBuf(); // update current buffer
     drawingarea->update();
-    UpdateStatusbar();
     UpdateStatusbar();
 }
 

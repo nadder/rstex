@@ -11,12 +11,19 @@ struct char_raster_info
     double tfm_width; // in pixels
     int y_off;// in pixels
     int x_off;// in pixels
-    double hppp; // pixels per point
-    double design_size; //points
     int code;
 };
 
+struct sfont_info
+{
+    double hppp; // pixels per point
+    double vppp; // pixels per point
+    double design_size; //points
+};
+
 extern char_raster_info char_info[256];
+extern sfont_info font_info;
+
 extern std::vector<std::vector<eight_bits>> image_raster;
 extern int num_chars;
 

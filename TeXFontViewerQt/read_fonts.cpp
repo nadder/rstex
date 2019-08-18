@@ -59,8 +59,10 @@ struct Array
 
 
 std::vector<std::vector<eight_bits>> image_raster(256);
-//eight_bits *image_raster[256];
 char_raster_info char_info[256];
+
+sfont_info font_info;
+
 int num_chars;
 
 static int term_pos; // current terminal position
@@ -296,6 +298,12 @@ void read_pk_file(char const * filename)
 	if (hppp!=vppp) printf("Warning:  aspect ratio not 1:1!\n");
 	// Read preamble
 
+    font_info.design_size = design_size/(1024.0*1024.0);
+    font_info.hppp = hppp/(256.0*256.0);
+    font_info.vppp = vppp/(256.0*256.0);
+
+
+
 	skip_specials();
 	while (flag_byte!=pk_post) {
 		// Unpack and write characters 40>
@@ -377,8 +385,6 @@ void read_pk_file(char const * filename)
 		char_info[raster_char_index].x_off = x_off;
 		char_info[raster_char_index].y_off = y_off;
 		char_info[raster_char_index].tfm_width = tfm_width/(1024.0*1024.0)*design_size/(1024.0*1024.0)*hppp/(256.0*256.0);
-		char_info[raster_char_index].design_size = design_size/(1024.0*1024.0);
-		char_info[raster_char_index].hppp = hppp/(256.0*256.0);
 
 		std::vector<eight_bits>& cur_image_raster = image_raster[raster_char_index];
 		raster_char_index++;
@@ -619,6 +625,9 @@ void ReadPXLFile(char const *filename)
 	design_size = read_big_endian_32bit(pxl_file);
 	dir_pointer = read_big_endian_32bit(pxl_file);
 
+    font_info.design_size = design_size/(1024.0*1024.0);
+    font_info.hppp = font_info.vppp = 200.0/72.27*magnification/1000.0;
+
 	sig2 = read_big_endian_32bit(pxl_file);
 	if (sig2 != 1001) {
         char buf[256]; sprintf(buf, "Not pxl file, sig2 not 1001"); myabort(buf);
@@ -654,9 +663,6 @@ void ReadPXLFile(char const *filename)
 			char_info[raster_char_index].x_off = xoff;
 			char_info[raster_char_index].y_off = yoff;
 			char_info[raster_char_index].tfm_width = cc_info[3]/(1024.0*1024.0) * (design_size/(1024.0*1024.0)) * 200.0/72.27*magnification/1000.0;
-			char_info[raster_char_index].design_size = design_size/(1024.0*1024.0);
-			char_info[raster_char_index].hppp = 200.0/72.27*magnification/1000.0;
-
 
 			long cur_pos = ftell(pxl_file);
 			fseek(pxl_file, rasterpointer*4, SEEK_SET);
@@ -767,6 +773,11 @@ void ReadGFFile(char const *filename)
 	design_size = gf_signed_quad(); check_sum = gf_signed_quad();
 	hppp = gf_signed_quad();
 	vppp = gf_signed_quad();
+
+    font_info.design_size = design_size/(1024.0*1024.0);
+    font_info.hppp = hppp/(256.0*256.0);
+    font_info.vppp = vppp/(256.0*256.0);
+
 	g_min_m = gf_signed_quad(); g_max_m = gf_signed_quad(); 
 	g_min_n = gf_signed_quad(); g_max_n = gf_signed_quad();
 	// allocate space large enough to hold raster of any character
@@ -775,9 +786,6 @@ void ReadGFFile(char const *filename)
 	n_cols = g_max_m - g_min_m + 1;
 
     std::vector<std::vector<int>> raster_buffer;
-    //for (int o = 0; o < n_rows; o++) raster_buffer[o].resize(n_cols);
-	//unsigned char **raster_buffer = (unsigned char **)malloc(n_rows);
-	//for (int o = 0; o < n_rows; o++) raster_buffer[o] = (unsigned char *)malloc(n_cols);
 
 	do { 
 		gf_com = gf_byte();
@@ -956,8 +964,6 @@ void ReadGFFile(char const *filename)
 							char_info[raster_char_index].x_off = -min_m;
 							char_info[raster_char_index].y_off = max_n;
 							char_info[raster_char_index].tfm_width = cur_char_tfm_width/(1024.0*1024.0)*design_size/(1024.0*1024.0)*hppp/(256.0*256.0);
-							char_info[raster_char_index].design_size = design_size/(1024.0*1024.0);
-							char_info[raster_char_index].hppp = hppp/(256.0*256.0);
 
                             if ( !(w == 0 && h == 0))
                                 for (int rr = max_n_seen; rr >= min_n_seen; rr--) {

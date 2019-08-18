@@ -77,7 +77,9 @@ private:
     QLabel *labelRes;
     QLabel *labelDsgSz;
     QLabel *labelOffset;
+    QLabel *labelNumChars;
     QColor curBkColor;
+    int total_num_fonts_opened;
 };
 
 #endif // MAINWINDOW_H
