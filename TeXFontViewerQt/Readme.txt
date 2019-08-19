@@ -1,5 +1,6 @@
 This is a simple Qt application to view TeX font files (.gf,.pxl,.pk).
 Should work on both Linux and Windows.
-Menu File/Open to open a font file.
-Ctrl-mousewheel zooms in and out.
-Press 'n' to show the next character in the font.
+Install Qt, then open TeXFontViewerQt.pro in QtCreator and build the application.
+Menu File/Open to open a font file. Or drag and drop in the application window.
+Ctrl-mousewheel to zoom in and out.
+Press 'n'/'N' to show the next/prev character in the font.
