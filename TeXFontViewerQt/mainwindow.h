@@ -24,7 +24,11 @@ public:
     void UpdateStatusbar();
     void InitStatusbar();
     ~MainWindow();
-    bool eventFilter(QObject *obj, QEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;    
+    void do_open_filename(QString the_filename);
+    void dragEnterEvent(QDragEnterEvent *e) override;
+    void dropEvent(QDropEvent* e) override;
+
 private slots:
     void on_actionExit_triggered();
 
@@ -60,11 +64,7 @@ private slots:
 
     void on_actionfgcolor_triggered();
 
-    void dragEnterEvent(QDragEnterEvent *e);
 
-    void dropEvent(QDropEvent* e);
-
-    void do_open_filename(QString the_filename);
 
 
 private:

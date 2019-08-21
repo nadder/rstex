@@ -2,6 +2,7 @@
 #include <array>
 #include <QMessageBox>
 #include <QApplication>
+#include <QDir>
 #include <mainwindow.h>
 #include <cmath>
 #include "read_fonts.h"
@@ -284,6 +285,11 @@ void read_pk_file(char const * filename)
     pk_file = fopen(filename, "rb");
     if (!pk_file) {char buf[256]; sprintf(buf, "Error opening %s", filename); myabort(buf);}
     log_file = fopen("TeXFontViewer.log", "a");
+    if (!log_file) {
+        // failed to open log file, try to change to home dir and try once more
+        QDir::setCurrent(QDir::homePath());
+        log_file = fopen("TeXFontViewer.log", "a");
+    }
     fprintf(log_file, "Opening file %s\n", filename);
 	// Read preamble 38>
     if (pk_byte()!=pk_pre) myabort("Bad PK file; pre command missing!");
@@ -607,6 +613,11 @@ void ReadPXLFile(char const *filename)
     pxl_file = fopen(filename, "rb");
     if (!pxl_file) {char buf[256]; sprintf(buf, "Error opening %s", filename); myabort(buf);}
     log_file = fopen("TeXFontViewer.log", "a");
+    if (!log_file) {
+        // failed to open log file, try to change to home dir and try once more
+        QDir::setCurrent(QDir::homePath());
+        log_file = fopen("TeXFontViewer.log", "a");
+    }
     fprintf(log_file, "Opening file %s\n", filename);
 
 	unsigned design_size, checksum;
@@ -750,6 +761,11 @@ void ReadGFFile(char const *filename)
     gf_file = fopen(filename, "rb");
     if (!gf_file) {char buf[256]; sprintf(buf, "Error opening %s", filename); myabort(buf);}
     log_file = fopen("TeXFontViewer.log", "a");
+    if (!log_file) {
+        // failed to open log file, try to change to home dir and try once more
+        QDir::setCurrent(QDir::homePath());
+        log_file = fopen("TeXFontViewer.log", "a");
+    }
     fprintf(log_file, "Opening file %s\n", filename);
 
     if (gf_byte() != pre) myabort("First byte is not preamble");

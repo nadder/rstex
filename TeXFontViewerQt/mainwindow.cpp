@@ -33,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent) :
     drawingarea->curFgColor = Qt::black;
     setCentralWidget(scrollarea);
     InitStatusbar();
-
     setAcceptDrops(true);
 
 }
@@ -184,7 +183,6 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::do_open_filename(QString the_filename)
 {
-
     if (the_filename.length() > 0) {
         QString olddir = QDir::current().path();
         bool mf_file = the_filename.endsWith(".mf",Qt::CaseInsensitive);
