@@ -1,3 +1,9 @@
+/*
+
+Copyright (C) 2018 by Richard Sandberg.
+
+*/
+
 #include <vector>
 #include <array>
 #include <QMessageBox>

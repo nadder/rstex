@@ -1,3 +1,12 @@
+/*
+
+Copyright (C) 2018 by Richard Sandberg.
+
+This is the Windows specific version of rsGFtoDVI.
+No Unix version exists yet, this should be easy to add though.
+
+*/
+
 #include "rsGFtoDVI.h"
 #include <io.h>
 

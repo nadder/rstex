@@ -1,3 +1,12 @@
+/*
+
+Copyright (C) 2018 by Richard Sandberg.
+
+This is the Windows specific version of rsdviviewer.
+No Unix version exists yet, maybe I'll rewrite it in Qt
+some day...
+
+*/
 #include <Windows.h>
 #include <windowsx.h>
 #include <commctrl.h>

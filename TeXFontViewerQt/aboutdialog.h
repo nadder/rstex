@@ -1,3 +1,9 @@
+/*
+
+Copyright (C) 2018 by Richard Sandberg.
+
+*/
+
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H
 

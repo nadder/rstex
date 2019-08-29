@@ -1,3 +1,9 @@
+/*
+
+Copyright (C) 2018 by Richard Sandberg.
+
+*/
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 

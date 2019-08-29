@@ -1,3 +1,12 @@
+/*
+
+Copyright (C) 2018 by Richard Sandberg.
+
+This is the Windows specific version of rsMetaFont.
+No Unix version exists yet.
+
+*/
+
 #include <Windows.h>
 #include <windowsx.h>
 #include <commctrl.h>

@@ -1,4 +1,10 @@
-﻿#include "mainwindow.h"
+﻿/*
+
+Copyright (C) 2018 by Richard Sandberg.
+
+*/
+
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QMessageBox>

@@ -1,3 +1,12 @@
+/*
+
+Copyright (C) 2018 by Richard Sandberg.
+
+This is the Windows specific version of rsdvitype.
+No Unix version yet, should be easy to add though.
+
+*/
+
 #include <cstring>
 #include <cstdlib>
 #include <io.h>
