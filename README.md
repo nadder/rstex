@@ -61,7 +61,7 @@ will exist some day.
 These programs are copyright (C) 2018 by Richard Sandberg (mylodon at gmail dot com).
 The original tex.web is copyright (C) 1982 by Donald Knuth.
 
-# License,
+# License
 These programs are for educational purpose only, all commercial use
 is strictly forbidden.
 
