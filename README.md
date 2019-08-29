@@ -1,4 +1,4 @@
-# rstex and related programs
+# rsTeX and related programs
 
 
 ## rsTeX
