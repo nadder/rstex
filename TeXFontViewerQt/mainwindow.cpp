@@ -183,86 +183,92 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::do_open_filename(QString the_filename)
 {
-    if (the_filename.length() > 0) {
-        QString olddir = QDir::current().path();
-        bool mf_file = the_filename.endsWith(".mf",Qt::CaseInsensitive);
+    if (the_filename.length() < 1)
+        return;
+
+    QString olddir = QDir::current().path();
+    bool mf_file = the_filename.endsWith(".mf",Qt::CaseInsensitive);
+    if (mf_file) {
+        char cmd[512];
         if (mf_file) {
-            char cmd[512];
-            if (mf_file) {
-                qDebug() << "cwd: " << QDir::current().path();
-                QFileInfo fileinfo(the_filename);
-                sprintf(cmd, "mf \"\\nonstopmode; mode=localfont; input %s\"", qPrintable(the_filename));
+            qDebug() << "cwd: " << QDir::current().path();
+            QFileInfo fileinfo(the_filename);
+            sprintf(cmd, "mf \"\\nonstopmode; mode=localfont; input %s\"", qPrintable(the_filename));
+            qDebug() << "cmd: " << cmd;
+            int ret = system(cmd);
+            qDebug() << "ret is: " << ret;
+            the_filename = fileinfo.baseName();
+            the_filename.append(".600gf");
+
+            QFileInfo gfFileInfo(the_filename);
+
+            if (!gfFileInfo.exists()) {// failed for some reason, try changing current dir
+
+                QDir::setCurrent(fileinfo.canonicalPath());
+                sprintf(cmd, "mf \"\\nonstopmode; mode=localfont; input %s\"", qPrintable(fileinfo.fileName()));
                 qDebug() << "cmd: " << cmd;
                 int ret = system(cmd);
-                qDebug() << "ret is: " << ret;
-                the_filename = fileinfo.baseName();
-                the_filename.append(".600gf");
+                qDebug() << "ret is now: " << ret;
 
-                QFileInfo gfFileInfo(the_filename);
-
-                if (!gfFileInfo.exists()) {// failed for some reason, try changing current dir
-
-                    QDir::setCurrent(fileinfo.canonicalPath());
-                    sprintf(cmd, "mf \"\\nonstopmode; mode=localfont; input %s\"", qPrintable(fileinfo.fileName()));
-                    qDebug() << "cmd: " << cmd;
-                    int ret = system(cmd);
-                    qDebug() << "ret is now: " << ret;
-                    if (!gfFileInfo.exists()) {
-                        QString msg;
-                        msg.sprintf("Could not open '%s'.\nCould be because the gf file is called something else or Metafont failed.", qPrintable(gfFileInfo.fileName()));
-                        QMessageBox::critical(this, "Error", msg);
-                        return;
-                    }
+                QDir::setCurrent(olddir); // restore path
+                if (!gfFileInfo.exists()) {
+                    QString msg;
+                    msg.sprintf("Could not open '%s'.\nCould be because the gf file is called something else or Metafont failed.", qPrintable(gfFileInfo.fileName()));
+                    QMessageBox::critical(this, "Error", msg);
+                    return;
                 }
             }
         }
-        if (the_filename.endsWith("pxl", Qt::CaseInsensitive)) {
-            drawingarea->cur_char = -1;
-            try {
-                ReadPXLFile(qPrintable(the_filename));
-            }
-            catch (...) {
-                return;
-            }
-        }
-
-        if (the_filename.endsWith("gf", Qt::CaseInsensitive)) {
-            drawingarea->cur_char = -1;
-            try {
-                ReadGFFile(qPrintable(the_filename));
-            }
-            catch (...) {
-                return;
-            }
-        }
-
-        if (the_filename.endsWith("pk", Qt::CaseInsensitive)) {
-            drawingarea->cur_char = -1;
-            try {
-                read_pk_file(qPrintable(the_filename));
-            }
-            catch (...) {
-                return;
-            }
-        }
-
-        QDir::setCurrent(olddir); // restore path
-
-        QString sTitle;
-        sTitle = QString("%1 - %2").arg(QApplication::applicationName()).arg(the_filename);
-
-        setWindowTitle(sTitle);
-
-        if (num_chars > 0) {
-            drawingarea->cur_char = 0;
-        }
-        drawingarea->SetZoomBuf(); // update current buffer
-
-        drawingarea->update();
-
-        total_num_fonts_opened++;
-        UpdateStatusbar();
     }
+
+    if (the_filename.endsWith("pxl", Qt::CaseInsensitive)) {
+        drawingarea->cur_char = -1;
+        try {
+            ReadPXLFile(qPrintable(the_filename));
+        }
+        catch (...) {
+            return;
+        }
+    }
+    else
+    if (the_filename.endsWith("gf", Qt::CaseInsensitive)) {
+        drawingarea->cur_char = -1;
+        try {
+            ReadGFFile(qPrintable(the_filename));
+        }
+        catch (...) {
+            return;
+        }
+    }
+    else
+    if (the_filename.endsWith("pk", Qt::CaseInsensitive)) {
+        drawingarea->cur_char = -1;
+        try {
+            read_pk_file(qPrintable(the_filename));
+        }
+        catch (...) {
+            return;
+        }
+    }
+    else {
+        // unknown file extension, just return
+        return;
+    }
+
+    QString sTitle;
+    sTitle = QString("%1 - %2").arg(QApplication::applicationName()).arg(the_filename);
+
+    setWindowTitle(sTitle);
+
+    if (num_chars > 0) {
+        drawingarea->cur_char = 0;
+    }
+    drawingarea->SetZoomBuf(); // update current buffer
+
+    drawingarea->update();
+
+    total_num_fonts_opened++;
+    UpdateStatusbar();
 }
 
 void MainWindow::on_actionOpen_triggered()
