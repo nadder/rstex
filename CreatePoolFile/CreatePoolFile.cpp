@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 	for (int i = 2; i < argc; i++) {
 		std::string filename = argv[i];
 		std::string outfilename = filename + ".out";
-		std::ofstream output_file(outfilename);
+		std::ofstream output_file(outfilename.c_str());
 		if (!output_file) {
 			std::cerr << "Error opening " << outfilename << " aborting.\n";
 			return 1;
@@ -293,7 +293,7 @@ int main(int argc, char **argv)
 		filename += ".out";
 		std::string outfilename = filename + ".out";
 
-		std::ofstream out_file(outfilename);
+		std::ofstream out_file(outfilename.c_str());
 		if (!out_file) {
 			std::cerr << "Error opening " << outfilename << " aborting.\n";
 			return 1;
