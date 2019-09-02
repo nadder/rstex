@@ -161,7 +161,7 @@ int main(int argc, char **argv)
 			std::cerr << "Error opening " << outfilename << " aborting.\n";
 			return 1;
 		}
-		std::ifstream filein(filename);
+		std::ifstream filein(filename.c_str());
 		if (!filein) {
 			std::cerr << "Error opening " << filename << " aborting.\n";
 			return 1;
@@ -298,7 +298,7 @@ int main(int argc, char **argv)
 			std::cerr << "Error opening " << outfilename << " aborting.\n";
 			return 1;
 		}
-		std::ifstream filein(filename);
+		std::ifstream filein(filename.c_str());
 		std::string sline;
 
 		
