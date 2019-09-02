@@ -2,6 +2,8 @@
 
 
 ## rsTeX
+[![Build Status](https://travis-ci.com/nadder/rstex.svg?branch=master)](https://travis-ci.com/nadder/rstex)
+
 This is a manual translation of tex.web version 3.14159265 into standard C++.
 Mostly it's a direct translation of the original pascal source with very minimal changes.
 The amount of C++ (that is not also C) used is very minimal. Notably I added an array
