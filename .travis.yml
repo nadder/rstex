@@ -1,0 +1,7 @@
+language: cpp
+compiler: gcc
+
+script:
+  - g++ -o cpf CreatePoolFile/CreatePoolFile.cpp
+  - ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
+  - g++ -o rstex rstex.cpp
