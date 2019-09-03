@@ -64,7 +64,11 @@ void DrawingArea::SetZoomBuf()
     height = char_info[cur_char].height;
     if (width == 0 && height == 0)
         return; // empty raster
-    zoom_raster(zoom_factor, width, height, image_raster[cur_char], zoomed_buf);
+    zoom_raster(zoom_factor,
+                width,
+                height,
+                image_raster[cur_char],
+                zoomed_buf);
     width *= zoom_factor;
     height *= zoom_factor;
 
@@ -72,7 +76,7 @@ void DrawingArea::SetZoomBuf()
     const int nfill = (8 - width % 8)%8;
     std::vector<eight_bits> new_buf;
     if (nfill > 0) {
-        const int new_size = 1*((width+7)/8)*height;
+        const unsigned new_size = 1*((width+7)/8)*height;
         //char unsigned * const new_buf = (unsigned char *)malloc(new_size);
         new_buf.resize(new_size);
         for (int yy = 0; yy < height; yy++) {
@@ -116,7 +120,7 @@ void draw_grid(QPainter& painter, int start_x, int start_y, int end_x, int end_y
 }
 
 
-void DrawingArea::paintEvent(QPaintEvent *event)
+void DrawingArea::paintEvent(QPaintEvent */*event*/)
 {
     QPainter painter(this);
      painter.setBackgroundMode(Qt::TransparentMode);

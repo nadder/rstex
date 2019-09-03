@@ -31,6 +31,6 @@ void read_pk_file(char const * filename);
 void ReadGFFile(char const *filename);
 void ReadPXLFile(char const *filename);
 void zoom_raster(int zoom_factor, int width, int height, std::vector<eight_bits>& raster, std::vector<eight_bits>& out_raster);
-bool get_image_raster_bit(int bit_offset, std::vector<eight_bits>& raster);
-void set_image_raster_bit(bool set, int bit_offset, std::vector<eight_bits>& raster);
+bool get_image_raster_bit(unsigned bit_offset, std::vector<eight_bits>& raster);
+void set_image_raster_bit(bool set, unsigned bit_offset, std::vector<eight_bits>& raster);
 #endif // READ_FONTS_H

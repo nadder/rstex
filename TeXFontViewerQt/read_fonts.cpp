@@ -122,7 +122,7 @@ static eight_bits bit_weight; // weight of the current bit
 eight_bits pk_byte()
 {
 	eight_bits temp;
-	temp=fgetc(pk_file); pk_loc++; return temp;
+    temp=static_cast<unsigned char>(fgetc(pk_file)); pk_loc++; return temp;
 }
 // 36
 int get_16()
@@ -233,20 +233,20 @@ int pk_packed_num()
 	}
 }
 
-void set_image_raster_bit(bool set, int bit_offset, std::vector<eight_bits>& raster)
+void set_image_raster_bit(bool set, unsigned bit_offset, std::vector<eight_bits>& raster)
 {
-	int byte_index = bit_offset / 8;
-	int bit_index = 7 - bit_offset % 8; // bit_offset 0 is the most significant bit in the byte
+    unsigned byte_index = bit_offset / 8;
+    unsigned bit_index = 7 - bit_offset % 8; // bit_offset 0 is the most significant bit in the byte
 	if (set)
 		raster[byte_index] |= (1 << bit_index);
 	else 
 		raster[byte_index] &= ~(1 << bit_index);
 }
 
-bool get_image_raster_bit(int bit_offset, std::vector<eight_bits>& raster)
+bool get_image_raster_bit(unsigned bit_offset, std::vector<eight_bits>& raster)
 {
-	int byte_index = bit_offset / 8;
-	int bit_index = 7 - bit_offset % 8; // bit_offset 0 is the most significant bit in the byte
+    unsigned byte_index = bit_offset / 8;
+    unsigned bit_index = 7 - bit_offset % 8; // bit_offset 0 is the most significant bit in the byte
 	return (raster[byte_index] & (1 << bit_index)) != 0;
 }
 
@@ -268,7 +268,7 @@ void copy_row(int width, int /*height*/, int row_to_copy, int n_rows_to_copy, st
 
 void zoom_raster(int zoom_factor, int width, int height, std::vector<eight_bits>& raster, std::vector<eight_bits>& out_raster)
 {
-	int new_size = (zoom_factor*width*zoom_factor*height+7)/8;
+    size_t new_size = size_t((zoom_factor*width*zoom_factor*height+7)/8);
 	out_raster.resize(new_size);
 	int src_offset = 0;
 	int dest_offset = 0;
@@ -307,7 +307,7 @@ void read_pk_file(char const * filename)
     fprintf(log_file,"'\n"); design_size=get_32(); fprintf(log_file,"Design size = %d\n",design_size);
     checksum=get_32(); fprintf(log_file,"Checksum = %d\n",checksum); hppp=get_32(); vppp=get_32();
     fprintf(log_file,"Resolution: horizontal = %d  vertical = %d",hppp,vppp);
-    magnification=(int)round(hppp*72.27/65536); fprintf(log_file,"  (%d dpi)\n",magnification);
+    magnification=int(round(hppp*72.27/65536)); fprintf(log_file,"  (%d dpi)\n",magnification);
 	if (hppp!=vppp) printf("Warning:  aspect ratio not 1:1!\n");
 	// Read preamble
 
@@ -683,15 +683,15 @@ void ReadPXLFile(char const *filename)
 			char_info[raster_char_index].tfm_width = cc_info[3]/(1024.0*1024.0) * (design_size/(1024.0*1024.0)) * 200.0/72.27*magnification/1000.0;
 
 			long cur_pos = ftell(pxl_file);
-			fseek(pxl_file, rasterpointer*4, SEEK_SET);
-			int words_per_row = (w+31)/32;
-			for (int row = 0; row < h; row++) {
-				for (int row_word = 0; row_word < words_per_row; row_word++) {
+            fseek(pxl_file, (int)rasterpointer*4, SEEK_SET);
+            unsigned words_per_row = (w+31)/32;
+            for (unsigned row = 0; row < h; row++) {
+                for (unsigned row_word = 0; row_word < words_per_row; row_word++) {
 					unsigned int cur_word = read_big_endian_32bit(pxl_file);
 
 					for (unsigned bit = 31; bit < 32; bit--) {
-						int cur_bit = (cur_word >> bit) & 1u;
-						int col = row_word*32+31-bit;
+                        unsigned cur_bit = (cur_word >> bit) & 1u;
+                        unsigned col = row_word*32+31-bit;
 						if (col >= w)
 							break;
 						set_image_raster_bit(cur_bit, row*w+col, image_raster[raster_char_index]);
