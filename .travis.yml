@@ -12,4 +12,4 @@ script:
   - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
   - $CXX -o rstex -std=c++11 rstex_unix/rstex.cpp
   - qmake TeXFontViewerQt/TeXFontViewerQt.pro
-  - make -C TeXFontViewerQt
+  - make
