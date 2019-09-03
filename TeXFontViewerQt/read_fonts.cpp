@@ -11,6 +11,7 @@ Copyright (C) 2018 by Richard Sandberg.
 #include <QDir>
 #include <mainwindow.h>
 #include <cmath>
+#include <cassert>
 #include "read_fonts.h"
 
 
