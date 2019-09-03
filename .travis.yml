@@ -11,5 +11,8 @@ script:
   - $CXX -o rstex -std=c++11 rstex.cpp
   - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
   - $CXX -o rstex -std=c++11 rstex_unix/rstex.cpp
-  - qmake TeXFontViewerQt/TeXFontViewerQt.pro
+  - cd TeXFontViewerQt
+  - qmake TeXFontViewerQt.pro
   - make
+  - cd ..
+
