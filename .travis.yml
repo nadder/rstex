@@ -1,7 +1,15 @@
 language: cpp
 compiler: gcc
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install qt5-default
+
 script:
-  - g++ -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
+  - $CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
   - ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
-  - g++ -o rstex -std=c++11 rstex.cpp
+  - $CXX -o rstex -std=c++11 rstex.cpp
+  - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
+  - $CXX -o rstex -std=c++11 rstex_unix/rstex.cpp
+  - qmake TeXFontViewerQt/TeXFontViewerQt.pro
+  - make -C TeXFontViewerQt
