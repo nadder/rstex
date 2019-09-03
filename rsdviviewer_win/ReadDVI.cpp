@@ -11,6 +11,7 @@
 #include "ReadDVI.h"
 #include "ReadDVIinternal.h"
 
+#pragma warning(disable:4390)
 
 int myabs(int x)
 {
@@ -190,7 +191,7 @@ int index_from_charcode(const Font *f, int charcode)
 
 	for (size_t i = 0; i < f->Char.size(); i++) {
 		if (f->Char[i].char_code == charcode)
-			return i;
+			return static_cast<int>(i);
 	}
 	return -1;
 }
@@ -1340,8 +1341,8 @@ void AddCharacterToPage(int page, int font_index, int charactercode, int pixel_x
 	}
 	character.x = pixel_x;
 	character.y = pixel_y;
-	character.x += resolution; //resolution in ppi, offset one inch, seems to be standard that dvi-drivers do this, don't know why
-	character.y += resolution;
+	character.x += static_cast<int>(resolution); //resolution in ppi, offset one inch, seems to be standard that dvi-drivers do this, don't know why
+	character.y += static_cast<int>(resolution);
 	PageCharVector[page].push_back(character);
 
 }
@@ -1349,8 +1350,8 @@ void AddCharacterToPage(int page, int font_index, int charactercode, int pixel_x
 void AddRuleToPage(int page, int pixel_x, int pixel_y, int width, int height)
 {
 	Rule rule;
-	rule.x = pixel_x+resolution;
-	rule.y = pixel_y+resolution;
+	rule.x = static_cast<int>(pixel_x+resolution);
+	rule.y = static_cast<int>(pixel_y+resolution);
 	rule.width = width;
 	rule.height = height;
 	PageRuleVector[page].push_back(rule);
