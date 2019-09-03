@@ -15,6 +15,9 @@ some day...
 #include "resource.h"
 #include "ReadDVI.h"
 
+// double to int warning
+#pragma warning(disable:4244)
+
 // use new common controls
 #pragma comment(linker, "/manifestdependency:\"type='win32' \
     name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
@@ -112,23 +115,19 @@ void DrawPage(HWND hwnd,
 	bool draw_border)
 {
 	BITMAP bm;
-	RECT rc;
-
-
-
 	SetMapMode(hdc, MM_ISOTROPIC);
 	SetWindowExtEx(hdc, 327670, 327670, NULL);
-	SetViewportExtEx(hdc, 327670*zoom_factor, 327670*zoom_factor, NULL);
+	SetViewportExtEx(hdc, static_cast<int>(327670*zoom_factor), static_cast<int>(327670*zoom_factor), NULL);
 
-	page_pixel_width = page_size_width*resolution;
-	page_pixel_height = page_size_height*resolution;
+	page_pixel_width = static_cast<int>(page_size_width*resolution);
+	page_pixel_height = static_cast<int>(page_size_height*resolution);
 
 
 	SetViewportOrgEx(hdc, -xCurrentScroll, -yCurrentScroll, NULL);
 
 	if (draw_border)
 		Rectangle(hdc, 0, 0, page_pixel_width, page_pixel_height);
-	HRGN hRgn = CreateRectRgn(0,0, page_pixel_width*zoom_factor, page_pixel_height*zoom_factor);
+	HRGN hRgn = CreateRectRgn(0,0, static_cast<int>(page_pixel_width*zoom_factor), static_cast<int>(page_pixel_height*zoom_factor));
 	SelectClipRgn(hdc, hRgn);
 
 	if (PageCharVector.size() == 0)
@@ -169,7 +168,7 @@ void DrawCharacterAt(HWND hwnd, HDC hdc, const Font *f, int index, int x, int y)
 	GetClientRect(hwnd, &rc);
 	SetMapMode(hdc, MM_ISOTROPIC);
 	SetWindowExtEx(hdc, 327670, 327670, NULL);
-	SetViewportExtEx(hdc, 327670*zoom_factor, 327670*zoom_factor, NULL);
+	SetViewportExtEx(hdc, static_cast<int>(327670*zoom_factor), static_cast<int>(327670*zoom_factor), NULL);
 	GetObject(f->Char[index].hBitmap, sizeof bm, &bm);
 	HDC hdcBitmap = CreateCompatibleDC(hdc);
 	int x_offset = f->Char[index].min_m;
@@ -197,7 +196,7 @@ HWND CreateStatusBar(HWND hwndParent, int idStatus, HINSTANCE hinst)
 		WS_CHILD | WS_VISIBLE,
 		0,0,0,0,
 		hwndParent,
-		(HMENU) idStatus,
+		(HMENU) (INT_PTR)idStatus,
 		hinst,
 		NULL);
 
@@ -217,7 +216,7 @@ HWND CreateStatusBar(HWND hwndParent, int idStatus, HINSTANCE hinst)
 }
 
 
-BOOL CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static char buf[256];
 	switch(msg) {
@@ -236,7 +235,7 @@ BOOL CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						GetDlgItemText(hwndDlg, IDC_EDIT1, buf, sizeof buf);
 						double dtmp = strtod(buf, NULL);
 						if (dtmp != 0.0)
-							resolution = dtmp;
+							resolution = static_cast<float>(dtmp);
 
 					}
 				// fall through
@@ -249,7 +248,7 @@ BOOL CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
-BOOL CALLBACK MyDialogProc3(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK MyDialogProc3(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static char buf[256];
 	switch(msg) {
@@ -279,7 +278,7 @@ BOOL CALLBACK MyDialogProc3(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam
 	}
 	return FALSE;
 }
-BOOL CALLBACK MyDialogProc2(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK MyDialogProc2(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static char buf[256];
 	switch(msg) {
@@ -500,7 +499,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch(uMsg) {
 
 		case WM_CREATE:
-			if (GetWindowLong(hwnd, GWL_HWNDPARENT) == NULL) {
+			if (GetWindowLongPtr(hwnd, GWLP_HWNDPARENT) == NULL) {
 				hwndStatus = CreateStatusBar(hwnd, ID_STATUS_BAR, ghInst);
 
 				const char *class_name = "DVIViewWindow";
@@ -639,14 +638,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						pd.hwndOwner = hwnd;
 						pd.Flags = PD_RETURNDC;
 						pd.nMinPage = 1;
-						pd.nMaxPage = PageCharVector.size();
+						pd.nMaxPage = static_cast<WORD>(PageCharVector.size());
 						
 						if (!PrintDlg(&pd)) break;;
 						hdcPrinter = pd.hDC;
 						int logPixelsX = GetDeviceCaps(hdcPrinter, LOGPIXELSX);
 
 						if (fabs((double)logPixelsX - resolution) > 1.0) {
-							resolution = (double)logPixelsX;
+							resolution = (float)logPixelsX;
 							ReadDVIFile(cur_dvi_filename);
 							SCROLLINFO si = {0};
 							RECT rc;
