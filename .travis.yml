@@ -1,18 +1,25 @@
 language: cpp
-compiler: gcc
-
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install qt5-default
-
-script:
-  - $CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
-  - ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
-  - $CXX -o rstex -std=c++11 rstex.cpp
-  - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
-  - $CXX -o rstex -std=c++11 rstex_unix/rstex.cpp
-  - cd TeXFontViewerQt
-  - qmake TeXFontViewerQt.pro
-  - make
-  - cd ..
-
+matrix:
+  include:
+      - os: linux
+        dist: trusty
+        compiler: gcc
+        before_install:
+          - sudo apt-get update
+          - sudo apt-get install qt5-default
+        script:
+          - $CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
+          - ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
+          - $CXX -o rstex -std=c++11 rstex.cpp
+          - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
+          - $CXX -o rstex -std=c++11 rstex_unix/rstex.cpp
+          - cd TeXFontViewerQt
+          - qmake TeXFontViewerQt.pro
+          - make
+          - cd ..
+      - os: windows
+        script:
+          - $CXX /EHsc /Fecpf /std:c++14 CreatePoolFile\CreatePoolFile.cpp
+          - cpf TEX_STRING rsmetafont_win\rsMetaFont.cpp.pre rsmetafont_win\rsMetaFont.h.pre
+          - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsDevCmd.bat" -host_arch=amd64 -arch=amd64
+          - msbuild rsmetafont_win\rsMetaFont.vcxproj
