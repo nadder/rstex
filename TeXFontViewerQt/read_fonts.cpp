@@ -740,8 +740,6 @@ void ReadGFFile(char const *filename)
 	int m = 0, n = 0; // cur col, row - 0 - based
 	Array<int, 0, 8> power;
 	const int virgin = 0;
-	const int located = 1;
-	const int sent = 2;
 	eight_bits gf_com;
     int gf_ch=0;
     int max_n=0, min_n=0, max_m=0, min_m=0;
