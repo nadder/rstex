@@ -197,7 +197,7 @@ HWND CreateStatusBar(HWND hwndParent, int idStatus, HINSTANCE hinst)
 		WS_CHILD | WS_VISIBLE,
 		0,0,0,0,
 		hwndParent,
-		(HMENU) idStatus,
+		(HMENU) (INT_PTR)idStatus,
 		hinst,
 		NULL);
 
@@ -349,7 +349,7 @@ INT_PTR CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			{
 				case NM_CUSTOMDRAW:
 					{
-						int ctl_id = ((LPNMHDR)lParam)->idFrom;
+						UINT_PTR ctl_id = ((LPNMHDR)lParam)->idFrom;
 						if (ctl_id == IDC_BTN_BLACK_COLOR ||
 							ctl_id == IDC_BTN_WHITE_COLOR ||
 							ctl_id == IDC_BTN_GRID_COLOR || 
@@ -481,7 +481,7 @@ INT_PTR CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
 LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	int ret = 0;
+	LRESULT ret = 0;
 	static HWND hwndStatus;
 	WaitForSingleObject(hMutex, INFINITE);
 	switch(msg) {
@@ -1232,8 +1232,8 @@ bool init_terminal(int argc, char **argv)
 		for (int i = 1; i < argc; i++) {
 			if (argv[i][0] == '-') // skip
 				continue;
-			int j = 0;
-			int k = strlen(argv[i]) - 1;
+			size_t j = 0;
+			size_t k = strlen(argv[i]) - 1;
 			while (k > 0 && argv[i][k] == ' ')
 				k--;
 			while (j <= k) {
@@ -7522,7 +7522,7 @@ void fin_offset_prep(pointer p, halfword k, pointer w, int x0, int x1, int x2, i
 			t = crossing_point(0,-t1,-t2);
 			if (t < fraction_one)
 			{ 
-				split_for_offset(p,t); right_type(link(p)) = k;
+				split_for_offset(p,t); right_type(link(p)) = (quarterword)k;
 				v = t_of_the_way(x1,x2); x1 = t_of_the_way(x0,x1); x2 = t_of_the_way(x1,v);
 				v = t_of_the_way(y1,y2); y1 = t_of_the_way(y0,y1); y2 = t_of_the_way(y1,v);
 			}
@@ -9914,7 +9914,7 @@ found: cur_sym = id_lookup(k, loc - k);
 	#pragma endregion
 
 	#pragma region <Finish getting the symbolic token in |cur_sym|; |goto restart| if it is illegal>
-	cur_cmd = eq_type(cur_sym); cur_mod = equiv(cur_sym);
+	cur_cmd = (eight_bits)eq_type(cur_sym); cur_mod = equiv(cur_sym);
 	if (cur_cmd >= outer_tag)
 		if (check_outer_validity()) cur_cmd = cur_cmd - outer_tag;
 		else goto restart;
@@ -12146,7 +12146,7 @@ mycontinue:
 				mac_name = cur_sym; add_mac_ref(c);
 			}
 			get_x_next(); scan_primary();
-			if (d != secondary_primary_macro) do_binary(p,c);
+			if (d != secondary_primary_macro) do_binary(p,(quarterword)c);
 			else  {
 				back_input(); binary_mac(p,c,mac_name);
 				ref_count(c)--; get_x_next(); goto restart;
@@ -12188,7 +12188,7 @@ mycontinue:
 			mac_name = cur_sym; add_mac_ref(c);
 		}
 		get_x_next(); scan_secondary();
-		if (d != tertiary_secondary_macro) do_binary(p,c);
+		if (d != tertiary_secondary_macro) do_binary(p,(quarterword)c);
 		else  { 
 			back_input(); binary_mac(p,c,mac_name);
 			ref_count(c)--; get_x_next(); goto restart;
@@ -12499,7 +12499,7 @@ mycontinue:
 					#pragma endregion
 				else { 
 					get_x_next(); scan_tertiary();
-					if (d != expression_tertiary_macro) do_binary(p,c);
+					if (d != expression_tertiary_macro) do_binary(p,(quarterword)c);
 					else {
 						back_input(); binary_mac(p,c,mac_name);
 						ref_count(c)--; get_x_next(); goto restart;
@@ -15634,7 +15634,7 @@ void set_tag(halfword c, small_number t, halfword r)
 		char_tag[c] = t; char_remainder[c] = r;
 		if (t == lig_tag)
 		{
-			label_ptr++; label_loc[label_ptr] = r; label_char[label_ptr] = c;
+			label_ptr++; label_loc[label_ptr] = r; label_char[label_ptr] = (eight_bits)c;
 		}
 	}
 	else 
