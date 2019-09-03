@@ -19,7 +19,5 @@ matrix:
           - cd ..
       - os: windows
         script:
-          - $CXX /EHsc /Fecpf /std:c++14 CreatePoolFile\CreatePoolFile.cpp
-          - cpf TEX_STRING rsmetafont_win\rsMetaFont.cpp.pre rsmetafont_win\rsMetaFont.h.pre
-          - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsDevCmd.bat" -host_arch=amd64 -arch=amd64
-          - msbuild rsmetafont_win\rsMetaFont.vcxproj
+          - cd rsmetafont_win
+          - build.bat
