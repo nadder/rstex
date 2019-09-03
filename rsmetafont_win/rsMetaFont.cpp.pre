@@ -322,7 +322,7 @@ void ReplaceColor(HDC hDC, RECT *rcReplaceArea, COLORREF clrColorReplace, COLORR
 
 
 
-BOOL CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 
 	switch(msg) {
