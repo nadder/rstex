@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{2269E738-12D3-49EE-8A8D-C4FF8959DCAF}</ProjectGuid>
-    <RootNamespace>rsDVIViewer</RootNamespace>
+    <RootNamespace>DVIViewer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -130,7 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ReadDVI.cpp" />
-    <ClCompile Include="rsDVIViewer.cpp" />
+    <ClCompile Include="DVIViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ReadDVI.h" />
@@ -138,7 +138,7 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="rsDVIViewer.rc" />
+    <ResourceCompile Include="DVIViewer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
