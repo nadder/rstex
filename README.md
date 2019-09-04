@@ -53,7 +53,7 @@ can run on both Linux and Windows.
 A small program to view the original TeX font bitmaps (PXL, GF, PK, or MF).
 This program works on both Linux and Windows, and Mac but requires Qt to be installed.
 
-## rsDVIViewer
+## DVIViewer
 Far from complete program to read DVI files, only for Windows at the moment but perhaps a Qt version
 will exist some day.
 
