@@ -1,9 +1,7 @@
+[![Build Status](https://travis-ci.com/nadder/rstex.svg?branch=master)](https://travis-ci.com/nadder/rstex)
 # rsTeX and related programs
 
-
 ## rsTeX
-[![Build Status](https://travis-ci.com/nadder/rstex.svg?branch=master)](https://travis-ci.com/nadder/rstex)
-
 This is a manual translation of tex.web version 3.14159265 into standard C++.
 Mostly it's a direct translation of the original pascal source with very minimal changes.
 The amount of C++ (that is not also C) used is very minimal. Notably I added an array
@@ -33,13 +31,13 @@ and makes a string pool file.
 After this preprocessing we are left with three files rstex.h, rstex.cpp, and tex.pool.
 rstex.cpp can then be compiled by any non-ancient C++ compiler, and the executable can be run.
 
-Notable omissions:
+#### Notable omissions
 * Currently no path searching is done so all files the program needs are supposed
   to exist in the current directory. (See the Unix and Windows specific versions to avoid this).
 * No other files needed for a complete system is included, i.e. fmt files, fonts, tfm files
   macro packages etc.
 
-Disclaimer:
+#### Disclaimer
 This is NOT the official version of TeX, it is only based upon the official version of TeX.
 It may contain bugs not present in the official version. It does pass the trip test,
 but the trip test does not test everything. In no way shall the author of this program
