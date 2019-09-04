@@ -1,1 +1,1 @@
-cl.exe /EHsc rsDviType.cpp
+cl.exe /EHsc /Za rsDviType.cpp
