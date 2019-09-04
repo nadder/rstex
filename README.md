@@ -2,7 +2,7 @@
 # rsTeX and related programs
 
 ## rsTeX
-This is a manual translation of tex.web version 3.14159265 into standard C++.
+This is a manual translation of [tex.web](https://ctan.org/pkg/tex) version 3.14159265 into standard C++.
 Mostly it's a direct translation of the original pascal source with very minimal changes.
 The amount of C++ (that is not also C) used is very minimal. Notably I added an array
 class to keep the same indexing as in the original and to also get boundschecking.
@@ -46,12 +46,12 @@ It is not meant to be a working typesetting system, it is meant for educational 
 for those who want to understand how this complex software works.
 
 ## rsMetaFont
-I have also translated mf.web, currently only for windows, but the plan is to make a Qt version which
+I have also translated [mf.web](https://ctan.org/pkg/metafont), currently only for windows, but the plan is to make a Qt version which
 can run on both Linux and Windows.
 
 ## TeXFontViewerQt
 A small program to view the original TeX font bitmaps (PXL, GF, PK, or MF).
-This program works on both Linux and Windows, and Mac but requires Qt to be installed.
+This program works on both Linux and Windows, and Mac but requires [Qt](https://www.qt.io) to be installed.
 
 ## DVIViewer
 Far from complete program to read DVI files, only for Windows at the moment but perhaps a Qt version
