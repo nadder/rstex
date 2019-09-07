@@ -7,7 +7,6 @@ matrix:
         before_install:
           - sudo apt-get update
           - sudo apt-get install qt5-default
-        env: QMAKE_CXX=$CXX QMAKE_LINK=$CXX
         script:
           - $CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
           - ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
@@ -15,7 +14,7 @@ matrix:
           - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
           - $CXX -o rstex -std=c++11 rstex_unix/rstex.cpp
           - cd TeXFontViewerQt
-          - qmake TeXFontViewerQt.pro
+          - qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX TeXFontViewerQt.pro
           - make
           - cd ..
       - os: linux
@@ -24,7 +23,6 @@ matrix:
         before_install:
           - sudo apt-get update
           - sudo apt-get install qt5-default
-        env: QMAKE_CXX=clang++ QMAKE_LINK=clang++
         script:
           - $CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
           - ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
@@ -32,7 +30,7 @@ matrix:
           - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
           - $CXX -o rstex -std=c++11 -Wno-dangling-else rstex_unix/rstex.cpp
           - cd TeXFontViewerQt
-          - qmake TeXFontViewerQt.pro
+          - qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX TeXFontViewerQt.pro
           - make
           - cd ..
       - os: windows
