@@ -3,9 +3,10 @@ matrix:
   include:
       - os: linux
         dist: trusty
-        compiler: 
+        compilers:
           - gcc
           - clang
+          - icc
         before_install:
           - sudo apt-get update
           - sudo apt-get install qt5-default
