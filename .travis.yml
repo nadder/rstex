@@ -30,7 +30,7 @@ matrix:
           - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
           - $CXX -o rstex -std=c++11 -Wno-dangling-else rstex_unix/rstex.cpp
           - cd TeXFontViewerQt
-          - qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX TeXFontViewerQt.pro
+          - qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX CXXFLAGS+=-Wno-inconsistent-missing-override TeXFontViewerQt.pro
           - make
           - cd ..
       - os: windows
