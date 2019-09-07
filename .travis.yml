@@ -1,29 +1,41 @@
 language: cpp
-os: linux
-dist: trusty
-compiler: 
-- clang
-- gcc
-before_install:
-- sudo apt-get update
-- sudo apt-get install qt5-default
-script:
-- $CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
-- ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
-- $CXX -o rstex -std=c++11 rstex.cpp
-- ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
-- $CXX -o rstex -std=c++11 rstex_unix/rstex.cpp
-- cd TeXFontViewerQt
-- qmake TeXFontViewerQt.pro
-- make
-- cd ..
-
 matrix:
   include:
-      - os: windows
+      - os: linux
+        dist: trusty
+        compiler: gcc
         before_install:
-        compiler:
-        dist:
+          - sudo apt-get update
+          - sudo apt-get install qt5-default
+        env: QMAKE_CXX=$CXX QMAKE_LINK=$CXX
+        script:
+          - $CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
+          - ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
+          - $CXX -o rstex -std=c++11 rstex.cpp
+          - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
+          - $CXX -o rstex -std=c++11 rstex_unix/rstex.cpp
+          - cd TeXFontViewerQt
+          - qmake TeXFontViewerQt.pro
+          - make
+          - cd ..
+      - os: linux
+        dist: trusty
+        compiler: clang
+        before_install:
+          - sudo apt-get update
+          - sudo apt-get install qt5-default
+        env: QMAKE_CXX=$CXX QMAKE_LINK=$CXX
+        script:
+          - $CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
+          - ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
+          - $CXX -o rstex -std=c++11 rstex.cpp
+          - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
+          - $CXX -o rstex -std=c++11 -Wno-dangling-else rstex_unix/rstex.cpp
+          - cd TeXFontViewerQt
+          - qmake TeXFontViewerQt.pro
+          - make
+          - cd ..
+      - os: windows
         script:
           - cd rsmetafont_win
           - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64 && build.bat'
@@ -40,3 +52,4 @@ matrix:
           - cd rsdvitype_win
           - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64 && build.bat'
           - cd ..
+          
