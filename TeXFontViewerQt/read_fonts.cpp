@@ -17,7 +17,7 @@ Copyright (C) 2018 by Richard Sandberg.
 
 #define incr(s) (s)++
 
-
+#define UNUSED(x) (void)x
 
 static FILE *pk_file;
 static FILE *gf_file;
@@ -639,6 +639,7 @@ void ReadPXLFile(char const *filename)
 	fseek(pxl_file, -20, SEEK_END);
 
 	checksum = read_big_endian_32bit(pxl_file);
+	UNUSED(checksum);
 	magnification = read_big_endian_32bit(pxl_file);
 	design_size = read_big_endian_32bit(pxl_file);
 	dir_pointer = read_big_endian_32bit(pxl_file);
@@ -731,12 +732,12 @@ void ReadGFFile(char const *filename)
 	int post_loc;
 	int q;
 	int design_size;
-	int check_sum;
+	int check_sum=0;
 	int hppp;
 	int vppp;
 	int cur_char_tfm_width;
-	int cur_char_dx;
-	int cur_char_dy;
+	int cur_char_dx=0;
+	int cur_char_dy=0;
 	int m = 0, n = 0; // cur col, row - 0 - based
 	Array<int, 0, 8> power;
 	const int virgin = 0;
@@ -755,6 +756,9 @@ void ReadGFFile(char const *filename)
 	int save_pos;
 	int save_com;
 
+	UNUSED(check_sum);
+	UNUSED(cur_char_dy);
+	UNUSED(gf_ch);
 	num_chars = 0;
 
 
