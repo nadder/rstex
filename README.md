@@ -65,3 +65,5 @@ The original tex.web is copyright (C) 1982 by Donald Knuth.
 These programs are for educational purpose only, all commercial use
 is strictly forbidden.
 
+# Donate
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/nadder1)
