@@ -10931,17 +10931,14 @@ void begin_name()
 // 771
 bool more_name(ASCII_code c)
 {
-	if (c == TEX_STRING(" ")) return false;
+	if (c == TEX_STRING(" ") || c == tab) return false;
 	else {
-		str_room(1); append_char(c);
-		if (c == TEX_STRING("/")) {
-			area_delimiter = cur_length;
-			ext_delimiter = 0;
+		if (c == TEX_STRING("\")) {
+			area_delimiter = pool_ptr; ext_delimiter = 0;
 		}
-		else if (c == TEX_STRING(".") && ext_delimiter == 0)
-			ext_delimiter = cur_length;
+		else if (c == TEX_STRING(".") && ext_delimiter == 0) ext_delimiter = pool_ptr;
+		str_room(1); append_char(c); // contribute |c| to the current string
 		return true;
-
 	}
 }
 
