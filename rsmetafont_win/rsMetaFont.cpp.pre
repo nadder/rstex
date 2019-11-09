@@ -13,6 +13,8 @@ No Unix version exists yet.
 #include <io.h>
 #include <iostream>
 #include <ctime>
+#include <climits>
+#include <cstring>
 #include "resource.h"
 #include "rsMetaFont.h"
 
@@ -73,7 +75,7 @@ void pack_real_name_of_file(char **cpp)
 		}
 		if (*p == 0) *cpp = NULL;
 		else *cpp = p + 1;
-		*real_name++ = '\\';
+		*real_name++ = '/';
 	}
 	p = name_of_file.get_c_str();
 
@@ -108,7 +110,7 @@ bool test_access(int filepath)
 		exit(1);
 		break;
 	}
-	if (name_of_file[1] == '\\' || (isalpha(name_of_file[1]) && name_of_file[2] == ':'))
+	if (name_of_file[1] == '\\' || name_of_file[1] == '/' || (isalpha(name_of_file[1]) && name_of_file[2] == ':'))
 		cur_path_place = NULL;
 	do {
 		pack_real_name_of_file(&cur_path_place);
@@ -203,7 +205,12 @@ HWND CreateStatusBar(HWND hwndParent, int idStatus, HINSTANCE hinst)
 
 		GetClientRect(hwndParent, &rcClient);
 		hloc = LocalAlloc(LHND, sizeof(int) * cParts);
+		if (!hloc) return NULL;
 		paParts = (PINT)LocalLock(hloc);
+		if (!paParts) {
+			LocalFree(hloc);
+			return NULL;
+		}
 
 		paParts[0] = 120;
 		paParts[1] = -1;
@@ -1048,7 +1055,7 @@ void initialize()
 	loop_ptr = null;
 
 	// 776
-	strcpy(MF_base_default.get_c_str(), "plain.base");
+	//strcpy(MF_base_default.get_c_str(), "plain.base");
 
 	// 797
 	cur_exp = 0;
@@ -10999,7 +11006,8 @@ void pack_buffered_name(small_number n, int a, int b)
 	int k; // number of positions filled in name_of_file
 	ASCII_code c; // number of positions filled in name_of_file
 	int j; // index into buffer or MF_base_default
-
+	int base_default_length = (int)strlen(MF_base_default);
+	
 	if (n + b - a + 1 + base_ext_length > file_name_size)
 		b = a + file_name_size - n - 1 - base_ext_length;
 	k = 0;
@@ -11018,6 +11026,7 @@ void pack_buffered_name(small_number n, int a, int b)
 bool open_base_file()
 {
 	int j; // 0..buf_size, the first space after the file name
+	int base_default_length = (int)strlen(MF_base_default);
 	j = loc;
 	if (buffer[loc] == TEX_STRING("&")) {
 		loc++; j = loc; buffer[last] = TEX_STRING(" ");
@@ -11026,13 +11035,13 @@ bool open_base_file()
 		if (w_open_in(&base_file)) goto found;
 		pack_buffered_name(base_area_length, loc, j - 1); // now try the system base file area
 		if (w_open_in(&base_file)) goto found;
-		wake_up_terminal(); wterm_ln_s("Sorry, I can\'t find that base; will try PLAIN.");
+		wake_up_terminal(); wterm_ln_s("Sorry, I can't find that base; will try PLAIN.");
 		update_terminal();
 
 	}
 	pack_buffered_name(base_default_length - base_ext_length, 1, 0);
 	if (!w_open_in(&base_file)) {
-		wake_up_terminal(); wterm_ln_s("I can\'t find the PLAIN base file!");
+		wake_up_terminal(); wterm_ln_s("I can't find the PLAIN base file!");
 		return false;
 	}
 found:
@@ -16360,7 +16369,7 @@ bool load_base_file()
 
 	return true;
 off_base:
-	wake_up_terminal(); wterm_ln_s("(Fatal base file error; I\'m stymied)");
+	wake_up_terminal(); wterm_ln_s("(Fatal base file error; I'm stymied)");
 	return false;
 }
 
@@ -16802,7 +16811,7 @@ void close_files_and_terminate()
 		#pragma region <Output statistics about this job 1208>
 	{
 		if (log_opened) {
-			wlog_ln_s(" "); wlog_ln_s("Here is how much of METAFONT\'s memory you used:");
+			wlog_ln_s(" "); wlog_ln_s("Here is how much of METAFONT's memory you used:");
 			fprintf(log_file, " %d string", max_str_ptr - init_str_ptr);
 			if (max_str_ptr != init_str_ptr + 1) wlog_s("s");
 			fprintf(log_file, " out of %d\n", max_strings - init_str_ptr);
@@ -17219,7 +17228,7 @@ int main(int argc, char**argv)
 	if (int_packets + 17 * int_increment > bistack_size) bad = 32;
 
 	// 777
-	if (base_default_length > file_name_size) bad = 41;
+	if (strlen(MF_base_default) + 1 > file_name_size) bad = 41;
 
 
 	#pragma endregion

@@ -43,7 +43,7 @@ struct Array
 
 
 // 2
-#define banner "This is rsMETAFONT, Version 0.1" // printed when METAFONT starts
+#define banner "This is rsMETAFONT, Version 0.1 Windows" // printed when METAFONT starts
 
 
 
@@ -1625,17 +1625,13 @@ pool_pointer ext_delimiter; // the relevant '.', if any
 
 
 // 775
-const int base_default_length = 11; // length of MF_base_default string strlen("plain.base")+1, NOTE: used to be 18
+//const int base_default_length = 11; // length of MF_base_default string strlen("plain.base")+1, NOTE: used to be 18
 const int base_area_length = 0; // length of its area part, NOTE: used to be 8
 const int base_ext_length = 5; // length of its '.base' part
 #define base_extension TEX_STRING(".base") // the extension as a WEB constant
 
-
-Array<char, 1, base_default_length> MF_base_default;
-
-
-
-
+//Array<char, 1, base_default_length> MF_base_default;
+const char *MF_base_default = "plain.base";
 
 // 782
 str_number job_name; // principal file name

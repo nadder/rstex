@@ -1,0 +1,658 @@
+/*
+
+Copyright (C) 2018 by Richard Sandberg.
+
+This is the Windows specific version of rsGFtoDVI.
+
+*/
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
+#include <array>
+
+#define array_size maxindex - minindex + 1
+template<typename T, int minindex, int maxindex>
+struct Array
+{
+	T& operator[](int x) {
+		assert(x >= minindex && x <= maxindex);
+		return _array[x - minindex];
+	}
+
+	T* get_c_str() {
+		assert(array_size > 0);
+		_array[array_size - 1] = T(0);
+		return &_array[0];
+	}
+	static const int _minindex = minindex;
+	static const int _maxindex = maxindex;	
+	std::array<T, array_size> _array;
+};
+
+
+
+// 1
+#define banner "This is rsGFtoDVI, Version 0.1 for Windows"
+
+// 3
+//#define print(s) write(s)
+//#define print_ln(s) write_ln(s)
+//#define print_nl(s) do {\
+//	write_ln(); write(s);\
+//while (false)
+
+// 5
+const int max_labels=2000; //{maximum number of labels and dots and rules per character}
+const int pool_size=10000; //{maximum total length of labels and other strings}
+const int max_strings=1100; //{maximum number of labels and other strings}
+const int terminal_line_length=150; //{maximum number of characters input in a single line of input from the terminal}
+const int file_name_size=500; //{a file name shouldn't be longer than this}
+const int font_mem_size=2000; //{space for font metric data}
+const int dvi_buf_size=800; //{size of the output buffer; must be a multiple of 8}
+const int widest_row=8192; //{maximum number of pixels per row}
+const int lig_lookahead=20; //{size of stack used when inserting ligature characters}
+
+// 7
+#define incr(n)  n=n+1 //{increase a variable by unity}
+#define decr(n)  n=n-1 //{decrease a variable by unity}
+#define loop  while(true) //{repeat over and over until a |goto| happens}
+#define do_nothing
+
+// 8
+#define abort(s) do {\
+	fprintf(stdout, " %s\n",s); jump_out();\
+} while (false)
+#define bad_gf(n) do {\
+	char temp[300];\
+	sprintf(temp, "Bad GF file: %s%s%d%s",n,"! (at byte ",cur_loc-1,")");\
+	abort(temp);\
+} while (false)
+
+// 9
+const int unity = 0200000; //{|scaled| representation of 1.0}
+typedef int scaled; // {fixed-point numbers
+
+// 10
+typedef unsigned char ASCII_code; // {eight-bit numbers, a subrange of the integers}
+
+// 11
+typedef unsigned char text_char; //{the data type of characters in text files}
+const int first_text_char=0; //{ordinal number of the smallest element of |text_char|}
+const int last_text_char=255; //{ordinal number of the largest element of |text_char|}
+
+typedef FILE* text_file;
+
+
+
+
+// 12
+Array<ASCII_code, 0, 255> xord; // {specifies conversion of input characters}
+Array<text_char, 0, 255> xchr; // {specifies conversion of output characters}
+  
+// 16
+Array<text_char, 0, terminal_line_length> buffer;
+#define term_in stdin
+
+// 18
+int buf_ptr; // 0..terminal_line_length, the number of characters read
+int line_length; // 0..terminal_line_length, end of line read by input_ln
+
+// 22
+
+// 23
+const int dvi_id_byte=2; //{identifies the kind of \.{DVI} files described here}
+
+// 29
+const int gf_id_byte = 131; //{identifies the kind of \.{GF} files described here}
+
+// 30
+enum dvi_op
+{
+// 22
+	set1=128, //{typeset a character and move right}
+	put_rule=137, //{typeset a rule}
+	bop=139, //{beginning of page}
+	eop=140, //{ending of page}
+	push=141, //{save the current positions}
+	pop=142, //{restore previous positions}
+	right4=146, //{move right}
+	down4=160, //{move down}
+	z0=166, //{move down |z|}
+	z4=170, //{move down and set |z|}
+	fnt_num_0=171, //{set current font to 0}
+	fnt_def1=243, //{define the meaning of a font number}
+	pre=247, //{preamble}
+	post=248, //{postamble beginning}
+	post_post=249, //{postamble ending}
+
+// 30
+	paint_0=0, //{beginning of the \\{paint} commands}
+	paint1=64, //{move right a given number of columns, then black${}\swap{}$white}
+	paint2=65, //{ditto, with potentially larger number of columns}
+	paint3=66, //{ditto, with potentially excessive number of columns}
+	boc=67, //{beginning of a character}
+	boc1=68, //{abbreviated |boc|}
+	eoc=69, //{end of a character}
+	skip0=70, //{skip no blank rows}
+	skip1=71, //{skip over blank rows}
+	skip2=72, //{skip over lots of blank rows}
+	skip3=73, //{skip over a huge number of blank rows}
+	new_row_0=74, //{move down one row and then right}
+	xxx1=239, //{for \&{special} strings}
+	xxx2=240, //{for somewhat long \&{special} strings}
+	xxx3=241, //{for extremely long \&{special} strings}
+	xxx4=242, //{for incredibly long \&{special} strings}
+	yyy=243, //{for \&{numspecial} numbers}
+	no_op=244, //{no operation}
+
+};
+
+
+// 37
+int lf,lh,bc,ec,nw,nh,nd,ni,nl,nk,ne,np; //:0..@'77777; {subfile sizes}
+
+// 41
+const int no_tag=0; //{vanilla character}
+const int lig_tag=1; //{character has a ligature/kerning program}
+const int list_tag=2; //{character has a successor in a charlist}
+const int ext_tag=3; //{character is extensible}
+
+// 42
+const int stop_flag=128; //{value indicating `\.{STOP}' in a lig/kern program}
+const int kern_flag=128; //{op code for a kern step}
+
+// 45
+typedef unsigned char eight_bits; // {unsigned one-byte quantity}
+typedef FILE* byte_file; // {files that contain binary data}
+
+
+// 46
+byte_file gf_file; //{the character data we are reading}
+byte_file dvi_file; //{the typesetting instructions we are writing}
+byte_file tfm_file; //{a font metric file}
+
+// 48
+int cur_loc; //{current byte number in |gf_file|}
+Array<char, 1, file_name_size> name_of_file;//{external file name}
+Array<char, 1, file_name_size+1> real_name_of_file; 
+
+// 49
+eight_bits b0, b1, b2, b3; //{four bytes input at once}
+
+// 52
+const int min_quarterword = 0; // {change this to allow efficient packing, if necessary}
+const int max_quarterword = 255; // {ditto}
+#define qi(s) s+min_quarterword // {to put an eight_bit item into a quarterword}
+#define qo(s) s-min_quarterword // {to take an eight_bit item out of a quarterword}
+const int title_font = 1;
+const int label_font = 2;
+const int gray_font = 3;
+const int slant_font = 4;
+const int logo_font = 5;
+#define non_char qi(256)
+#define non_address font_mem_size
+
+typedef int font_index; // 0..font_mem_size
+typedef unsigned char quarterword; // min_quarterword..max_quarterword
+
+typedef struct {
+	quarterword b0;
+	quarterword b1;
+	quarterword b2;
+	quarterword b3;
+} four_quarters;
+
+typedef struct
+{
+	union {
+		scaled sc;
+		four_quarters qqqq;
+	};
+} memory_word;
+
+typedef int internal_font_number; // title_font..logo_font
+
+
+
+// 53
+Array<memory_word, 0, font_mem_size> font_info; //{the font metric data}
+font_index fmem_ptr; //{first unused word of |font_info|}
+Array<four_quarters, title_font, logo_font> font_check;//{check sum}
+Array<scaled, title_font, logo_font> font_size;//{``at'' size}
+Array<scaled, title_font, logo_font> font_dsize;//{``design'' size}
+Array<eight_bits, title_font, logo_font> font_bc;//{beginning (smallest) character code}
+Array<eight_bits, title_font, logo_font> font_ec;//{ending (largest) character code}
+Array<int, title_font, logo_font> char_base;//{base addresses for |char_info|}
+Array<int, title_font, logo_font> width_base;//{base addresses for widths}
+Array<int, title_font, logo_font> height_base;//{base addresses for heights}
+Array<int, title_font, logo_font> depth_base;//{base addresses for depths}
+Array<int, title_font, logo_font> italic_base;//{base addresses for italic corrections}
+Array<int, title_font, logo_font> lig_kern_base;//{base addresses for ligature/kerning programs}
+Array<int, title_font, logo_font> kern_base;//{base addresses for kerns}
+Array<int, title_font, logo_font> exten_base;//{base addresses for extensible recipes}
+Array<int, title_font, logo_font> param_base;//{base addresses for font parameters}
+Array<font_index, title_font, logo_font> bchar_label;//{start of |lig_kern| program for left boundary character, |non_address| if there is none}
+Array<int, title_font, logo_font> font_bchar;//{right boundary character, |non_char| if there is none}
+
+
+// 55
+// char_info_end(#)==#].qqqq
+#define char_info(s1,s2) font_info[char_base[s1]+s2].qqqq
+//@d char_width_end(#)==#.b0].sc
+#define char_width(s1,s2) font_info[width_base[s1]+s2.b0].sc
+#define char_exists(s) (s.b0>min_quarterword)
+// char_italic_end(#)==(qo(#.b2)) div 4].sc
+#define char_italic(s1,s2) font_info[italic_base[s1]+(qo(s2.b2)) div 4].sc
+#define height_depth(s) qo(s.b1)
+//char_height_end(#)==(#) div 16].sc
+#define char_height(s1, s2) font_info[height_base[s1]+(s2) / 16].sc
+//@d char_depth_end(#)==# mod 16].sc
+#define char_depth(s1, s2) font_info[depth_base[s1]+s2 % 16].sc
+#define char_tag(s) ((qo(s.b2)) % 4)
+#define skip_byte(s) qo(s.b0)
+#define next_char(s) s.b1
+#define op_byte(s) qo(s.b2)
+#define rem_byte(s) s.b3
+
+// 56
+#define lig_kern_start(s1,s2) lig_kern_base[s1]+rem_byte(s2) //{beginning of lig/kern program}
+//@d lig_kern_restart_end(#)==256*(op_byte(#))+rem_byte(#)
+#define lig_kern_restart(s1,s2) lig_kern_base[s1]+256*(op_byte(s2))+rem_byte(s2)
+//@d char_kern_end(#)==256*(op_byte(#)-128)+rem_byte(#)].sc
+#define char_kern(s1,s2) font_info[kern_base[s1]+256*(op_byte(s2)-128)+rem_byte(s2)].sc
+
+
+
+
+// 57
+//@d param_end(#)==param_base[#]].sc
+#define param(s1,s2) font_info[s1+param_base[s2]].sc
+#define slant(s) param(1, s) //{slant to the right, per unit distance upward}
+#define space(s) param(2, s) //{normal space between words}
+#define x_height(s) param(5,s) //{one ex}
+#define default_rule_thickness(s) param(8,s) //{thickness of rules}
+
+
+// 58
+const int bad_tfm = 11; // {label for |read_font_info|}
+
+#define abend goto bad_tfm //{do this when the \.{TFM} data is wrong}
+
+// 60
+#define read_two_halves(s1,s2) read_tfm_word(); s1=b0*256+b1; s2=b2*256+b3
+
+// 62
+#define store_four_quarters(s) do {\
+	read_tfm_word();\
+	qw.b0=qi(b0); qw.b1=qi(b1); qw.b2=qi(b2); qw.b3=qi(b3);\
+	s=qw;\
+} while (false);
+
+// 64
+#define store_scaled(s) do {\
+	read_tfm_word();\
+	sw=(((((b3*z)/0400)+(b2*z))/0400)+(b1*z))/ beta;\
+	if (b0==0) s=sw; else if (b0==255) s=sw-alpha; else abend;\
+} while (false)
+
+// 66
+#define check_byte_range(s) do {\
+	if (s<bc || s>ec) abend;\
+} while (false)
+
+
+// 69
+#define adjust(s) s[f]=qo(s[f]) //{correct for the excess |min_quarterword| that was added}
+
+
+// 70
+typedef int pool_pointer; // 0..pool_size {for variables that point into str_pool
+typedef int str_number; // 0..max_strings {for variables that point into str_start
+
+
+// 71
+Array<ASCII_code, 0, pool_size> str_pool; //{the characters}
+Array<pool_pointer, 0, max_strings> str_start; //{the starting pointers}
+pool_pointer pool_ptr; //{first unused position in |str_pool|}
+str_number str_ptr; //{start of the current string being created}
+str_number init_str_ptr; //{|str_ptr| setting when a new character starts}
+
+
+
+#define init_str0(s0) first_string(s0)
+#define init_str1(s1, s0) buffer[1] = s1; init_str0(s0)
+#define init_str2(s2, s1, s0) buffer[2] = s2; init_str1(s1,s0)
+#define init_str3(s3, s2, s1, s0) buffer[3] = s3; init_str2(s2, s1, s0)
+#define init_str4(s4, s3, s2, s1, s0) buffer[4] = s4; init_str3(s3, s2, s1,s0)
+#define init_str5(s5, s4, s3, s2, s1, s0) buffer[5] = s5; init_str4(s4, s3, s2, s1, s0)
+#define init_str6(s6, s5, s4, s3, s2, s1, s0) buffer[6] = s6; init_str5(s5, s4, s3, s2, s1, s0)
+#define init_str7(s7, s6, s5, s4, s3, s2, s1, s0) buffer[7] = s7; init_str6(s6, s5, s4, s3, s2, s1, s0)
+#define init_str8(s8, s7, s6, s5, s4, s3, s2, s1, s0) buffer[8] = s8; init_str7(s7, s6, s5, s4, s3, s2, s1, s0)
+#define init_str9(s9, s8, s7, s6, s5, s4, s3, s2, s1, s0) buffer[9] = s9; init_str8(s8, s7, s6, s5, s4, s3, s2, s1, s0)
+#define init_str10(s10, s9, s8, s7, s6, s5, s4, s3, s2, s1, s0) buffer[10] = s10; init_str9(s9, s8, s7, s6, s5, s4, s3, s2, s1, s0)
+#define init_str11(s11, s10, s9, s8, s7, s6, s5, s4, s3, s2, s1, s0) buffer[11] = s11; init_str10(s10, s9, s8, s7, s6, s5, s4, s3, s2, s1, s0)
+#define init_str12(s12, s11, s10, s9, s8, s7, s6, s5, s4, s3, s2, s1, s0) buffer[12] = s12; init_str11(s11, s10, s9, s8, s7, s6, s5, s4, s3, s2, s1, s0)
+#define init_str13(s13, s12, s11, s10, s9, s8, s7, s6, s5, s4, s3, s2, s1, s0) buffer[13] = s13; init_str12(s12, s11, s10, s9, s8, s7, s6, s5, s4, s3, s2, s1, s0)
+const int longest_keyword = 13;
+
+// 72
+#define length(s) (str_start[s+1]-str_start[s]) //{the number of characters in string number \#}
+
+
+// 73
+//{put |ASCII_code| \# at the end of |str_pool|}
+#define append_char(s) do {\
+	str_pool[pool_ptr]=s; incr(pool_ptr);\
+} while (false)
+
+//{make sure that the pool hasn't overflowed}
+#define str_room(s) do {\
+	if (pool_ptr+s > pool_size)\
+		abort("Too many strings!");\
+} while (false)
+
+
+// 76
+int l; //{length of string being made by |first_string|}
+
+// 77
+const int null_string=0; //{the empty keyword}
+const int area_code=4; //{add to font code for the `\.{area}' keywords}
+const int at_code=8; //{add to font code for the `\.{at}' keywords}
+const int rule_code=13; //{code for the keyword `\.{rule}'}
+const int title_code=14; //{code for the keyword `\.{title}'}
+const int rule_thickness_code=15; //{code for the keyword `\.{rulethickness}'}
+const int offset_code=16; //{code for the keyword `\.{offset}'}
+const int x_offset_code=17; //{code for the keyword `\.{xoffset}'}
+const int y_offset_code=18; //{code for the keyword `\.{yoffset}'}
+const int max_keyword=18; //{largest keyword code number}
+
+// 78
+const int gf_ext=max_keyword+1; //{string number for `\.{.gf}'}
+const int dvi_ext=max_keyword+2; //{string number for `\.{.dvi}'}
+const int tfm_ext=max_keyword+3; //{string number for `\.{.tfm}'}
+const int page_header=max_keyword+4; //{string number for `\.{\ \ Page\ }'}
+const int char_header=max_keyword+5; //{string number for `\.{\ \ Character\ }'}
+const int ext_header=max_keyword+6; //{string number for `\.{\ \ Ext\ }'}
+const int left_quotes=max_keyword+7; //{string number for `\.{\ \ ``}'}
+const int right_quotes=max_keyword+8; //{string number for `\.{''}'}
+const int equals_sign=max_keyword+9; //{string number for `\.{ = }'}
+const int plus_sign=max_keyword+10; //{string number for `\.{ + (}'}
+const int default_title_font=max_keyword+11; //{string number for the default |title_font|}
+const int default_label_font=max_keyword+12; //{string number for the default |label_font|}
+const int default_gray_font=max_keyword+13; //{string number for the default |gray_font|}
+const int logo_font_name=max_keyword+14; //{string number for the font with \MF\ logo}
+const int small_logo=max_keyword+15; //{string number for `\.{METAFONT}'}
+const int home_font_area=max_keyword+16; //{string number for system-dependent font area}
+
+
+// 79
+typedef int keyword_code; // null_string..no_operation
+
+const int no_operation = max_keyword+1;
+
+///////////////////////////////////////////////////////////////////////////
+// System specific addition on Windows
+
+//const int read_access_mode=4; // ``read'' mode for test_access
+//const int write_access_mode=2; // ``write'' mode for test_access
+
+#define MAX_INPUT_CHARS 700
+#define default_input_path ".;..;c:\\tex\\local\\lib"
+#define MAX_OTH_PATH_CHARS 200
+#define default_font_path "c:\\tex\\fonts"
+#define default_format_path ".;c:\\tex\\local\\tex"
+#define default_pool_path ".;c:\\tex\\local\\tex"
+
+char input_path[MAX_INPUT_CHARS] = default_input_path;
+char font_path[MAX_OTH_PATH_CHARS] = default_font_path;
+char format_path[MAX_OTH_PATH_CHARS] = default_format_path;
+char pool_path[MAX_OTH_PATH_CHARS] = default_pool_path;
+
+const int no_file_path = 0;
+const int input_file_path = 1;
+const int read_file_path = 2;
+const int font_file_path = 3;
+const int format_file_path = 4;
+const int pool_file_path = 5;
+///////////////////////////////////////////////////////////////////////////
+
+
+// 80
+eight_bits cur_gf; //{the byte most recently read from |gf_file|}
+str_number cur_string; //{the string following a keyword and space}
+eight_bits label_type; //{the character following a null keyword and space}
+
+// 86
+str_number cur_name; //{name of file just scanned}
+str_number cur_area; //{file area just scanned, or |null_string|}
+str_number cur_ext; //{file extension just scanned, or |null_string|}
+
+// 87
+pool_pointer area_delimiter; //{the most recent `\.>' or `\.:', if any}
+pool_pointer ext_delimiter; //{the relevant `\..', if any}
+
+// 92
+#define append_to_name(s) do {\
+	c = s; incr(k);\
+	if (k<=file_name_size) name_of_file[k] = xchr[c];\
+} while (false)
+
+// 93
+str_number job_name; //{principal file name}
+
+// 96
+bool interaction; //{is the user allowed to type specials online?}
+bool fonts_not_loaded; //{have the \.{TFM} files still not been input?}
+Array<str_number, title_font, logo_font> font_name; //{current font names}
+Array<str_number, title_font, logo_font> font_area; //{current font areas}
+Array<scaled, title_font, logo_font> font_at; //{current font ``at'' sizes}
+
+#define check_fonts if (fonts_not_loaded) load_fonts()
+
+// 102
+int total_pages; //{the number of pages that have been shipped out}
+scaled max_v; //{maximum height-plus-depth of pages shipped so far}
+scaled max_h; //{maximum width of pages shipped so far}
+int last_bop; //{location of previous |bop| in the \.{DVI} output}
+
+// 104
+typedef int dvi_index; // 0..dvi_buf_size
+
+
+// 105
+Array<eight_bits, 0, dvi_buf_size> dvi_buf; //{buffer for \.{DVI} output}
+dvi_index half_buf; //{half of |dvi_buf_size|}
+dvi_index dvi_limit; //{end of the current half buffer}
+dvi_index dvi_ptr; //{the next available buffer address}
+int dvi_offset; //{|dvi_buf_size| times the number of times the output buffer has been fully emptied}
+
+// 108
+#define dvi_out(s) do {\
+	dvi_buf[dvi_ptr]=s; incr(dvi_ptr);\
+	if (dvi_ptr==dvi_limit) dvi_swap();\
+} while (false)
+
+// 111
+#define select_font(s) dvi_out(fnt_num_0+s) //{set current font to \#}
+
+// 116
+#define set_cur_r if (k<end_k) cur_r=qi(str_pool[k]); else cur_r=bchar
+
+
+
+// 117
+scaled box_width; //{width of box constructed by |hbox|}
+scaled box_height; //{height of box constructed by |hbox|}
+scaled box_depth; //{depth of box constructed by |hbox|}
+Array<quarterword, 1, lig_lookahead> lig_stack; //{inserted ligature chars}
+
+
+four_quarters dummy_info; //{fake |char_info| for nonexistent character}
+bool suppress_lig; //{should we bypass checking for ligatures next time?}
+
+// 122
+#define pop_stack do {\
+	decr(stack_ptr);\
+	if (stack_ptr>0) cur_r=lig_stack[stack_ptr];\
+	else set_cur_r;\
+} while (false)
+
+
+// 127
+Array<int, 1, 120> c; //{bit patterns for a gray font}
+Array<int, 1, 120> d; //{the superleading bits}
+Array<int, 0, 13> two_to_the; //{powers of 2}
+
+// 134
+float rule_slant; //{the slant ratio $s$ in the slant font, or zero if there is no slant font}
+int slant_n; //{the number of characters in the slant font}
+float slant_unit; //{the number of scaled points in the slant font unit}
+float slant_reported; //{invalid slant ratio reported to the user}
+
+// 139
+const int null = 0;
+typedef int node_pointer; // null..max_labels
+
+
+// 140
+Array<scaled, 1, max_labels> xl,xr,yt,yb; //{boundary coordinates}
+Array<scaled, 0, max_labels> xx, yy; //{reference coordinates}
+Array<node_pointer, 0, max_labels> prev, next; //{links}
+Array<str_number, 1, max_labels> info; //{associated strings}
+node_pointer max_node; //{the largest node in use}
+scaled max_height; //{greatest difference between |yy| and |yt|}
+scaled max_depth; //{greatest difference between |yb| and |yy|}
+
+// 142
+const int end_of_list=max_labels;
+
+// 149
+node_pointer first_dot; //{the node address where dots begin}
+bool twin; //{is there a nearer dot than the ``nearest'' dot?}
+
+// 154
+#define font_change(s) do {\
+	if (fonts_not_loaded) {\
+		s;\
+	}\
+	else fprintf(stdout, "\n(Tardy font change will be ignored (byte %d)!", cur_loc);\
+} while (false)
+
+// 155
+scaled rule_thickness; //{the current rule thickness (zero means use the default)}
+scaled offset_x,offset_y; //{the current offsets for images}
+scaled x_offset,y_offset; //{the current offsets for labels}
+scaled pre_min_x,pre_max_x,pre_min_y,pre_max_y;
+  //{extreme values of coordinates preceding a character, in \MF\ pixels}
+
+// 158
+node_pointer rule_ptr; //{top of the stack of remembered rules}
+
+#define x0 xl //{starting |x| coordinate of a stored rule}
+#define y0 yt //{starting |y| coordinate (in scaled \MF\ pixels)}
+#define x1 xr //{ending |x| coordinate of a stored rule}
+#define y1 yb //{ending |y| coordinate of a stored rule}
+#define rule_size xx //{thickness of a stored rule, in scaled points}
+
+
+
+
+// 160
+node_pointer label_tail; //{tail of the queue of remembered labels}
+node_pointer title_head,title_tail; //{head and tail of the queue for titles}
+
+#define lab_typ prev //{the type of a stored label (|"/"..."8"|)}
+#define label_head next[end_of_list]
+
+// 166
+int char_code,ext; //{the current character code and extension}
+int min_x,max_x,min_y,max_y; //{character boundaries, in pixels}
+int x,y; //{current painting position, in pixels}
+int z; //{initial painting position in row, relative to |min_x|}
+
+// 168
+float x_ratio,y_ratio,slant_ratio; //{conversion factors}
+float unsc_x_ratio,unsc_y_ratio,unsc_slant_ratio;
+  //{ditto, times |unity|}
+float fudge_factor; //{unconversion factor}
+scaled delta_x,delta_y; //{magic constants used by |convert|}
+scaled dvi_x,dvi_y; //{outputs of |convert|, in scaled points}
+scaled over_col; //{overflow labels start here}
+scaled page_height,page_width; //{size of the current page}
+
+// 173
+const int tol=6554; //{one tenth of a point, in \.{DVI} coordinates}
+
+// 174
+scaled gray_rule_thickness; //{thickness of rules, according to the gray font}
+scaled temp_x,temp_y; //{temporary registers for intermediate calculations}
+
+// 182
+int overflow_line; //{the number of labels that didn't fit, plus~1}
+
+// 183
+scaled delta; //{extra padding to keep labels from being too close}
+scaled half_x_height; //{amount to drop baseline of label below the dot center}
+scaled thrice_x_height; //{baseline separation for overflow labels}
+scaled dot_width, dot_height; //{$w'$ and $h'$ in the discussion above}
+
+// 188
+#define dot_for_label xl
+#define label_for_dot info
+
+// 191
+#define octant xr //{octant code for nearest dot, plus 8 for coincident dots}
+
+// 192
+const int first_octant=0;
+const int second_octant=1;
+const int third_octant=2;
+const int fourth_octant=3;
+const int fifth_octant=7;
+const int sixth_octant=6;
+const int seventh_octant=5;
+const int eighth_octant=4;
+
+// 207
+Array<int, 0, 4095> b; //{largest existing character for a given pattern}
+Array<int, 0, 4095> rho; //{the ``ruler function''}
+// 211
+Array<int, 0, widest_row> a; //{bit patterns for twelve rows}
+
+
+// 212
+int blank_rows;
+  //{rows of blanks carried over from a previous \.{GF} command}
+
+// 215
+#define do_skip z=0; paint_black=false
+#define end_with(s) do {\
+	s; cur_gf=get_byte(); goto done1;\
+} while (false)
+#define five_cases(s) s: case s+1: case s+2: case s+3: case s+4
+#define eight_cases(s) s: case s+1: case s+2: case s+3: case s+4: case s+5: case s+6: case s+7
+#define thirty_two_cases(s) eight_cases(s): case eight_cases(s+8): case eight_cases(s+16): case eight_cases(s+24)
+#define sixty_four_cases(s) thirty_two_cases(s): case thirty_two_cases(s+32)
+
+
+
+// 220
+int k,m,p,q,r,s,t,dx,dy; //{general purpose registers}
+str_number time_stamp; //{the date and time when the input file was made}
+bool use_logo; //{should \MF's logo be put on the title line?}
+
+
+
+
+
+
+
+void dvi_four(int x);
+void dvi_swap();
+
+
+
+
+
+
