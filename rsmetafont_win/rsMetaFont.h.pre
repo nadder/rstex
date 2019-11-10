@@ -43,7 +43,7 @@ struct Array
 
 
 // 2
-#define banner "This is rsMETAFONT, Version 0.1 Windows" // printed when METAFONT starts
+#define banner "This is rsMETAFONT, Version 1.0 Windows" // printed when METAFONT starts
 
 
 

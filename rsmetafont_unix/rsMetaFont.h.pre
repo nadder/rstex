@@ -42,7 +42,7 @@ struct Array
 
 
 // 2
-#define banner "This is rsMETAFONT, Version 0.1 Unix" // printed when METAFONT starts
+#define banner "This is rsMETAFONT, Version 1.0 Unix" // printed when METAFONT starts
 
 // 11
 const int mem_max = 50000;

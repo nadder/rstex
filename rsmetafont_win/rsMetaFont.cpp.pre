@@ -10952,19 +10952,25 @@ bool more_name(ASCII_code c)
 // 772
 void end_name()
 {
-	if (str_ptr + 3 > max_strings) overflow(TEX_STRING("number of strings"), max_strings - init_str_ptr);
-	if (area_delimiter == 0)
-		cur_area = TEX_STRING("");
-	else {
-		cur_area = str_ptr; str_start[str_ptr + 1] = str_start[str_ptr] + area_delimiter; str_ptr++;
+	if (str_ptr+3 > max_str_ptr)
+	{
+		if (str_ptr+3 > max_strings)
+			overflow(TEX_STRING("number of strings"),max_strings-init_str_ptr);
+		max_str_ptr = str_ptr+3;
 	}
-	if (ext_delimiter == 0) {
-		cur_ext = TEX_STRING(""); cur_name = make_string();
+	if (area_delimiter == 0) cur_area = TEX_STRING("");
+	else { 
+		cur_area =str_ptr; str_ptr++;
+		str_start[str_ptr] = area_delimiter+1;
 	}
-	else {
-		cur_name = str_ptr;
-		str_start[str_ptr + 1] = str_start[str_ptr] + ext_delimiter - area_delimiter - 1; str_ptr++;
-		cur_ext = make_string();
+	if (ext_delimiter == 0)
+	{
+		cur_ext = TEX_STRING(""); 
+		cur_name = make_string();
+	}
+	else { 
+		cur_name=str_ptr; str_ptr++;
+		str_start[str_ptr] = ext_delimiter; cur_ext = make_string();
 	}
 }
 
