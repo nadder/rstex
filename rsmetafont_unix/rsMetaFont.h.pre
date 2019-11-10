@@ -34,13 +34,6 @@ struct Array
 	std::array<T, array_size> _array;
 };
 
-
-
-
-
-
-
-
 // 2
 #define banner "This is rsMETAFONT, Version 1.0 Unix" // printed when METAFONT starts
 

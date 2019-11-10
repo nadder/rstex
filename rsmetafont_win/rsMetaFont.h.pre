@@ -35,18 +35,8 @@ struct Array
 	std::array<T, array_size> _array;
 };
 
-
-
-
-
-
-
-
 // 2
 #define banner "This is rsMETAFONT, Version 1.0 Windows" // printed when METAFONT starts
-
-
-
 
 // 11
 const int mem_max = 50000;
