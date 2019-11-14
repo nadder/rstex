@@ -7772,9 +7772,10 @@ void blank_rectangle(screen_col left_col,screen_col right_col, screen_row top_ro
 // 568
 void paint_row(screen_row r, pixel_color b, trans_spec& a, screen_col n)
 {
+
 	screen_col k; //{an index into |a|}
 	screen_col c; //{an index into |screen_pixel|}
-
+/*
 	k = 0; c = a[0];
 	do { 
 		k++;
@@ -7783,6 +7784,7 @@ void paint_row(screen_row r, pixel_color b, trans_spec& a, screen_col n)
 		} while (!(c == a[k]));
 		b = black - b; //{$|black|\swap|white|$}
 	} while (!(k == n));
+*/
 #ifndef NO_INIT
 	fprintf(log_file, "Calling PAINTROW(%d,%d;", r, b);
 	//{this is done only after |init_screen=true|}
