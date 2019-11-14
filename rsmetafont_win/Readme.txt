@@ -12,7 +12,7 @@ To create a plain base file make sure you have plain.mf nearby and run:
 rsMetaFont plain dump
 Now you can start rsMetaFont with
 rsMetaFont -base=plain
-And have plain reloaded.
+and start with plain preloaded.
 
 The following environment variables can be set e.g.:
 MFINPUTS=.;c:\mfinputs
