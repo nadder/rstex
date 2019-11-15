@@ -2,7 +2,7 @@
 
 Copyright (C) 2018 by Richard Sandberg.
 
-This is the Windows specific version of rsGFtoDVI.
+This is the Unix specific version of rsGFtoDVI.
 
 */
 #include <cstdio>
@@ -32,7 +32,7 @@ struct Array
 
 
 // 1
-#define banner "This is rsGFtoDVI, Version 0.1 for Windows"
+#define banner "This is rsGFtoDVI, Version 1.0 for Unix"
 
 // 3
 //#define print(s) write(s)
@@ -81,8 +81,6 @@ const int first_text_char=0; //{ordinal number of the smallest element of |text_
 const int last_text_char=255; //{ordinal number of the largest element of |text_char|}
 
 typedef FILE* text_file;
-
-
 
 
 // 12
@@ -392,17 +390,17 @@ typedef int keyword_code; // null_string..no_operation
 const int no_operation = max_keyword+1;
 
 ///////////////////////////////////////////////////////////////////////////
-// System specific addition on Windows
+// System specific addition on Unix
 
 //const int read_access_mode=4; // ``read'' mode for test_access
 //const int write_access_mode=2; // ``write'' mode for test_access
 
 #define MAX_INPUT_CHARS 700
-#define default_input_path ".;..;c:\\tex\\local\\lib"
+#define default_input_path ".:..:/usr/local/tex"
 #define MAX_OTH_PATH_CHARS 200
-#define default_font_path "c:\\tex\\fonts"
-#define default_format_path ".;c:\\tex\\local\\tex"
-#define default_pool_path ".;c:\\tex\\local\\tex"
+#define default_font_path "/usr/local/tex/fonts"
+#define default_format_path ".:/usr/local/tex/format"
+#define default_pool_path ".;/usr/local/tex"
 
 char input_path[MAX_INPUT_CHARS] = default_input_path;
 char font_path[MAX_OTH_PATH_CHARS] = default_font_path;
@@ -549,10 +547,10 @@ scaled pre_min_x,pre_max_x,pre_min_y,pre_max_y;
 // 158
 node_pointer rule_ptr; //{top of the stack of remembered rules}
 
-#define x0 xl //{starting |x| coordinate of a stored rule}
-#define y0 yt //{starting |y| coordinate (in scaled \MF\ pixels)}
-#define x1 xr //{ending |x| coordinate of a stored rule}
-#define y1 yb //{ending |y| coordinate of a stored rule}
+#define gf_x0 xl //{starting |x| coordinate of a stored rule}
+#define gf_y0 yt //{starting |y| coordinate (in scaled \MF\ pixels)}
+#define gf_x1 xr //{ending |x| coordinate of a stored rule}
+#define gf_y1 yb //{ending |y| coordinate of a stored rule}
 #define rule_size xx //{thickness of a stored rule, in scaled points}
 
 

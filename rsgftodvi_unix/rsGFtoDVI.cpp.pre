@@ -2,13 +2,15 @@
 
 Copyright (C) 2018 by Richard Sandberg.
 
-This is the Windows specific version of rsGFtoDVI.
-No Unix version exists yet, this should be easy to add though.
+This is the Unix specific version of rsGFtoDVI.
 
 */
 
 #include "rsGFtoDVI.h"
-#include <io.h>
+#include <cstring>
+#include <climits>
+#include <cmath>
+#include <unistd.h>
 
 int myabs(int x)
 {
@@ -30,7 +32,7 @@ bool myodd(int c)
 
 
 ///////////////////////////////////////////////////////////////////////////
-// System specific addition for paths on windows
+// System specific addition for paths on unix
 
 void copypath(char *s1, char *s2, int n)
 {
@@ -63,14 +65,14 @@ void pack_real_name_of_file(char **cpp)
 
 	real_name = &real_name_of_file[1];
 	if ((p = *cpp) != NULL) {
-		while ((*p != ';') && (*p != 0)) {
+		while ((*p != ':') && (*p != 0)) {
 			*real_name++ = *p++;
 			if (real_name == &real_name_of_file[file_name_size])
 				break;
 		}
 		if (*p == 0) *cpp = NULL;
 		else *cpp = p + 1;
-		*real_name++ = '\\';
+		*real_name++ = '/';
 	}
 	p = name_of_file.get_c_str();
 	
@@ -103,11 +105,11 @@ bool test_access(int filepath)
 		exit(1);
 		break;
 	}
-	if (name_of_file[1] == '\\' || (isalpha(name_of_file[1]) && name_of_file[2] == ':'))
+	if (name_of_file[1] == '/')
 		cur_path_place = NULL;
 	do {
 		pack_real_name_of_file(&cur_path_place);
-		if (_access(real_name_of_file.get_c_str(), 0) == 0)
+		if (access(real_name_of_file.get_c_str(), 0) == 0)
 			ok = true;
 		else
 			ok = false;
@@ -117,14 +119,6 @@ bool test_access(int filepath)
 }
 
 ///////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
 
 
 void jump_out()
@@ -242,9 +236,9 @@ void initialize()
 	for (i=0177; i <= 0377; i++) xchr[i]='?';
 
 	// 15
-	for (i=first_text_char; i<= last_text_char; i++) xord[i]=/* */32;
+	for (i=first_text_char; i<= last_text_char; i++) xord[i]=TEX_STRING(" ");
 	for (i=1; i<= 0377; i++) xord[xchr[i]]=i;
-	xord['?']=/*?*/63;
+	xord['?']=TEX_STRING("?");
 
 	// 54
 	fmem_ptr=0;
@@ -333,10 +327,10 @@ void hbox(str_number s, internal_font_number f, bool send_it)
 	ASCII_code save_c; //{character temporarily blanked out}
 	box_width=0; box_height=0; box_depth=0;
 	k=str_start[s]; max_k=str_start[s+1];
-	save_c=str_pool[max_k]; str_pool[max_k]=/* */32;
+	save_c=str_pool[max_k]; str_pool[max_k]=TEX_STRING(" ");
 	while (k<max_k)
 	{ 
-		if (str_pool[k]==/* */32) 
+		if (str_pool[k]==TEX_STRING(" ")) 
 			//@<Typeset a space in font |f| and advance~|k|@>
 		{ 
 			box_width=box_width+space(f);
@@ -351,7 +345,7 @@ void hbox(str_number s, internal_font_number f, bool send_it)
 			end_k=k;
 			do { 
 				incr(end_k); 
-			} while (!(str_pool[end_k]==/* */32));
+			} while (!(str_pool[end_k]==TEX_STRING(" ")));
 			kern_amount=0; cur_l=256; stack_ptr=0; bchar=font_bchar[f];
 			set_cur_r; suppress_lig=false;
 		mycontinue: 
@@ -546,13 +540,13 @@ void begin_name()
 // 90
 bool more_name(ASCII_code c)
 {
-	if (c == /* */32) return false;
+	if (c == TEX_STRING(" ")) return false;
 	else {
-		if (c == /*/*/47) {
+		if (c == TEX_STRING("/")) {
 			area_delimiter = pool_ptr;
 			ext_delimiter = 0;
 		}
-		else if (c == /*.*/46 && ext_delimiter == 0)
+		else if (c == TEX_STRING(".") && ext_delimiter == 0)
 			ext_delimiter = pool_ptr;
 		str_room(1); append_char(c);
 		return true;
@@ -693,12 +687,12 @@ void start_gf(int argc, char *argv[])
 		}
 	}
 
-	buf_ptr=0; buffer[line_length]=/*?*/63;
-	while (buffer[buf_ptr] == /* */32) incr(buf_ptr);
+	buf_ptr=0; buffer[line_length]=TEX_STRING("?");
+	while (buffer[buf_ptr] == TEX_STRING(" ")) incr(buf_ptr);
 	if (buf_ptr<line_length)
 	{ 
 		//@<Scan the file name in the buffer@>;
-		if (buffer[line_length-1]==/*/*/47)
+		if (buffer[line_length-1]==TEX_STRING("/"))
 		{ 
 			interaction=true; decr(line_length);
 		}
@@ -760,7 +754,7 @@ keyword_code interpret_xxx()
 		if (j==k) goto done1;
 		if (j==longest_keyword) goto not_found;
 		incr(j); buffer[j]=get_byte();
-		if (buffer[j]==/* */32) goto done1;
+		if (buffer[j]==TEX_STRING(" ")) goto done1;
 	}
 done1:
 	//@<If the keyword in |buffer[1..l]| is known, change |c| and |goto done|@>;
@@ -1011,18 +1005,18 @@ void dvi_scaled(float x)
 	n=int(round(x/6553.6f));
 	if (n<0)
 	{ 
-		dvi_out(/*-*/45); n=-n;
+		dvi_out(TEX_STRING("-")); n=-n;
 	}
 	m=n / 10; k=0;
 	do { 
-		incr(k); buffer[k]=(m % 10)+/*0*/48; m=m / 10;
+		incr(k); buffer[k]=(m % 10)+TEX_STRING("0"); m=m / 10;
 	} while (!(m==0));
 	do { 
 		dvi_out(buffer[k]); decr(k);
 	} while (!(k==0));
 	if (n % 10 != 0)
 	{ 
-		dvi_out(/*.*/46); dvi_out((n % 10)+/*0*/48);
+		dvi_out(TEX_STRING(".")); dvi_out((n % 10)+TEX_STRING("0"));
 	}
 }
 
@@ -1068,8 +1062,8 @@ void load_fonts()
 			input_ln();
 			if (line_length==0) goto done;
 			//@<Search buffer for valid keyword; if successful, |goto found|@>;
-			buf_ptr=0; buffer[line_length]=/* */32;
-			while (buffer[buf_ptr]!=/* */32) incr(buf_ptr);
+			buf_ptr=0; buffer[line_length]=TEX_STRING(" ");
+			while (buffer[buf_ptr]!=TEX_STRING(" ")) incr(buf_ptr);
 			for (m=title_font; m<=slant_font+area_code; m++) 
 				if (length(m)==buf_ptr)
 				{ 
@@ -1535,41 +1529,41 @@ int main(int argc, char *argv[])
 	// 77
 	str_ptr=0; pool_ptr=0; str_start[0]=0;
 	l=0; init_str0(null_string);
-	l=9; init_str9(/*t*/116,/*i*/105,/*t*/116,/*l*/108,/*e*/101,/*f*/102,/*o*/111,/*n*/110,/*t*/116,title_font);
-	l=9; init_str9(/*l*/108,/*a*/97,/*b*/98,/*e*/101,/*l*/108,/*f*/102,/*o*/111,/*n*/110,/*t*/116,label_font);
-	l=8; init_str8(/*g*/103,/*r*/114,/*a*/97,/*y*/121,/*f*/102,/*o*/111,/*n*/110,/*t*/116,gray_font);
-	l=9; init_str9(/*s*/115,/*l*/108,/*a*/97,/*n*/110,/*t*/116,/*f*/102,/*o*/111,/*n*/110,/*t*/116,slant_font);
-	l=13; init_str13(/*t*/116,/*i*/105,/*t*/116,/*l*/108,/*e*/101,/*f*/102,/*o*/111,/*n*/110,/*t*/116,/*a*/97,/*r*/114,/*e*/101,/*a*/97,title_font+area_code);
-	l=13; init_str13(/*l*/108,/*a*/97,/*b*/98,/*e*/101,/*l*/108,/*f*/102,/*o*/111,/*n*/110,/*t*/116,/*a*/97,/*r*/114,/*e*/101,/*a*/97,label_font+area_code);
-	l=12; init_str12(/*g*/103,/*r*/114,/*a*/97,/*y*/121,/*f*/102,/*o*/111,/*n*/110,/*t*/116,/*a*/97,/*r*/114,/*e*/101,/*a*/97,gray_font+area_code);
-	l=13; init_str13(/*s*/115,/*l*/108,/*a*/97,/*n*/110,/*t*/116,/*f*/102,/*o*/111,/*n*/110,/*t*/116,/*a*/97,/*r*/114,/*e*/101,/*a*/97,slant_font+area_code);
-	l=11; init_str11(/*t*/116,/*i*/105,/*t*/116,/*l*/108,/*e*/101,/*f*/102,/*o*/111,/*n*/110,/*t*/116,/*a*/97,/*t*/116,title_font+at_code);
-	l=11; init_str11(/*l*/108,/*a*/97,/*b*/98,/*e*/101,/*l*/108,/*f*/102,/*o*/111,/*n*/110,/*t*/116,/*a*/97,/*t*/116,label_font+at_code);
-	l=10; init_str10(/*g*/103,/*r*/114,/*a*/97,/*y*/121,/*f*/102,/*o*/111,/*n*/110,/*t*/116,/*a*/97,/*t*/116,gray_font+at_code);
-	l=11; init_str11(/*s*/115,/*l*/108,/*a*/97,/*n*/110,/*t*/116,/*f*/102,/*o*/111,/*n*/110,/*t*/116,/*a*/97,/*t*/116,slant_font+at_code);
-	l=4; init_str4(/*r*/114,/*u*/117,/*l*/108,/*e*/101,rule_code);
-	l=5; init_str5(/*t*/116,/*i*/105,/*t*/116,/*l*/108,/*e*/101,title_code);
-	l=13; init_str13(/*r*/114,/*u*/117,/*l*/108,/*e*/101,/*t*/116,/*h*/104,/*i*/105,/*c*/99,/*k*/107,/*n*/110,/*e*/101,/*s*/115,/*s*/115,rule_thickness_code);
-	l=6; init_str6(/*o*/111,/*f*/102,/*f*/102,/*s*/115,/*e*/101,/*t*/116,offset_code);
-	l=7; init_str7(/*x*/120,/*o*/111,/*f*/102,/*f*/102,/*s*/115,/*e*/101,/*t*/116,x_offset_code);
-	l=7; init_str7(/*y*/121,/*o*/111,/*f*/102,/*f*/102,/*s*/115,/*e*/101,/*t*/116,y_offset_code);
+	l=9; init_str9(TEX_STRING("t"),TEX_STRING("i"),TEX_STRING("t"),TEX_STRING("l"),TEX_STRING("e"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),title_font);
+	l=9; init_str9(TEX_STRING("l"),TEX_STRING("a"),TEX_STRING("b"),TEX_STRING("e"),TEX_STRING("l"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),label_font);
+	l=8; init_str8(TEX_STRING("g"),TEX_STRING("r"),TEX_STRING("a"),TEX_STRING("y"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),gray_font);
+	l=9; init_str9(TEX_STRING("s"),TEX_STRING("l"),TEX_STRING("a"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),slant_font);
+	l=13; init_str13(TEX_STRING("t"),TEX_STRING("i"),TEX_STRING("t"),TEX_STRING("l"),TEX_STRING("e"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("a"),TEX_STRING("r"),TEX_STRING("e"),TEX_STRING("a"),title_font+area_code);
+	l=13; init_str13(TEX_STRING("l"),TEX_STRING("a"),TEX_STRING("b"),TEX_STRING("e"),TEX_STRING("l"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("a"),TEX_STRING("r"),TEX_STRING("e"),TEX_STRING("a"),label_font+area_code);
+	l=12; init_str12(TEX_STRING("g"),TEX_STRING("r"),TEX_STRING("a"),TEX_STRING("y"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("a"),TEX_STRING("r"),TEX_STRING("e"),TEX_STRING("a"),gray_font+area_code);
+	l=13; init_str13(TEX_STRING("s"),TEX_STRING("l"),TEX_STRING("a"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("a"),TEX_STRING("r"),TEX_STRING("e"),TEX_STRING("a"),slant_font+area_code);
+	l=11; init_str11(TEX_STRING("t"),TEX_STRING("i"),TEX_STRING("t"),TEX_STRING("l"),TEX_STRING("e"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("a"),TEX_STRING("t"),title_font+at_code);
+	l=11; init_str11(TEX_STRING("l"),TEX_STRING("a"),TEX_STRING("b"),TEX_STRING("e"),TEX_STRING("l"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("a"),TEX_STRING("t"),label_font+at_code);
+	l=10; init_str10(TEX_STRING("g"),TEX_STRING("r"),TEX_STRING("a"),TEX_STRING("y"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("a"),TEX_STRING("t"),gray_font+at_code);
+	l=11; init_str11(TEX_STRING("s"),TEX_STRING("l"),TEX_STRING("a"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("f"),TEX_STRING("o"),TEX_STRING("n"),TEX_STRING("t"),TEX_STRING("a"),TEX_STRING("t"),slant_font+at_code);
+	l=4; init_str4(TEX_STRING("r"),TEX_STRING("u"),TEX_STRING("l"),TEX_STRING("e"),rule_code);
+	l=5; init_str5(TEX_STRING("t"),TEX_STRING("i"),TEX_STRING("t"),TEX_STRING("l"),TEX_STRING("e"),title_code);
+	l=13; init_str13(TEX_STRING("r"),TEX_STRING("u"),TEX_STRING("l"),TEX_STRING("e"),TEX_STRING("t"),TEX_STRING("h"),TEX_STRING("i"),TEX_STRING("c"),TEX_STRING("k"),TEX_STRING("n"),TEX_STRING("e"),TEX_STRING("s"),TEX_STRING("s"),rule_thickness_code);
+	l=6; init_str6(TEX_STRING("o"),TEX_STRING("f"),TEX_STRING("f"),TEX_STRING("s"),TEX_STRING("e"),TEX_STRING("t"),offset_code);
+	l=7; init_str7(TEX_STRING("x"),TEX_STRING("o"),TEX_STRING("f"),TEX_STRING("f"),TEX_STRING("s"),TEX_STRING("e"),TEX_STRING("t"),x_offset_code);
+	l=7; init_str7(TEX_STRING("y"),TEX_STRING("o"),TEX_STRING("f"),TEX_STRING("f"),TEX_STRING("s"),TEX_STRING("e"),TEX_STRING("t"),y_offset_code);
 
 	// 78
-	l=7; init_str7(/*.*/46,/*2*/50,/*6*/54,/*0*/48,/*2*/50,/*g*/103,/*f*/102,gf_ext);
-	l=4; init_str4(/*.*/46,/*d*/100,/*v*/118,/*i*/105,dvi_ext);
-	l=4; init_str4(/*.*/46,/*t*/116,/*f*/102,/*m*/109,tfm_ext);
-	l=7; init_str7(/* */32,/* */32,/*P*/80,/*a*/97,/*g*/103,/*e*/101,/* */32,page_header);
-	l=12; init_str12(/* */32,/* */32,/*C*/67,/*h*/104,/*a*/97,/*r*/114,/*a*/97,/*c*/99,/*t*/116,/*e*/101,/*r*/114,/* */32,char_header);
-	l=6; init_str6(/* */32,/* */32,/*E*/69,/*x*/120,/*t*/116,/* */32,ext_header);
-	l=4; init_str4(/* */32,/* */32,/*`*/96,/*`*/96,left_quotes);
-	l=2; init_str2(/*'*/39,/*'*/39,right_quotes);
-	l=3; init_str3(/* */32,/*=*/61,/* */32,equals_sign);
-	l=4; init_str4(/* */32,/*+*/43,/* */32,/*(*/40,plus_sign);
-	l=4; init_str4(/*c*/99,/*m*/109,/*r*/114,/*8*/56,default_title_font);
-	l=6; init_str6(/*c*/99,/*m*/109,/*t*/116,/*t*/116,/*1*/49,/*0*/48,default_label_font);
-	l=4; init_str4(/*g*/103,/*r*/114,/*a*/97,/*y*/121,default_gray_font);
-	l=5; init_str5(/*l*/108,/*o*/111,/*g*/103,/*o*/111,/*8*/56,logo_font_name);
-	l=8; init_str8(/*M*/77,/*E*/69,/*T*/84,/*A*/65,/*F*/70,/*O*/79,/*N*/78,/*T*/84,small_logo);
+	l=7; init_str7(TEX_STRING("."),TEX_STRING("2"),TEX_STRING("6"),TEX_STRING("0"),TEX_STRING("2"),TEX_STRING("g"),TEX_STRING("f"),gf_ext);
+	l=4; init_str4(TEX_STRING("."),TEX_STRING("d"),TEX_STRING("v"),TEX_STRING("i"),dvi_ext);
+	l=4; init_str4(TEX_STRING("."),TEX_STRING("t"),TEX_STRING("f"),TEX_STRING("m"),tfm_ext);
+	l=7; init_str7(TEX_STRING(" "),TEX_STRING(" "),TEX_STRING("P"),TEX_STRING("a"),TEX_STRING("g"),TEX_STRING("e"),TEX_STRING(" "),page_header);
+	l=12; init_str12(TEX_STRING(" "),TEX_STRING(" "),TEX_STRING("C"),TEX_STRING("h"),TEX_STRING("a"),TEX_STRING("r"),TEX_STRING("a"),TEX_STRING("c"),TEX_STRING("t"),TEX_STRING("e"),TEX_STRING("r"),TEX_STRING(" "),char_header);
+	l=6; init_str6(TEX_STRING(" "),TEX_STRING(" "),TEX_STRING("E"),TEX_STRING("x"),TEX_STRING("t"),TEX_STRING(" "),ext_header);
+	l=4; init_str4(TEX_STRING(" "),TEX_STRING(" "),TEX_STRING("`"),TEX_STRING("`"),left_quotes);
+	l=2; init_str2(TEX_STRING("'"),TEX_STRING("'"),right_quotes);
+	l=3; init_str3(TEX_STRING(" "),TEX_STRING("="),TEX_STRING(" "),equals_sign);
+	l=4; init_str4(TEX_STRING(" "),TEX_STRING("+"),TEX_STRING(" "),TEX_STRING("("),plus_sign);
+	l=4; init_str4(TEX_STRING("c"),TEX_STRING("m"),TEX_STRING("r"),TEX_STRING("8"),default_title_font);
+	l=6; init_str6(TEX_STRING("c"),TEX_STRING("m"),TEX_STRING("t"),TEX_STRING("t"),TEX_STRING("1"),TEX_STRING("0"),default_label_font);
+	l=4; init_str4(TEX_STRING("g"),TEX_STRING("r"),TEX_STRING("a"),TEX_STRING("y"),default_gray_font);
+	l=5; init_str5(TEX_STRING("l"),TEX_STRING("o"),TEX_STRING("g"),TEX_STRING("o"),TEX_STRING("8"),logo_font_name);
+	l=8; init_str8(TEX_STRING("M"),TEX_STRING("E"),TEX_STRING("T"),TEX_STRING("A"),TEX_STRING("F"),TEX_STRING("O"),TEX_STRING("N"),TEX_STRING("T"),small_logo);
 
 	// 88	
 	l=0; init_str0(home_font_area);
@@ -1591,15 +1585,15 @@ int main(int argc, char *argv[])
 	dvi_four(1000); //{magnification factor}
 	dvi_out(k); use_logo=false; s=str_start[str_ptr];
 	for (m=1; m<= k; m++) dvi_out(str_pool[s+m-1]);
-	if (str_pool[s] == /* */32)
-		if (str_pool[s+1] == /*M*/77)
-			if (str_pool[s+2]==/*E*/69)
-				if (str_pool[s+3]==/*T*/84)
-					if (str_pool[s+4]==/*A*/65)
-						if (str_pool[s+5]==/*F*/70)
-							if (str_pool[s+6]==/*O*/79)
-								if (str_pool[s+7]==/*N*/78)
-									if (str_pool[s+8]==/*T*/84)
+	if (str_pool[s] == TEX_STRING(" "))
+		if (str_pool[s+1] == TEX_STRING("M"))
+			if (str_pool[s+2]==TEX_STRING("E"))
+				if (str_pool[s+3]==TEX_STRING("T"))
+					if (str_pool[s+4]==TEX_STRING("A"))
+						if (str_pool[s+5]==TEX_STRING("F"))
+							if (str_pool[s+6]==TEX_STRING("O"))
+								if (str_pool[s+7]==TEX_STRING("N"))
+									if (str_pool[s+8]==TEX_STRING("T"))
 									{ 
 										incr(str_ptr); str_start[str_ptr]=s+9; use_logo=true;
 									} //{we will substitute `\MF' for \.{METAFONT}}
@@ -1646,15 +1640,15 @@ int main(int argc, char *argv[])
 				case rule_code:
 					//@<Store a rule@>;
 					p=get_avail(); next[p]=rule_ptr; rule_ptr=p;
-					x0[p]=get_yyy(); y0[p]=get_yyy(); x1[p]=get_yyy(); y1[p]=get_yyy();
-					if (x0[p]<pre_min_x) pre_min_x=x0[p];
-					if (x0[p]>pre_max_x) pre_max_x=x0[p];
-					if (y0[p]<pre_min_y) pre_min_y=y0[p];
-					if (y0[p]>pre_max_y) pre_max_y=y0[p];
-					if (x1[p]<pre_min_x) pre_min_x=x1[p];
-					if (x1[p]>pre_max_x) pre_max_x=x1[p];
-					if (y1[p]<pre_min_y) pre_min_y=y1[p];
-					if (y1[p]>pre_max_y) pre_max_y=y1[p];
+					gf_x0[p]=get_yyy(); gf_y0[p]=get_yyy(); gf_x1[p]=get_yyy(); gf_y1[p]=get_yyy();
+					if (gf_x0[p]<pre_min_x) pre_min_x=gf_x0[p];
+					if (gf_x0[p]>pre_max_x) pre_max_x=gf_x0[p];
+					if (gf_y0[p]<pre_min_y) pre_min_y=gf_y0[p];
+					if (gf_y0[p]>pre_max_y) pre_max_y=gf_y0[p];
+					if (gf_x1[p]<pre_min_x) pre_min_x=gf_x1[p];
+					if (gf_x1[p]>pre_max_x) pre_max_x=gf_x1[p];
+					if (gf_y1[p]<pre_min_y) pre_min_y=gf_y1[p];
+					if (gf_y1[p]>pre_max_y) pre_max_y=gf_y1[p];
 					rule_size[p]=rule_thickness;
 					//@<Store a rule@>;
 					break;
@@ -1679,7 +1673,7 @@ int main(int argc, char *argv[])
 					break;
 				case null_string:
 					//@<Store a label@>;
-					if (label_type < /*/*/47 || label_type > /*8*/56)
+					if (label_type < TEX_STRING("/") || label_type > TEX_STRING("8"))
 						fprintf(stdout, "\nBad label type precedes byte %d!", cur_loc);
 					else { 
 						p=get_avail(); next[label_tail]=p; label_tail=p;
@@ -1813,8 +1807,8 @@ int main(int argc, char *argv[])
 			if (rule_size[p]==0) rule_size[p]=gray_rule_thickness;
 			if (rule_size[p]>0)
 			{ 
-				convert(x0[p],y0[p]); temp_x=dvi_x; temp_y=dvi_y;
-				convert(x1[p],y1[p]);
+				convert(gf_x0[p],gf_y0[p]); temp_x=dvi_x; temp_y=dvi_y;
+				convert(gf_x1[p],gf_y1[p]);
 				if (myabs(temp_x-dvi_x)<tol)
 					//@<Output a vertical rule@>
 				{ 
@@ -1894,7 +1888,7 @@ int main(int argc, char *argv[])
 			while (p != null)
 			{ 
 				convert(xx[p],yy[p]); xx[p]=dvi_x; yy[p]=dvi_y;
-				if (lab_typ[p] < /*5*/53)
+				if (lab_typ[p] < TEX_STRING("5"))
 					//@<Enter a dot for label |p| in the rectangle list, and typeset the dot@>;
 				{ 
 					q=get_avail(); dot_for_label[p]=q; label_for_dot[q]=p;
@@ -1913,7 +1907,7 @@ int main(int argc, char *argv[])
 			p=label_head;
 			while (p!=null)
 			{ 
-				if (lab_typ[p]<=/*0*/48)
+				if (lab_typ[p]<=TEX_STRING("0"))
 					//@<Compute the octant code for floating label |p|@>;
 				{ 
 					r=dot_for_label[p]; q=nearest_dot(r,10);
@@ -1937,18 +1931,18 @@ int main(int argc, char *argv[])
 			while (next[q]!=null)
 			{ 
 				p=next[q];
-				if (lab_typ[p]>/*0*/48)
+				if (lab_typ[p]>TEX_STRING("0"))
 				{ 
 					next[q]=next[p];
 					//@<Enter a prescribed label for node |p| into the rectangle list, and typeset it@>;
 					hbox(info[p],label_font,false); //{Compute the size of this label}
 					dvi_x=xx[p];  dvi_y=yy[p];
-					if (lab_typ[p]</*5*/53) r=dot_for_label[p]; else r=0;
+					if (lab_typ[p]<TEX_STRING("5")) r=dot_for_label[p]; else r=0;
 					switch(lab_typ[p]) {
-						case /*1*/49: case /*5*/53:top_coords(p); break;
-						case /*2*/50: case /*6*/54:left_coords(p); break;
-						case /*3*/51: case /*7*/55:right_coords(p); break;
-						case /*4*/52: case /*8*/56:bot_coords(p); break;
+						case TEX_STRING("1"): case TEX_STRING("5"):top_coords(p); break;
+						case TEX_STRING("2"): case TEX_STRING("6"):left_coords(p); break;
+						case TEX_STRING("3"): case TEX_STRING("7"):right_coords(p); break;
+						case TEX_STRING("4"): case TEX_STRING("8"):bot_coords(p); break;
 					} //{no other cases are possible}
 					node_ins(p,r);
 					dvi_goto(xx[p],yy[p]); hbox(info[p],label_font,true); dvi_out(pop);
@@ -1966,7 +1960,7 @@ int main(int argc, char *argv[])
 				if (place_label(p)) next[q]=r;
 				else { 
 					label_for_dot[s]=null; //{disconnect the dot}
-					if (lab_typ[p]==/*/*/47) next[q]=r; //{remove label from list}
+					if (lab_typ[p]==TEX_STRING("/")) next[q]=r; //{remove label from list}
 					else q=p; //{retain label in list for the overflow column}
 				}
 			}
@@ -2003,9 +1997,9 @@ int main(int argc, char *argv[])
 					hbox(info[label_for_dot[q]],label_font,true);
 					hbox(plus_sign,label_font,true);
 					dvi_scaled((xx[p]-xx[q])/x_ratio+(yy[p]-yy[q])*fudge_factor);
-					dvi_out(/*,*/44);
+					dvi_out(TEX_STRING(","));
 					dvi_scaled((yy[q]-yy[p])/y_ratio);
-					dvi_out(/*)*/41);
+					dvi_out(TEX_STRING(")"));
 				}
 				dvi_out(pop);
 				//@<Typeset an overflow label for |p|@>;

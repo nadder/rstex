@@ -2,8 +2,7 @@
 
 Copyright (C) 2018 by Richard Sandberg.
 
-This is the Windows specific version of rsdvitype.
-No Unix version yet, should be easy to add though.
+This is the Unix specific version of rsdvitype.
 
 */
 #pragma once
@@ -32,11 +31,10 @@ struct Array
 };
 
 ///////////////////////////////////////////////////////////////////////////
-// System specific addition on Windows
+// System specific addition on Unix
 
 #define MAX_OTH_PATH_CHARS 512
-#define default_font_path "c:\\tex\\fonts"
-
+#define default_font_path "."
 
 char const *font_path;
 
@@ -46,7 +44,7 @@ const int font_file_path = 3;
 
 
 
-#define banner "This is rsDVItype, Version 1.0 for Windows" // printed when the program starts
+#define banner "This is rsDVItype, Version 1.0 for Unix" // printed when the program starts
 
 
 #define random_reading true
@@ -254,8 +252,8 @@ const int max_drift=2; //{we insist that abs|(hh-pixel_round(h))<=max_drift|}
 	printf("%d: %s", a, s);\
 } while (false)
 
-#define major(s) if (out_mode>errors_only) show(s)
-#define minor(s) do {\
+#define _major(s) if (out_mode>errors_only) show(s)
+#define _minor(s) do {\
 	if (out_mode>terse) {\
 		showing=true;\
 		printf("%d: %s", a, s);\
@@ -278,7 +276,7 @@ const int max_drift=2; //{we insist that abs|(hh-pixel_round(h))<=max_drift|}
 	}\
 	else hh=(int)(hh+pixel_round(p));\
 	sprintf(temp, "%s %d", s, p);\
-	minor(temp); q=p; goto move_right;\
+	_minor(temp); q=p; goto move_right;\
 } while (false)
 
 
@@ -287,19 +285,13 @@ const int max_drift=2; //{we insist that abs|(hh-pixel_round(h))<=max_drift|}
 	if (myabs(p)>=5*font_space[cur_font]) vv=(int)pixel_round(v+p);\
 	else vv=(int)(vv+pixel_round(p));\
 	sprintf(temp, "%s %d", s, p);\
-	major(temp); goto move_down;\
+	_major(temp); goto move_down;\
 } while (false)
 
 
 
 int first_par(eight_bits o);
 void scan_bop();
-
-
-
-
-
-
 
 
 
