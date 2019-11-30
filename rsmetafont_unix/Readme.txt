@@ -17,5 +17,5 @@ The following environment variables can be set e.g.:
 MFINPUTS=.:/home/local/mfinputs
 MFBASES=.:/home/local/mfbases
 MFPOOL=.
-MFEDIT=emacs +%d %s
+MFEDIT=emacs "+%d %s"
 
