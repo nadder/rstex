@@ -470,6 +470,20 @@ scaled mult_and_add(int n, scaled x, scaled y, scaled max_answer)
 	}
 }
 
+// 114
+#ifndef NO_DEBUG 
+void print_word(memory_word w) // {prints w in all ways}
+{
+	print_int(w.an_int); print_char(TEX_STRING(" "));
+	print_scaled(w.sc); print_char(TEX_STRING(" "));
+	print_scaled((scaled)round(unity * w.gr)); print_ln();
+	print_int(w.hh.lh); print_char(TEX_STRING("=")); print_int(w.hh.b0); print_char(TEX_STRING(":")); print_int(w.hh.b1);
+	print_char(TEX_STRING(";")); print_int(w.hh.rh); print_char(TEX_STRING(" "));
+	print_int(w.qqqq.b0); print_char(TEX_STRING(":")); print_int(w.qqqq.b1); print_char(TEX_STRING(":")); print_int(w.qqqq.b2);
+	print_char(TEX_STRING(":")); print_int(w.qqqq.b3);
+}
+#endif
+
 //167
 //debug
 #ifndef NO_DEBUG
@@ -2629,7 +2643,7 @@ void show_node_list(int p)
 					if (g != 0.0f && glue_sign(p) != normal) {
 						print(TEX_STRING(", glue set "));
 						if (glue_sign(p) == shrinking) print(TEX_STRING("- "));
-						if (myabs(mem[p + glue_offset].union_t.an_int) < 04000000)
+						if (myabs(mem[p + glue_offset].an_int) < 04000000)
 							print(TEX_STRING("?.?"));
 						else if (myabs(g) > 20000.0f) {
 							if (g > 0.0f) print_char(TEX_STRING(">"));
@@ -3253,7 +3267,7 @@ void eq_word_define(pointer p, int w)
 		eq_save(p, xeq_level[p]);
 		xeq_level[p] = cur_level;
 	}
-	eqtb[p].union_t.an_int = w;
+	eqtb[p].an_int = w;
 }
 
 // 279
@@ -3264,7 +3278,7 @@ void geq_define(pointer p, quarterword t, halfword e)
 
 void geq_word_define(pointer p, int w)
 {
-	eqtb[p].union_t.an_int = w;
+	eqtb[p].an_int = w;
 	xeq_level[p] = level_one;
 }
 
@@ -3516,7 +3530,7 @@ void scan_something_internal(small_number level, bool negative)
 		scan_char_num();
 		if (m == math_code_base) scanned_result(ho(math_code(cur_val)), int_val);
 		else if (m < math_code_base) scanned_result(equiv(m + cur_val), int_val);
-		else scanned_result(eqtb[m + cur_val].union_t.an_int, int_val);
+		else scanned_result(eqtb[m + cur_val].an_int, int_val);
 		#pragma endregion
 		break;
 	case toks_register:
@@ -3545,7 +3559,7 @@ void scan_something_internal(small_number level, bool negative)
 		#pragma endregion
 		break;
 	case assign_int:
-		scanned_result(eqtb[m].union_t.an_int, int_val);
+		scanned_result(eqtb[m].an_int, int_val);
 		break;
 	case assign_dimen:
 		scanned_result(eqtb[m].sc, dimen_val);
@@ -4032,8 +4046,8 @@ pointer new_noad()
 {
 	pointer p;
 	p = get_node(noad_size); type(p) = ord_noad; subtype(p) = normal;
-	mem[nucleus(p)].union_t.hh = empty_field; mem[subscr(p)].union_t.hh = empty_field;
-	mem[supscr(p)].union_t.hh = empty_field;
+	mem[nucleus(p)].hh = empty_field; mem[subscr(p)].hh = empty_field;
+	mem[supscr(p)].hh = empty_field;
 	return p;
 }
 
@@ -4166,7 +4180,7 @@ found:
 
 			#pragma region <Construct an extensible character in a new box b, using recipe rem_byte(q) and font f 713>
 		{
-			b = new_null_box(); type(b) = vlist_node; r = font_info[exten_base[f] + rem_byte(q)].union_t.qqqq;
+			b = new_null_box(); type(b) = vlist_node; r = font_info[exten_base[f] + rem_byte(q)].qqqq;
 
 			#pragma region <Compute the minimum suitable height, w, and the corresponding number of extension steps, n; .. 714>
 			c = ext_rep(r); u = height_plus_depth(f, c); w = 0; q = char_info(f, c);
@@ -4791,9 +4805,9 @@ void make_math_accent(pointer q)
 		if (math_type(nucleus(q)) == math_char) {
 			fetch(nucleus(q));
 			if (char_tag(cur_i) == lig_tag) {
-				a = lig_kern_start(cur_f, cur_i); cur_i = font_info[a].union_t.qqqq;
+				a = lig_kern_start(cur_f, cur_i); cur_i = font_info[a].qqqq;
 				if (skip_byte(cur_i) > stop_flag) {
-					a = lig_kern_restart(cur_f, cur_i); cur_i = font_info[a].union_t.qqqq;
+					a = lig_kern_restart(cur_f, cur_i); cur_i = font_info[a].qqqq;
 				}
 				while(1) {
 					if (qo(next_char(cur_i)) == skew_char[cur_f]) {
@@ -4802,7 +4816,7 @@ void make_math_accent(pointer q)
 						goto done1;
 					}
 					if (skip_byte(cur_i) >= stop_flag) goto done1;
-					a += qo(skip_byte(cur_i)) + 1; cur_i = font_info[a].union_t.qqqq;
+					a += qo(skip_byte(cur_i)) + 1; cur_i = font_info[a].qqqq;
 				}
 			}
 		}
@@ -4832,7 +4846,7 @@ void make_math_accent(pointer q)
 			{
 				flush_node_list(x); x = new_noad(); mem[nucleus(x)] = mem[nucleus(q)];
 				mem[supscr(x)] = mem[supscr(q)]; mem[subscr(x)] = mem[subscr(q)];
-				mem[supscr(q)].union_t.hh = empty_field; mem[subscr(q)].union_t.hh = empty_field;
+				mem[supscr(q)].hh = empty_field; mem[subscr(q)].hh = empty_field;
 				math_type(nucleus(q)) = sub_mlist; info(nucleus(q)) = x; x = clean_box(nucleus(q), cur_style);
 				delta += height(x) - h; h = height(x);
 			}
@@ -5006,9 +5020,9 @@ restart:
 								math_type(nucleus(q)) = math_text_char; fetch(nucleus(q));
 								if (char_tag(cur_i) == lig_tag) {
 									a = lig_kern_start(cur_f, cur_i); cur_c = character(nucleus(p));
-									cur_i = font_info[a].union_t.qqqq;
+									cur_i = font_info[a].qqqq;
 									if (skip_byte(cur_i) > stop_flag) {
-										a = lig_kern_restart(cur_f, cur_i); cur_i = font_info[a].union_t.qqqq;
+										a = lig_kern_restart(cur_f, cur_i); cur_i = font_info[a].qqqq;
 									}
 									while (1) {
 										#pragma region <If instruction cur_i is a kern with cur_c, attach the kern after q; or.. 753>
@@ -5048,7 +5062,7 @@ restart:
 												}
 										#pragma endregion
 										if (skip_byte(cur_i) >= stop_flag) return;
-										a += qo(skip_byte(cur_i)) + 1; cur_i = font_info[a].union_t.qqqq;
+										a += qo(skip_byte(cur_i)) + 1; cur_i = font_info[a].qqqq;
 									}
 								}
 							}
@@ -5145,7 +5159,7 @@ void push_alignment()
 {
 	pointer p;
 	p = get_node(align_stack_node_size); link(p) = align_ptr; info(p) = cur_align;
-	llink(p) = preamble; rlink(p) = cur_span; mem[p + 2].union_t.an_int = cur_loop; mem[p + 3].union_t.an_int = align_state;
+	llink(p) = preamble; rlink(p) = cur_span; mem[p + 2].an_int = cur_loop; mem[p + 3].an_int = align_state;
 	info(p + 4) = cur_head; link(p + 4) = cur_tail; align_ptr = p; cur_head = get_avail();
 }
 
@@ -5153,7 +5167,7 @@ void pop_alignment()
 {
 	pointer p;
 	free_avail(cur_head); p = align_ptr; cur_tail = link(p + 4); cur_head = info(p + 4);
-	align_state = mem[p + 3].union_t.an_int; cur_loop = mem[p + 2].union_t.an_int; cur_span = rlink(p);
+	align_state = mem[p + 3].an_int; cur_loop = mem[p + 2].an_int; cur_span = rlink(p);
 	preamble = llink(p);
 	cur_align = info(p); align_ptr = link(p); free_node(p, align_stack_node_size);
 }
@@ -5887,7 +5901,7 @@ void show_eqtb(pointer n)
 		else {
 			print_esc(TEX_STRING("delcode")); print_int(n - del_code_base);
 		}
-		print_char(TEX_STRING("=")); print_int(eqtb[n].union_t.an_int);
+		print_char(TEX_STRING("=")); print_int(eqtb[n].an_int);
 	}
 		#pragma endregion
 	else if(n<=eqtb_size)
@@ -6106,7 +6120,7 @@ void handle_right_brace()
 				if (type(p) == ord_noad) {
 					if(math_type(subscr(p))==empty)
 						if (math_type(supscr(p)) == empty) {
-							mem[saved(0)].union_t.hh = mem[nucleus(p)].union_t.hh; free_node(p, noad_size);
+							mem[saved(0)].hh = mem[nucleus(p)].hh; free_node(p, noad_size);
 						}
 				}
 				else if(type(p) == accent_noad)
@@ -6391,7 +6405,7 @@ void initialize()
 	pack_begin_line = 0;
 
 	// 685
-	empty_field.rh = empty; empty_field.union_t.lh = null;
+	empty_field.rh = empty; empty_field.lh = null;
 	null_delimiter.b0 = 0; null_delimiter.b1 = min_quarterword;
 	null_delimiter.b2 = 0; null_delimiter.b3 = min_quarterword;
 
@@ -6526,7 +6540,7 @@ void initialize()
 	}
 
 	// 240
-	for (k = int_base; k <= del_code_base - 1; k++) eqtb[k].union_t.an_int = 0;
+	for (k = int_base; k <= del_code_base - 1; k++) eqtb[k].an_int = 0;
 	mag = 1000; tolerance = 10000; hang_after = 1; max_dead_cycles = 25;
 	escape_char = TEX_STRING("\");
 	end_line_char = carriage_return;
@@ -8380,7 +8394,7 @@ void init_trie()
 		first_fit(trie_root); trie_pack(trie_root);
 	}
 	#pragma region <Move the data into trie 958>
-	h.rh = 0; h.union_t.struct_t.b0 = min_quarterword; h.union_t.struct_t.b1 = min_quarterword;
+	h.rh = 0; h.b0 = min_quarterword; h.b1 = min_quarterword;
 	if (trie_root == 0) {
 		for (r = 0; r <= 256; r++) trie[r] = h;
 		trie_max = 256;
@@ -8863,7 +8877,7 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
 
 	#pragma region <read character data 569>
 	for (k = fmem_ptr; k <= width_base[f] - 1; k++) {
-		store_four_quarters(font_info[k].union_t.qqqq);
+		store_four_quarters(font_info[k].qqqq);
 		if (a >= nw || b / 020 >= nh || b % 020 >= nd || c / 4 >= ni) _abort;
 		switch (c % 4) {
 		case lig_tag:if (d >= nl)_abort; break;
@@ -8910,7 +8924,7 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
 	bch_label = 077777; bchar = 256;
 	if (nl > 0) {
 		for (k = lig_kern_base[f]; k <= kern_base[f] + kern_base_offset - 1;k++) {
-			store_four_quarters(font_info[k].union_t.qqqq);
+			store_four_quarters(font_info[k].qqqq);
 			if (a > 128) {
 				if (256 * c + d >= nl) _abort;
 				if (a == 255)
@@ -8932,7 +8946,7 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
 
 	#pragma region <read extensible chracter recipes 574>
 	for (k = exten_base[f]; k <= param_base[f] - 1; k++) {
-		store_four_quarters(font_info[k].union_t.qqqq);
+		store_four_quarters(font_info[k].qqqq);
 		if (a != 0) check_existence(a);
 		if (b != 0) check_existence(a);
 		if (c != 0) check_existence(a);
@@ -11339,7 +11353,48 @@ common_ending:
 #ifndef NO_DEBUG
 void debug_help()
 {
-
+	int k, l, m, n;
+	while (true)
+	{
+		wake_up_terminal(); print_nl(TEX_STRING("debug # (-1 to exit):")); update_terminal(); fscanf(term_in, "%d", &m); //read(term_in, m);
+		if (m < 0) return;
+		else if (m == 0)
+		{
+			/* NOTE: Do not know how this was used in Pascal Tex
+			goto breakpoint; @\ {go to every label at least once}
+			breakpoint: m = 0; @{'BREAKPOINT'@}@\
+			*/
+			// Instead print something and continue
+			print_nl(TEX_STRING("Option 0 not implemented, sorry."));
+			continue;
+		}
+		else {
+			//read(term_in, n);
+			fscanf(term_in, "%d", &n);
+			switch (m)
+			{
+				#pragma region <Numbered cases for debug help 1339>
+				case 1: print_word(mem[n]); break;// {display mem[n] in all forms}
+				case 2: print_int(info(n)); break;
+				case 3: print_int(link(n)); break;
+				case 4: print_word(eqtb[n]); break;
+				case 5: print_word(font_info[n]); break;
+				case 6: print_word(save_stack[n]); break;
+				case 7: show_box(n);  break; //{show a box, abbreviated by show box depth and show box breadth }
+				case 8: breadth_max = 10000; depth_threshold = pool_size - pool_ptr - 10; show_node_list(n);  break; //{show a box in its entirety}
+				case 9: show_token_list(n, null, 1000); break;
+				case 10: slow_print(n); break;
+				case 11: check_mem(n > 0);  break; // {check wellformedness; print new busy locations if n > 0}
+				case 12: search_mem(n);  break; // {look for pointers to n}
+				case 13: fscanf(term_in, "%d", &l);   /*read(term_in, l);*/ print_cmd_chr(n, l);  break;
+				case 14: for (k = 0; k <= n; k++) print(buffer[k]);  break;
+				case 15: font_in_short_display = null_font; short_display(n);  break;
+				case 16: panicking = !panicking;  break;
+				#pragma endregion
+				default: print(TEX_STRING("?")); break;
+			}
+		}
+	}
 }
 #endif
 // gubed
@@ -12815,7 +12870,7 @@ found:
 		#pragma region <Compute result of register or advance, put it in cur_val 1238>
 		if (p < glue_val) {
 			if (p == int_val) scan_int(); else scan_normal_dimen;
-			if (q == advance) cur_val += eqtb[l].union_t.an_int;
+			if (q == advance) cur_val += eqtb[l].an_int;
 		}
 		else {
 			scan_glue(p);
@@ -12844,9 +12899,9 @@ found:
 		scan_int();
 		if (p < glue_val)
 			if (q == multiply)
-				if (p == int_val) cur_val = mult_integers(eqtb[l].union_t.an_int, cur_val);
-				else cur_val = nx_plus_y(eqtb[l].union_t.an_int, cur_val, 0);
-			else cur_val = x_over_n(eqtb[l].union_t.an_int, cur_val);
+				if (p == int_val) cur_val = mult_integers(eqtb[l].an_int, cur_val);
+				else cur_val = nx_plus_y(eqtb[l].an_int, cur_val, 0);
+			else cur_val = x_over_n(eqtb[l].an_int, cur_val);
 		else {
 			s = equiv(l); r = new_spec(s);
 			if (q == multiply) {
@@ -13015,14 +13070,14 @@ void show_activities()
 			}
 			break;
 		case 1:
-			print_nl(TEX_STRING("spacefactor ")); print_int(a.union_t.hh.union_t.lh);
-			if (m > 0) if (a.union_t.hh.rh > 0) {
-				print(TEX_STRING(", current language ")); print_int(a.union_t.hh.rh);
+			print_nl(TEX_STRING("spacefactor ")); print_int(a.hh.lh);
+			if (m > 0) if (a.hh.rh > 0) {
+				print(TEX_STRING(", current language ")); print_int(a.hh.rh);
 			}
 			break;
 		case 2:
-			if (a.union_t.an_int != null) {
-				print(TEX_STRING("this will be denominator of:")); show_box(a.union_t.an_int);
+			if (a.an_int != null) {
+				print(TEX_STRING("this will be denominator of:")); show_box(a.an_int);
 			}
 			break;
 		}
@@ -13145,8 +13200,8 @@ _exit:
 void math_radical()
 {
 	tail_append(get_node(radical_noad_size)); type(tail) = radical_noad; subtype(tail) = normal;
-	mem[nucleus(tail)].union_t.hh = empty_field; mem[subscr(tail)].union_t.hh = empty_field;
-	mem[supscr(tail)].union_t.hh = empty_field; scan_delimiter(left_delimiter(tail), true);
+	mem[nucleus(tail)].hh = empty_field; mem[subscr(tail)].hh = empty_field;
+	mem[supscr(tail)].hh = empty_field; scan_delimiter(left_delimiter(tail), true);
 	scan_math(nucleus(tail));
 }
 
@@ -13163,8 +13218,8 @@ void math_ac()
 		error();
 	}
 	tail_append(get_node(accent_noad_size)); type(tail) = accent_noad; subtype(tail) = normal;
-	mem[nucleus(tail)].union_t.hh = empty_field; mem[subscr(tail)].union_t.hh = empty_field;
-	mem[supscr(tail)].union_t.hh = empty_field; math_type(accent_chr(tail)) = math_char;
+	mem[nucleus(tail)].hh = empty_field; mem[subscr(tail)].hh = empty_field;
+	mem[supscr(tail)].hh = empty_field; math_type(accent_chr(tail)) = math_char;
 	scan_fifteen_bit_int();
 	character(accent_chr(tail)) = qi(cur_val % 256);
 	if (cur_val >= var_code && fam_in_range) fam(accent_chr(tail)) = cur_fam;
@@ -13235,9 +13290,9 @@ void math_fraction()
 		incompleat_noad = get_node(fraction_noad_size); type(incompleat_noad) = fraction_noad;
 		subtype(incompleat_noad) = normal; math_type(numerator(incompleat_noad)) = sub_mlist;
 		info(numerator(incompleat_noad)) = link(head);
-		mem[denominator(incompleat_noad)].union_t.hh = empty_field;
-		mem[left_delimiter(incompleat_noad)].union_t.qqqq = null_delimiter;
-		mem[right_delimiter(incompleat_noad)].union_t.qqqq = null_delimiter;
+		mem[denominator(incompleat_noad)].hh = empty_field;
+		mem[left_delimiter(incompleat_noad)].qqqq = null_delimiter;
+		mem[right_delimiter(incompleat_noad)].qqqq = null_delimiter;
 		link(head) = null; tail = head;
 		#pragma region <Use code c to distinguish between generalized fraction 1182>
 		if (c >= delimited_code) {
@@ -14701,11 +14756,11 @@ main_lig_loop:
 	#pragma region <If theres a ligature/kern command relevant to cur_l and cur_r adjust the text appropriatley exit to main_loop_wrapup 1039>
 	if (char_tag(main_i) != lig_tag) goto main_loop_wrapup;
 	if (cur_r == non_char) goto main_loop_wrapup;
-	main_k = lig_kern_start(main_f, main_i); main_j = font_info[main_k].union_t.qqqq;
+	main_k = lig_kern_start(main_f, main_i); main_j = font_info[main_k].qqqq;
 	if (skip_byte(main_j) <= stop_flag) goto main_lig_loop_plus2;
 	main_k = lig_kern_restart(main_f, main_j);
 main_lig_loop_plus1:
-	main_j = font_info[main_k].union_t.qqqq;
+	main_j = font_info[main_k].qqqq;
 main_lig_loop_plus2:
 	if(next_char(main_j) == cur_r)
 		if (skip_byte(main_j) <= stop_flag) 
@@ -16066,14 +16121,14 @@ mycontinue:
 	#pragma region <If theres a ligature or constant.. 909>
 	if (cur_l == non_char) {
 		k = bchar_label[hf];
-		if (k == non_address) goto done; else q = font_info[k].union_t.qqqq;
+		if (k == non_address) goto done; else q = font_info[k].qqqq;
 	}
 	else {
 		q = char_info(hf, cur_l);
 		if (char_tag(q) != lig_tag) goto done;
-		k = lig_kern_start(hf, q); q = font_info[k].union_t.qqqq;
+		k = lig_kern_start(hf, q); q = font_info[k].qqqq;
 		if (skip_byte(q) > stop_flag) {
-			k = lig_kern_restart(hf, q); q = font_info[k].union_t.qqqq;
+			k = lig_kern_restart(hf, q); q = font_info[k].qqqq;
 		}
 	}
 	if (cur_rh < non_char) test_char = cur_rh; else test_char = cur_r;
@@ -16162,7 +16217,7 @@ mycontinue:
 			else {
 				cur_rh = non_char; goto mycontinue;
 			}
-		k = k + qo(skip_byte(q)) + 1; q = font_info[k].union_t.qqqq;
+		k = k + qo(skip_byte(q)) + 1; q = font_info[k].qqqq;
 	}
 done:
 
@@ -17226,7 +17281,7 @@ void store_fmt_file()
 	do {
 		j = k;
 		while (j < eqtb_size) {
-			if (eqtb[j].union_t.an_int == eqtb[j + 1].union_t.an_int)
+			if (eqtb[j].an_int == eqtb[j + 1].an_int)
 				goto found2;
 			incr(j);
 		}
@@ -17234,7 +17289,7 @@ void store_fmt_file()
 	found2:
 		incr(j); l = j;
 		while (j < eqtb_size) {
-			if (eqtb[j].union_t.an_int != eqtb[j + 1].union_t.an_int)
+			if (eqtb[j].an_int != eqtb[j + 1].an_int)
 				goto done2;
 			incr(j);
 		}

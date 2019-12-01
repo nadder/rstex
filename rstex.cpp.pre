@@ -11277,12 +11277,10 @@ common_ending:
 }
 
 // 1338
-// skip implementing this for now
 // debug
 #ifndef NO_DEBUG
 void debug_help() //{routine to display various things}
 {
-
 	int k, l, m, n;
 	while (true)
 	{
@@ -11325,7 +11323,6 @@ void debug_help() //{routine to display various things}
 			}
 		}
 	}
-
 }
 #endif
 // gubed

@@ -363,7 +363,7 @@ const int min_halfword = 0; // Smallest allowable value in halfword
 const int max_halfword = 1073741823; // Largest allowable value in halfword
 
 // 113
-#define sc union_t.an_int // Scaled data is equivalent to integer
+#define sc an_int // Scaled data is equivalent to integer
 
 typedef unsigned char quarterword; // min_quarterword..max_quarterword, 1/4 of a word, NOTE: This part assumes min_quarterword=0
 typedef int halfword; // min_halfword..max_halfword, 1/2 of a word, NOTE: This part assumes min_halfword=0
@@ -375,9 +375,9 @@ typedef int halfword; // min_halfword..max_halfword, 1/2 of a word, NOTE: This p
 //#define free_avail(s) do{link(s) = avail;avail=s;/*stat*/decr(dyn_used);/*tats*/}while(0)
 
 // 221
-#define eq_level_field(s) s.union_t.hh.union_t.struct_t.b1
-#define eq_type_field(s) s.union_t.hh.union_t.struct_t.b0
-#define equiv_field(s) s.union_t.hh.rh
+#define eq_level_field(s) s.hh.b1
+#define eq_type_field(s) s.hh.b0
+#define equiv_field(s) s.hh.rh
 #define eq_level(s) eq_level_field(eqtb[s]) // level of definition
 #define eq_type(s) eq_type_field(eqtb[s]) // command code for equivalent
 #define equiv(s) equiv_field(eqtb[s]) // equivalent value
@@ -632,9 +632,9 @@ const int scaled_base = dimen_base + dimen_pars; // table of 256 user-defined \d
 
 const int eqtb_size = scaled_base + 255; // largest subscript of eqtb
 
-#define del_code(s) (eqtb[del_code_base + s].union_t.an_int)
-#define count(s) (eqtb[count_base + s].union_t.an_int)
-#define int_par(s) (eqtb[int_base + s].union_t.an_int) // an integer parameter
+#define del_code(s) (eqtb[del_code_base + s].an_int)
+#define count(s) (eqtb[count_base + s].an_int)
+#define int_par(s) (eqtb[int_base + s].an_int) // an integer parameter
 
 #define pretolerance int_par(pretolerance_code);
 #define tolerance int_par(tolerance_code)
@@ -729,8 +729,8 @@ typedef struct two_halves
 		struct {
 			quarterword b0;
 			quarterword b1;
-		} struct_t;
-	} union_t;
+		};
+	};
 } two_halves;
 
 typedef struct {
@@ -747,7 +747,7 @@ typedef struct
 		glue_ratio gr;
 		two_halves hh;
 		four_quarters qqqq;
-	} union_t;
+	};
 } memory_word;
 
 typedef FILE* word_file;
@@ -768,8 +768,8 @@ int var_used;
 int dyn_used; // how much memory is in use
 
 // 118
-#define link(n) mem[n].union_t.hh.rh // the link field of a memory word
-#define info(n) mem[n].union_t.hh.union_t.lh // the info field of a memory word
+#define link(n) mem[n].hh.rh // the link field of a memory word
+#define info(n) mem[n].hh.lh // the info field of a memory word
 
 pointer avail; // head of the list of available one-word nodes
 pointer mem_end; // the last one-word node used in mem
@@ -784,8 +784,8 @@ pointer mem_end; // the last one-word node used in mem
 pointer rover; // points to some node in the list of empties
 
 //133
-#define type(n) mem[n].union_t.hh.union_t.struct_t.b0 // identifies what kind of node this is
-#define subtype(n) mem[n].union_t.hh.union_t.struct_t.b1 // secondary identification in some cases
+#define type(n) mem[n].hh.b0 // identifies what kind of node this is
+#define subtype(n) mem[n].hh.b1 // secondary identification in some cases
 
 // 134
 #define is_char_node(n) (n >= hi_mem_min) // does the argument point to a char_node?
@@ -856,7 +856,7 @@ const int normal = 0; // the most common case when several cases are named
 const int stretching = 1; // glue setting applies to the stretch components
 const int shrinking = 2; // glue setting applies to the shrink components
 const int glue_offset = 6; // position of glue_set in a box node
-#define glue_set(n) mem[n+glue_offset].union_t.gr // a word of type glue_ratio for glue setting
+#define glue_set(n) mem[n+glue_offset].gr // a word of type glue_ratio for glue setting
 
 // 137
 
@@ -867,13 +867,13 @@ const int null_flag = -010000000000; // -2^30, signifies a missing item
 
 // 140
 const int ins_node_size = 5; // number of words to allocate for an insertion
-#define float_cost(s) mem[s + 1].union_t.an_int // the floating_penalty to be used
+#define float_cost(s) mem[s + 1].an_int // the floating_penalty to be used
 #define ins_ptr(s) info(s + 4) // the vertical list to be inserted
 #define split_top_ptr(s) link(s + 4) // the split_top_skip to be used
 
 // 141
 const int small_node_size = 2; // number of words to allocate for most node types
-#define mark_ptr(s) mem[s + 1].union_t.an_int // head of token list for a mark
+#define mark_ptr(s) mem[s + 1].an_int // head of token list for a mark
 
 // 142
 #define adjust_ptr mark_ptr // vertical list to be moved out of horizontal list
@@ -926,7 +926,7 @@ const int acc_kern = 2; // subtype of kern nodes from accents
 // 157
 const int inf_penalty = inf_bad; // ``infinite'' penalty value
 const int eject_penalty = -inf_penalty; // ``negatively infinite'' penalty value
-#define penalty(s) mem[s+1].union_t.an_int // the added cost of breaking a list here
+#define penalty(s) mem[s+1].an_int // the added cost of breaking a list here
 
 // 159
 #define glue_stretch(s) mem[s+glue_offset].sc // total stretch in an unset node
@@ -1183,9 +1183,9 @@ const int ignore_depth = -65536000; // prev_depth value that is ignored
 #define prev_graf cur_list.pg_field // number of paragraph lines accumulated
 #define aux cur_list.aux_field // auxiliary data about the current list
 #define prev_depth aux.sc // the name of aux in vertical mode
-#define space_factor aux.union_t.hh.union_t.lh // part of aux in horizontal mode
-#define clang aux.union_t.hh.rh // the other part of aux in horizontal mode
-#define incompleat_noad aux.union_t.an_int // the name of aux in math mode
+#define space_factor aux.hh.lh // part of aux in horizontal mode
+#define clang aux.hh.rh // the other part of aux in horizontal mode
+#define incompleat_noad aux.an_int // the name of aux in math mode
 #define mode_line cur_list.ml_field // source file line number at beginning of list
 
 Array<list_state_record, 0, nest_size> nest;
@@ -1204,7 +1204,7 @@ short shown_mode; // -mmode..mmode, most recent mode shown by \tracingcommands
 int old_setting; // 0..max_selector
 
 // 256
-#define next(n) (hash[n].union_t.lh) // link for coalesced lists
+#define next(n) (hash[n].lh) // link for coalesced lists
 #define text(n) (hash[n].rh) // string number for control sequence name
 #define hash_is_full (hash_used == hash_base) // test if all positions are occupied
 #define font_id_text(n) text(font_id_base+n) // a frozen font identifier's name
@@ -1215,9 +1215,9 @@ bool no_new_control_sequence; // are new identifiers legal?
 int cs_count; // total number of known identifiers
 
 // 268
-#define save_type(n) (save_stack[n].union_t.hh.union_t.struct_t.b0) // classifies a save_stack entry
-#define save_level(n) (save_stack[n].union_t.hh.union_t.struct_t.b1) // saved level for regions 5 and 6, or group code
-#define save_index(n) (save_stack[n].union_t.hh.rh) // eqtb location or token or save_stack location
+#define save_type(n) (save_stack[n].hh.b0) // classifies a save_stack entry
+#define save_level(n) (save_stack[n].hh.b1) // saved level for regions 5 and 6, or group code
+#define save_index(n) (save_stack[n].hh.rh) // eqtb location or token or save_stack location
 
 enum save_type_type : quarterword
 {
@@ -1270,7 +1270,7 @@ int cur_boundary; // where the current level begins
 }while(0)
 
 // 274
-#define saved(s) save_stack[save_ptr+s].union_t.an_int
+#define saved(s) save_stack[save_ptr+s].an_int
 
 // 286
 int mag_set; // if nonzero, this magnification should be used henceforth
@@ -1580,7 +1580,7 @@ const int if_case_code = 16; // `\ifcase'
 
 // 489
 const int if_node_size = 2; // number of words in stack entry for conditionals
-#define if_line_field(s) mem[s+1].union_t.an_int
+#define if_line_field(s) mem[s+1].an_int
 const int if_code = 1; // code for \if... being evaluated
 const int fi_code = 2; // code for \fi
 const int else_code = 3; // code for \else
@@ -1720,7 +1720,7 @@ Array<int, font_base, font_max> exten_base; // base addresses for extensible rec
 Array<int, font_base, font_max> param_base; // base addresses for font parameters
 
 // 554
-#define char_info(s,t) font_info[char_base[s] + t].union_t.qqqq
+#define char_info(s,t) font_info[char_base[s] + t].qqqq
 #define char_width(s,t) font_info[width_base[s] + t.b0].sc
 #define char_exists(s) (s.b0 > min_quarterword)
 #define char_italic(s,t) font_info[italic_base[s]+(qo(t.b2)) / 4].sc
@@ -1932,7 +1932,7 @@ int dvi_gone; // the number of bytes already output to dvi_file
 
 // 605
 const int movement_node_size = 3; // number of words per entry in the down and right stacks
-#define location(s) mem[s+2].union_t.an_int // DVI byte number for a movement command
+#define location(s) mem[s+2].an_int // DVI byte number for a movement command
 
 pointer down_ptr;
 pointer right_ptr; // heads of down and right stacks
@@ -2026,10 +2026,10 @@ const int no_limits = 2; // subtype of op_noad whose scripts are to be normal
 
 const int radical_noad_size = 5; // number of mem words in a radical noad
 const int fraction_noad_size = 6; // number of mem words in a fraction noad
-#define small_fam(s) mem[s].union_t.qqqq.b0 // fam for ``small'' delimiter
-#define small_char(s) mem[s].union_t.qqqq.b1 // character for ``small'' delimiter
-#define large_fam(s) mem[s].union_t.qqqq.b2 // fam for ``large'' delimiter
-#define large_char(s) mem[s].union_t.qqqq.b3 // character for ``large'' delimiter
+#define small_fam(s) mem[s].qqqq.b0 // fam for ``small'' delimiter
+#define small_char(s) mem[s].qqqq.b1 // character for ``small'' delimiter
+#define large_fam(s) mem[s].qqqq.b2 // fam for ``large'' delimiter
+#define large_char(s) mem[s].qqqq.b3 // character for ``large'' delimiter
 #define thickness width // thickness field in a fraction noad
 const int default_code = 010000000000; // denotes default_rule_thickness
 #define numerator supscr // numerator field in a fraction noad
@@ -2126,7 +2126,7 @@ quarterword cur_c; // the character field of a math_char
 four_quarters cur_i; // the char_info of a math_char, or a lig/kern instruction
 
 // 725
-#define new_hlist(s) mem[nucleus(s)].union_t.an_int // the translation of an mlist
+#define new_hlist(s) mem[nucleus(s)].an_int // the translation of an mlist
 
 // 731
 #define choose_mlist(s) do { p = s(q); s(q) = null; } while(0)
@@ -2136,8 +2136,8 @@ four_quarters cur_i; // the char_info of a math_char, or a lig/kern instruction
 int magic_offset; // used to find inter-element spacing
 
 // 769
-#define u_part(s) mem[s+height_offset].union_t.an_int // pointer to <u_j> token list
-#define v_part(s) mem[s+depth_offset].union_t.an_int // pointer to <v_j> token list
+#define u_part(s) mem[s+height_offset].an_int // pointer to <u_j> token list
+#define v_part(s) mem[s+depth_offset].an_int // pointer to <v_j> token list
 #define extra_info(s) info(s+list_offset) // info to remember during template
 
 // 770
@@ -2174,7 +2174,7 @@ const int active_node_size = 3; // number of words in active nodes
 #define fitness subtype // very_loose_fit..tight_fit on final line for this break
 #define break_node rlink // pointer to the corresponding passive node
 #define line_number llink // line that begins at this breakpoint
-#define total_demerits(s) mem[s+2].union_t.an_int // the quantity that rsTeX minimizes
+#define total_demerits(s) mem[s+2].an_int // the quantity that rsTeX minimizes
 const int unhyphenated = 0; // the type of a normal active break node
 const int hyphenated = 1; // the type of an active node that breaks at a disc_node
 #define last_active active // the active list ends where it begins
@@ -2390,8 +2390,8 @@ typedef int trie_pointer; // 0..trie_size, an index into trie
 
 // 921
 #define trie_link(s) trie[s].rh // ``downward'' link in a trie
-#define trie_char(s) trie[s].union_t.struct_t.b1 // character matched at this trie location
-#define trie_op(s) trie[s].union_t.struct_t.b0 // program for hyphenation at this trie location
+#define trie_char(s) trie[s].b1 // character matched at this trie location
+#define trie_op(s) trie[s].b0 // program for hyphenation at this trie location
 
 Array<two_halves, 0, trie_size> trie; // trie_link, trie_char, trie_op
 Array<small_number, 1, trie_op_size> hyf_distance; // position k - j of n_j
@@ -2441,7 +2441,7 @@ Array<trie_pointer, 0, trie_size> trie_hash; // used to identify equivalent subt
 
 // 950
 #define trie_ref trie_hash // where linked trie families go into trie
-#define trie_back(s) trie[s].union_t.lh // backward links in trie holes
+#define trie_back(s) trie[s].lh // backward links in trie holes
 
 // init
 #ifndef NO_INIT
