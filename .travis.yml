@@ -47,3 +47,4 @@ matrix:
           - cd ..\rsdvitype_win
           - build.bat
           - cd ..
+          
