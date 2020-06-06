@@ -8,5 +8,5 @@ Path to success,
    are located in the same directory as the program itself.
    (Note: see win/unix specific versions to avoid having all files in the same directory)
 5. Run the command rstex.exe.
-6. Celebrate!!!!
+6. Celebrate!!!!!!!
 
