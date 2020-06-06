@@ -35,19 +35,16 @@ matrix:
           - cd ..
       - os: windows
         script:
+          - "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64
           - cd rsmetafont_win
-          - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64 && build.bat'
-          - cd ..
-          - cd rsgftodvi_win
-          - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64 && build.bat'
-          - cd ..
-          - cd dviviewer_win
-          - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64 && build.bat'
-          - cd ..
-          - cd rstex_win
-          - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64 && build.bat'
-          - cd ..
-          - cd rsdvitype_win
-          - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64 && build.bat'
+          - build.bat
+          - cd ..\rsgftodvi_win
+          - build.bat
+          - cd ..\dviviewer_win
+          - build.bat
+          - cd ..\rstex_win
+          - build.bat
+          - cd ..\rsdvitype_win
+          - build.bat
           - cd ..
           
