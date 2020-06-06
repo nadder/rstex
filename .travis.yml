@@ -42,13 +42,13 @@ matrix:
         - "echo \"Starting windows build...\""
         - "\"C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Auxiliary/Build/vcvarsall.bat\" amd64"
         - "cd rsmetafont_win"
-        - do_build.bat
+        - ./build.bat
         - "cd ../rsgftodvi_win"
-        - .\build
+        - ./build.bat
         - "cd ../dviviewer_win"
-        - .\build
+        - ./build.bat
         - "cd ../rstex_win"
-        - .\build
+        - ./build.bat
         - "cd ../rsdvitype_win"
-        - .\build
+        - ./build.bat
         - "cd .."
