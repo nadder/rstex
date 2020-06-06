@@ -1,51 +1,54 @@
+--- 
 language: cpp
-matrix:
-  include:
-      - os: linux
-        dist: trusty
-        compiler: gcc
-        before_install:
-          - sudo apt-get update
-          - sudo apt-get install qt5-default
-        script:
-          - $CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
-          - ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
-          - $CXX -o rstex -std=c++11 rstex.cpp
-          - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
-          - $CXX -o rstex -std=c++11 rstex_unix/rstex.cpp
-          - cd TeXFontViewerQt
-          - qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX TeXFontViewerQt.pro
-          - make
-          - cd ..
-      - os: linux
-        dist: trusty
-        compiler: clang
-        before_install:
-          - sudo apt-get update
-          - sudo apt-get install qt5-default
-        script:
-          - $CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp
-          - ./cpf TEX_STRING rstex.cpp.pre rstex.h.pre
-          - $CXX -o rstex -std=c++11 -Wno-dangling-else rstex.cpp
-          - ./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre
-          - $CXX -o rstex -std=c++11 -Wno-dangling-else rstex_unix/rstex.cpp
-          - cd TeXFontViewerQt
-          - qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX QMAKE_CXXFLAGS+=-Wno-inconsistent-missing-override TeXFontViewerQt.pro
-          - make
-          - cd ..
-      - os: windows 
-        script:
-          - echo "Starting windows build....."
-          - "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64
-          - cd rsmetafont_win
-          - build.bat
-          - cd ..\rsgftodvi_win
-          - build.bat 
-          - cd ..\dviviewer_win
-          - build.bat
-          - cd ..\rstex_win
-          - build.bat
-          - cd ..\rsdvitype_win
-          - build.bat
-          - cd ..
-          
+matrix: 
+  include: 
+    - 
+      before_install: 
+        - "sudo apt-get update"
+        - "sudo apt-get install qt5-default"
+      compiler: gcc
+      dist: trusty
+      os: linux
+      script: 
+        - "$CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp"
+        - "./cpf TEX_STRING rstex.cpp.pre rstex.h.pre"
+        - "$CXX -o rstex -std=c++11 rstex.cpp"
+        - "./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre"
+        - "$CXX -o rstex -std=c++11 rstex_unix/rstex.cpp"
+        - "cd TeXFontViewerQt"
+        - "qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX TeXFontViewerQt.pro"
+        - make
+        - "cd .."
+    - 
+      before_install: 
+        - "sudo apt-get update"
+        - "sudo apt-get install qt5-default"
+      compiler: clang
+      dist: trusty
+      os: linux
+      script: 
+        - "$CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp"
+        - "./cpf TEX_STRING rstex.cpp.pre rstex.h.pre"
+        - "$CXX -o rstex -std=c++11 -Wno-dangling-else rstex.cpp"
+        - "./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre"
+        - "$CXX -o rstex -std=c++11 -Wno-dangling-else rstex_unix/rstex.cpp"
+        - "cd TeXFontViewerQt"
+        - "qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX QMAKE_CXXFLAGS+=-Wno-inconsistent-missing-override TeXFontViewerQt.pro"
+        - make
+        - "cd .."
+    - 
+      os: windows
+      script: 
+        - "echo \"Starting windows build...\""
+        - "\"C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Auxiliary/Build/vcvarsall.bat\" amd64"
+        - "cd rsmetafont_win"
+        - build.bat
+        - "cd ../rsgftodvi_win"
+        - build.bat
+        - "cd ../dviviewer_win"
+        - build.bat
+        - "cd ../rstex_win"
+        - build.bat
+        - "cd ../rsdvitype_win"
+        - build.bat
+        - "cd .."
