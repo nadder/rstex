@@ -13,7 +13,7 @@ This is the vanilla version of rstex with minimal changes from the original tex.
 #include "rstex.h"
 
 
-// Some versions of gcc and clang easily get confused about the abs function overloads so let's use our own abs functions
+// Some versions of gcc and clang easily get confused about the abs function overloads so let's use our own abs functions.
 float myabs(float x)
 {
 	return x >= 0.0f ? x : -x;
