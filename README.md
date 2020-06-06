@@ -46,7 +46,7 @@ It is not meant to be a working typesetting system, it is meant for educational 
 for those who want to understand how this complex software works.
 
 ## rsMetaFont
-I have also translated [mf.web](https://ctan.org/pkg/metafont) for Windows and Unix but currently only the Windows version supports graphical screen output. 
+I have also translated [mf.web](https://ctan.org/pkg/metafont) for Windows and Unix but currently only the Windows version supports graphical screen output.
 
 ## TeXFontViewerQt
 A small program to view the original TeX font bitmaps (PXL, GF, PK, or MF).
