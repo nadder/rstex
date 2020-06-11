@@ -38,8 +38,9 @@ matrix:
         - "cd .."
     - 
       os: windows
-      script: 
+      script:
         - "echo \"Starting windows build..\""
+        - ./build.bat
         - "cd rsmetafont_win"
         - ./build.bat
         - "cd ../rsgftodvi_win"
