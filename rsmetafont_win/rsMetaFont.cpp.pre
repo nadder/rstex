@@ -15983,12 +15983,15 @@ void fix_check_sum()
 
 					#pragma region <Compute a check sum in (b1, b2, b3, b4) 1132>
 					b1 = bc; b2 = ec; b3 = bc; b4 = ec; tfm_changed = 0;
-					for (k = bc; k <= ec; k++)
+					
+					PASCAL_FOR_BEGIN(k, bc, ec)
 						if (char_exists[k]) {
 							x = dimen_out(value(tfm_width[k])) + (k + 4) * 020000000; // this is positive
 							b1 = (b1 + b1 + x) % 255; b2 = (b2 + b2 + x) % 253; b3 = (b3 + b3 + x) % 251;
 							b4 = (b4 + b4 + x) % 247;
 						}
+					PASCAL_FOR_END(k, ec)
+
 					#pragma endregion
 
 					header_byte[1] = b1; header_byte[2] = b2; header_byte[3] = b3; header_byte[4] = b4; return;
@@ -16133,11 +16136,10 @@ void init_gf()
 	eight_bits k; //{runs through all possible character codes}
 	int t; //{the time of this run}
 	gf_min_m = 4096; gf_max_m = -4096; gf_min_n = 4096; gf_max_n = -4096;
-	k = 0;
-	do {
+	PASCAL_FOR_BEGIN(k,0,255)
 		char_ptr[k] = -1;
-	} while (k++ != 255);
-	//for (k = 0; k > 255; k++) char_ptr[k] = -1;
+	PASCAL_FOR_END(k, 255)
+
 	#pragma region <Determine the file extension, |gf_ext|>
 	if (internal[hppp] <= 0) gf_ext = TEX_STRING(".gf");
 	else {
@@ -16847,8 +16849,9 @@ void close_files_and_terminate()
 
 		#pragma region <Massage the TFM widths 1124>
 		clear_the_list;
-		for (k = bc; k <= ec; k++)
+		PASCAL_FOR_BEGIN(k, bc, ec)
 			if (char_exists[k]) tfm_width[k] = sort_in(tfm_width[k]);
+		PASCAL_FOR_END(k, ec)			
 		nw = skimp(255) + 1; dimen_head[1] = link(temp_head);
 		if (perturbation >= 010000) tfm_warning(char_wd);
 		#pragma endregion
@@ -16858,24 +16861,27 @@ void close_files_and_terminate()
 
 			#pragma region <Massage the TFM heights, depths, and italic corrections 1126>
 			clear_the_list;
-			for (k = bc; k <= ec; k++)
+			PASCAL_FOR_BEGIN(k, bc, ec)
 				if (char_exists[k])
 					if (tfm_height[k] == 0) tfm_height[k] = zero_val;
 					else tfm_height[k] = sort_in(tfm_height[k]);
+			PASCAL_FOR_END(k, ec)
 			nh = skimp(15) + 1; dimen_head[2] = link(temp_head);
 			if (perturbation >= 010000) tfm_warning(char_ht);
 			clear_the_list;
-			for (k = bc; k <= ec; k++)
+			PASCAL_FOR_BEGIN(k, bc, ec)
 				if (char_exists[k])
 					if (tfm_depth[k] == 0) tfm_depth[k] = zero_val;
 					else tfm_depth[k] = sort_in(tfm_depth[k]);
+			PASCAL_FOR_END(k, ec)					
 			nd = skimp(15) + 1; dimen_head[3] = link(temp_head);
 			if (perturbation >= 010000) tfm_warning(char_dp);
 			clear_the_list;
-			for (k = bc; k <= ec; k++)
+			PASCAL_FOR_BEGIN(k, bc, ec)
 				if (char_exists[k])
 					if (tfm_ital_corr[k] == 0) tfm_ital_corr[k] = zero_val;
 					else tfm_ital_corr[k] = sort_in(tfm_ital_corr[k]);
+			PASCAL_FOR_END(k, ec)
 			ni = skimp(63) + 1; dimen_head[4] = link(temp_head);
 			if (perturbation >= 010000) tfm_warning(char_ic);
 			#pragma endregion
@@ -16950,13 +16956,14 @@ void close_files_and_terminate()
 			#pragma endregion
 
 			#pragma region <Output the character information bytes, then output the dimensions themselves 1136>
-			for (k = bc; k <= ec; k++)
+			PASCAL_FOR_BEGIN(k, bc, ec)
 				if (!char_exists[k]) tfm_four(0);
 				else {
 					tfm_out(info(tfm_width[k])); // the width index
 					tfm_out((info(tfm_height[k]))*16 + info(tfm_depth[k]));
 					tfm_out((info(tfm_ital_corr[k]))*4 + char_tag[k]); tfm_out(char_remainder[k]);
 				}
+			PASCAL_FOR_END(k, ec)
 			tfm_changed = 0;
 			for (k = 1; k <= 4; k++) {
 				tfm_four(0); p = dimen_head[k];
@@ -16968,15 +16975,16 @@ void close_files_and_terminate()
 
 
 			#pragma region <Output the ligature/kern program 1139>
-			for (k = 0; k <= 255; k++)
+			PASCAL_FOR_BEGIN(k, 0, 255)
 				if (skip_table[k] < undefined_label) {
 					print_nl(TEX_STRING("(local label ")); print_int(k); print(TEX_STRING(":: was missing)"));
 					cancel_skips(skip_table[k]);
 				}
+			PASCAL_FOR_END(k, 255)
 			if (lk_started) {// lk_offset = 1 for special bchar
 				tfm_out(255); tfm_out(bchar); tfm_two(0);
 			}
-			else for (k = 1; k <= lk_offset; k++) { // output teh redirection specs
+			else for (k = 1; k <= lk_offset; k++) { // output the redirection specs
 				ll = label_loc[label_ptr];
 				if (bchar < 0) {
 					tfm_out(254); tfm_out(0);
@@ -17022,7 +17030,7 @@ void close_files_and_terminate()
 				if(bch_label < undefined_label) nl--;
 				fprintf(log_file, "(You used %dw,%dh,%dd,%di,%dl,%dk,%de,%dp metric file positions\n",
 									nw, nh, nd, ni, nl, nk, ne, np);
-				fprintf(log_file, "  out of 256w,16h,16d,64i,%dl,%dk,256e,%dp)",
+				fprintf(log_file, "  out of 256w,16h,16d,64i,%dl,%dk,256e,%dp)\n",
 								lig_table_size, max_kerns, max_font_dimen);
 			}
 				#pragma endregion

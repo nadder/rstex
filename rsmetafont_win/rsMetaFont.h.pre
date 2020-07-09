@@ -1,16 +1,11 @@
 /*
 
 Copyright (C) 2018 by Richard Sandberg.
-
 This is the Windows specific version of rsMetaFont.
-No Unix version exists yet.
 
 */
 
 #pragma once
-#define TEX_STRING(s) 1
-
-
 
 #include <cstdio>
 #include <cassert>
@@ -35,8 +30,24 @@ struct Array
 	std::array<T, array_size> _array;
 };
 
+// Pascal for loops do not always translate directly into C for loops, beware!
+#define PASCAL_FOR_BEGIN(k, bc, ec) \
+{\
+	k = bc;\
+	if (k <= ec)\
+		do {
+
+#define PASCAL_FOR_END(k, ec) \
+			if (k == ec) break;\
+			k++;\
+		} while (true);\
+}
+
+
+
+
 // 2
-#define banner "This is rsMETAFONT, Version 1.0 Windows" // printed when METAFONT starts
+#define banner "This is rsMETAFONT, Version 1.1 Windows" // printed when METAFONT starts
 
 // 11
 const int mem_max = 50000;
