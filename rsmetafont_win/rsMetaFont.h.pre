@@ -44,8 +44,6 @@ struct Array
 }
 
 
-
-
 // 2
 #define banner "This is rsMETAFONT, Version 1.1 Windows" // printed when METAFONT starts
 
@@ -169,7 +167,6 @@ int ed_name_length;
 int edit_line;
 
 char input_path[MAX_INPUT_CHARS] = default_input_path;
-//char font_path[MAX_OTH_PATH_CHARS] = default_font_path;
 char base_path[MAX_OTH_PATH_CHARS] = default_base_path;
 char pool_path[MAX_OTH_PATH_CHARS] = default_pool_path;
 
@@ -1357,11 +1354,6 @@ const int int_increment=int_packets+int_packets+5; //{number of stack words per 
 	}\
 } while(false);
 
-
-
-
-
-
 // 555
 const int max_patience = 5000;
 
@@ -1502,7 +1494,6 @@ Array<alpha_file, 1, max_in_open> input_file;
 int line; // current line number in the current source file
 Array<int, 1, max_in_open> line_stack;
 
-
 // 632
 #define token_type index // type of current token list
 #define token_state (index > max_in_open) // are we scanning a token list?
@@ -1541,7 +1532,6 @@ int file_ptr; // 0..stack_size, shallowest level shown by show_context
 	input_ptr--; cur_input = input_stack[input_ptr];\
 } while(false)
 
-
 // 649
 #define back_list(s) begin_token_list(s, backed_up) // backs up a simple token list
 
@@ -1556,7 +1546,6 @@ const int loop_defining = 6; // scanner_status when a for loop is being scanned
 
 int scanner_status; // normal..loop_defining, are we scanning at high speed?
 int warning_info; // if so, what else do we need to know, in case an error occurrs?
-
 
 // 680
 bool force_eof; // should the next input be aborted early?
@@ -1602,7 +1591,6 @@ const int progression_node_size = 4; // the number of words in a progression nod
 
 pointer loop_ptr; // top of the loop-control-node stack
 
-
 // 767
 str_number cur_name; // name of file just scanned
 str_number cur_area; // file area just scanned, or ""
@@ -1624,21 +1612,17 @@ pool_pointer ext_delimiter; // the relevant '.', if any
 		name_of_file[k] = xchr[c];\
 } while(0)
 
-
 // 775
-//const int base_default_length = 11; // length of MF_base_default string strlen("plain.base")+1, NOTE: used to be 18
 const int base_area_length = 0; // length of its area part, NOTE: used to be 8
 const int base_ext_length = 5; // length of its '.base' part
 #define base_extension TEX_STRING(".base") // the extension as a WEB constant
 
-//Array<char, 1, base_default_length> MF_base_default;
 const char *MF_base_default = "plain.base";
 
 // 782
 str_number job_name; // principal file name
 bool log_opened; // has the transcript file been opened?
 str_number log_name; // full name of the log file
-
 
 // 784
 #define pack_cur_name pack_file_name(cur_name, cur_area, cur_ext)
@@ -1660,15 +1644,12 @@ str_number gf_ext; // default extension for the output file
 byte_file gf_file; // the generic font output goes here
 str_number output_file_name; // full name of the output file
 
-
 // 796
 small_number cur_type; // the type of the expression just found
 int cur_exp; // the value of the expression just found
 
-
 // 807
 #define exp_err(n) disp_err(null, n) // displays the current expression
-
 
 // 813
 Array<int, dependent, proto_dependent> max_c; // max coefficient magnitude

@@ -1398,7 +1398,7 @@ bool get_strings_started()
 					k = 1;
 					while (1) {
 						if (xord[n] < '0' || xord[n] > '9')
-							bad_pool("! mf.pool check sum doesn\'t have nine digits.", true);
+							bad_pool("! mf.pool check sum doesn't have nine digits.", true);
 						a = 10 * a + xord[n] - '0';
 						if (k == 9) goto done;
 						k++;
@@ -1406,7 +1406,7 @@ bool get_strings_started()
 					}
 				done:
 					if (a != @$)
-						bad_pool("! mf.pool doesn\'t match; TANGLE me again.", true);
+						bad_pool("! mf.pool doesn't match; TANGLE me again.", true);
 					c = true;
 				}
 					#pragma endregion
@@ -1436,7 +1436,7 @@ bool get_strings_started()
 		return true;
 	}
 	else
-		bad_pool("! I can\'t read mf.pool.", false);
+		bad_pool("! I can't read mf.pool.", false);
 	#pragma endregion
 
 }
@@ -8288,8 +8288,6 @@ void cubic_intersection(pointer p, pointer pp)
 			dely = dely - stack_1(y_packet(xy)) - stack_2(y_packet(xy)) - stack_3(y_packet(xy));
 			xy = xy + int_packets; // {switch from l_packets to r_packets }
 		}
-
-
 		#pragma endregion
 	}
 }
@@ -8396,10 +8394,8 @@ void blank_rectangle(screen_col left_col,screen_col right_col, screen_row top_ro
 
 
 // 568
-// 568
 void paint_row(screen_row r, pixel_color b, trans_spec& a, screen_col n)
 {
-	
 	screen_col k; //{an index into |a|}
 	screen_col c; //{an index into |screen_pixel|}
 /*
@@ -8453,13 +8449,13 @@ void open_a_window(window_number k,scaled r0, scaled c0,scaled r1,scaled c1,scal
 	c1 = round_unscaled(c1);
 	if (c1 > screen_width) c1 = screen_width;
 	if (c1 < c0)
-		if (c0 > screen_width) c0 = c1; else c1 = c0;	
+		if (c0 > screen_width) c0 = c1; else c1 = c0;
 	#pragma endregion
 	window_open[k] = true; window_time[k]++;
 	left_col[k] = c0; right_col[k] = c1; top_row[k] = r0; bot_row[k] = r1;
 	#pragma region <Compute the offsets between screen coordinates and actual coordinates>
 	m = round_unscaled(x); n = round_unscaled(y) - 1;
-	m_window[k] = c0 - m; n_window[k] = r0 + n;	
+	m_window[k] = c0 - m; n_window[k] = r0 + n;
 	#pragma endregion
 	start_screen;
 	if (screen_OK)
@@ -8467,9 +8463,6 @@ void open_a_window(window_number k,scaled r0, scaled c0,scaled r1,scaled c1,scal
 		blank_rectangle(c0,c1,r0,r1); update_screen();
 	}
 }
-
-
-
 
 
 // 577
@@ -10976,7 +10969,6 @@ void end_name()
 
 
 
-
 // 773
 void print_file_name(int n, int a, int e)
 {
@@ -11012,7 +11004,6 @@ void pack_buffered_name(small_number n, int a, int b)
 	ASCII_code c; // number of positions filled in name_of_file
 	int j; // index into buffer or MF_base_default
 	int base_default_length = (int)strlen(MF_base_default);
-	
 	if (n + b - a + 1 + base_ext_length > file_name_size)
 		b = a + file_name_size - n - 1 - base_ext_length;
 	k = 0;
@@ -16139,7 +16130,6 @@ void init_gf()
 	PASCAL_FOR_BEGIN(k,0,255)
 		char_ptr[k] = -1;
 	PASCAL_FOR_END(k, 255)
-
 	#pragma region <Determine the file extension, |gf_ext|>
 	if (internal[hppp] <= 0) gf_ext = TEX_STRING(".gf");
 	else {
@@ -16851,7 +16841,7 @@ void close_files_and_terminate()
 		clear_the_list;
 		PASCAL_FOR_BEGIN(k, bc, ec)
 			if (char_exists[k]) tfm_width[k] = sort_in(tfm_width[k]);
-		PASCAL_FOR_END(k, ec)			
+		PASCAL_FOR_END(k, ec)
 		nw = skimp(255) + 1; dimen_head[1] = link(temp_head);
 		if (perturbation >= 010000) tfm_warning(char_wd);
 		#pragma endregion
