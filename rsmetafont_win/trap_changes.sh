@@ -4,6 +4,7 @@
 # The capsule numbers will show up wrong in the test but that also happens with texlive and MikTeX
 # which is curious.
 sed -i 's/mem_max = [0-9]\+;/mem_max = 3000;/' rsMetaFont.h
+sed -i 's/mem_top = [0-9]\+;/mem_top = 3000;/' rsMetaFont.h
 sed -i 's/error_line = [0-9]\+;/error_line = 64;/' rsMetaFont.h
 sed -i 's/half_error_line = [0-9]\+;/half_error_line = 32;/' rsMetaFont.h
 sed -i 's/max_print_line = [0-9]\+;/max_print_line = 72;/' rsMetaFont.h
