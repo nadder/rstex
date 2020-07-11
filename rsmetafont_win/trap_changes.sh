@@ -13,5 +13,5 @@ sed -i 's/screen_depth = [0-9]\+;/screen_depth = 200;/' rsMetaFont.h
 sed -i 's/gf_buf_size = [0-9]\+;/gf_buf_size = 8;/' rsMetaFont.h
 perl -i -p0e "s/bool init_screen\(\).*?$.*?^}/bool init_screen()\n{\n\treturn true;\n}\n/gms" rsMetaFont.cpp
 perl -i -p0e "s/void update_screen.*?$.*?^}/void update_screen()\n{\n\twlog_ln_s\(\"Calling UPDATESCREEN\"\);\n}\n/gms" rsMetaFont.cpp
-perl -i -p0e "s/void blank_rectangle\(screen_col.*?$.*?^}/void blank_rectangle(screen_col left_col,screen_col right_col, screen_row top_row,screen_row bot_row)\n{\n}\n/gms" rsMetaFont.cpp
+perl -i -p0e "s/void blank_rectangle\(screen_col.*?$.*?^}/void blank_rectangle(screen_col left_col,screen_col right_col, screen_row top_row,screen_row bot_row)\n{\twlog_cr;\n\tfprintf(log_file, \"Calling BLANKRECTANGLE(%d,%d,%d,%d)\\\\n\", left_col, right_col, top_row, bot_row);\n}\n/gms" rsMetaFont.cpp
 perl -i -p0e "s/void paint_row\(screen_row.*?$.*?^}/void paint_row(screen_row r, pixel_color b, trans_spec& a, screen_col n)\n{\n\tscreen_col k;\n\tfprintf(log_file, \"Calling PAINTROW(%d,%d;\", r, b);\n\tfor (k = 0; k <= n; k++)\n\t{\n\t\tfprintf(log_file, \"%d\", a[k]); if (k != n) fprintf(log_file, \",\");\n\t}\n\tfprintf(log_file, \")\\\\n\");\n}\n/gms" rsMetaFont.cpp
