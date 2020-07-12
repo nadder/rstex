@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 # after running cpf on the .pre files you can run this script to make changes suitable for metafont trap test
 # see https://ctan.org/tex-archive/systems/knuth/dist/mf for instruction on how to run the test
 # The capsule numbers will show up wrong in the test but that also happens with texlive and MikTeX
