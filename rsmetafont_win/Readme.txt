@@ -10,6 +10,10 @@ This is the windows version of rsMetaFont. It has support for drawing graphics i
 
 To create a plain base file make sure you have plain.mf nearby and run:
 rsMetaFont plain dump
+or even
+rsMetaFont plain input modes dump
+to include the printer modes.
+
 Now you can start rsMetaFont with
 rsMetaFont -base=plain
 and start with plain preloaded.
@@ -18,4 +22,4 @@ The following environment variables can be set e.g.:
 MFINPUTS=.;c:\mfinputs
 MFBASES=.;c:\mfbases
 MFPOOL=.
-MFEDIT=emacs +%d %s
+MFEDIT="notepad++ -n%d "%s"

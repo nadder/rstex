@@ -9,6 +9,10 @@ This is the Unix version of rsMetaFont, no GUI support yet.
 
 To create a plain base file make sure you have plain.mf nearby and run:
 ./rsmf plain dump
+or even
+./rsmf plain input modes dump
+to include the printer modes.
+
 Now you can start rsmf with
 ./rsmf -base=plain
 and start with plain preloaded.
@@ -17,5 +21,5 @@ The following environment variables can be set e.g.:
 MFINPUTS=.:/home/local/mfinputs
 MFBASES=.:/home/local/mfbases
 MFPOOL=.
-MFEDIT=emacs "+%d %s"
+MFEDIT=emacs +%d %s
 

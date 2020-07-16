@@ -1067,8 +1067,8 @@ void error() //{completes the job of error reporting}
 				case TEX_STRING("E"):
 					if (file_ptr > 0)
 					{
-						ed_name_start = str_start[edit_file.name_field];
-						ed_name_length = str_start[edit_file.name_field+1] - str_start[edit_file.name_field];
+						ed_name_start = str_start[edit_file.full_name_field];
+						ed_name_length = str_start[edit_file.full_name_field+1] - str_start[edit_file.full_name_field];
 						edit_line = line;
 						jump_out();
 					}
@@ -10419,14 +10419,33 @@ str_number make_name_string()
 	}
 }
 
+str_number make_full_name_string()
+{
+	int k;
+	if (pool_ptr + strlen(real_name_of_file.get_c_str()) > pool_size || str_ptr == max_strings)
+		return /*?*/63;
+	else {
+		for (k = 1; k <= (int)strlen(real_name_of_file.get_c_str()); k++) append_char(xord[real_name_of_file[k]]);
+		return make_string();
+	}
+}
+
+
 str_number a_make_name_string(alpha_file)
 {
 	return make_name_string();
 }
+
+str_number a_make_full_name_string(alpha_file)
+{
+	return make_full_name_string();
+}
+
 str_number b_make_name_string(byte_file)
 {
 	return make_name_string();
 }
+
 str_number w_make_name_string(word_file)
 {
 	return make_name_string();
@@ -10573,6 +10592,7 @@ void start_input() // METAFONT will input something
 	}
 done:
 	name = a_make_name_string(cur_file); str_ref[cur_name] = max_str_ref;
+	full_name = a_make_full_name_string(cur_file);
 	if (job_name == 0) {
 		job_name = cur_name; open_log_file();
 	} // open_log_file doesn't show_context, so limit and loc neednt be set to meaningful values yet

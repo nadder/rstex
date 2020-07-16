@@ -154,11 +154,10 @@ alpha_file term_out = stdout; // the terminal as an output file
 // System specific addition on windows
 
 #define MAX_INPUT_CHARS 700
-#define default_input_path ".;..;c:\\mf\\local\\lib"
+#define default_input_path ".;c:\\mf\\src"
 #define MAX_OTH_PATH_CHARS 200
-//#define default_font_path "c:\\tex\\fonts"
-#define default_base_path ".;c:\\tex\\local\\tex"
-#define default_pool_path ".;c:\\mf\\local\\tex"
+#define default_base_path ".;c:\\tex\\local\\mf"
+#define default_pool_path ".;c:\\tex\\local\\mf"
 
 #define edit_file input_stack[file_ptr]
 
@@ -1468,6 +1467,7 @@ typedef struct
 	halfword loc_field;
 	halfword limit_field;
 	halfword name_field;
+	halfword full_name_field;						  
 } in_state_record;
 
 
@@ -1482,6 +1482,7 @@ in_state_record cur_input; // the ``top'' input state
 #define start cur_input.start_field
 #define limit cur_input.limit_field
 #define name cur_input.name_field
+#define full_name cur_input.full_name_field										   
 
 // 631
 #define terminal_input (name == 0) // are we reading from the terminal?
