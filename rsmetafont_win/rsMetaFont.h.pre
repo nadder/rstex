@@ -45,10 +45,10 @@ struct Array
 
 
 // 2
-#define banner "This is rsMETAFONT, Version 1.1 Windows" // printed when METAFONT starts
+#define banner "This is rsMETAFONT, Version 1.2 Windows" // printed when METAFONT starts
 
 // 11
-const int mem_max = 50000;
+const int mem_max = 500000;
 const int max_internal = 100;
 const int buf_size = 500;
 const int error_line = 72;
@@ -56,29 +56,29 @@ const int half_error_line = 42;
 const int max_print_line = 79;
 const int screen_width = 1200;//768;
 const int screen_depth = 1200;//1024;
-const int stack_size = 30;
-const int max_strings = 2000;
-const int string_vacancies = 8000;
-const int pool_size = 32000;
-const int move_size = 5000;
+const int stack_size = 1000;
+const int max_strings = 20000;
+const int string_vacancies = 20000;
+const int pool_size = 300000;
+const int move_size = 50000;
 const int max_wiggle = 300;
 const int gf_buf_size = 800;
 const int file_name_size = 300;
 const char pool_name[] = "mf.pool";
-const int path_size = 300;
-const int bistack_size = 785;
+const int path_size = 3000;
+const int bistack_size = 7850;
 const int header_size = 100;
 const int lig_table_size = 5000;
-const int max_kerns = 500;
-const int max_font_dimen = 50;
+const int max_kerns = 5000;
+const int max_font_dimen = 500;
 
 // 12
 const int mem_min = 0;
-const int mem_top = 50000;
-const int hash_size = 2100;
-const int hash_prime = 1777;
-const int max_in_open = 6;
-const int param_size = 150;
+const int mem_top = 500000;
+const int hash_size = 21000;
+const int hash_prime = 16249;
+const int max_in_open = 60;
+const int param_size = 1500;
 
 
 // 37
@@ -482,10 +482,10 @@ int j_random; // 0..54, the number of unused randoms
 const int min_quarterword = 0; // Smallest allowable value in quarterword
 const int max_quarterword = 255; // Largest allowable value in quarterword
 const int min_halfword = 0; // Smallest allowable value in halfword
-const int max_halfword = 65535;//1073741823; // Largest allowable value in halfword
+const int max_halfword = 1073741823; // Largest allowable value in halfword
 
 typedef unsigned char quarterword; // min_quarterword..max_quarterword, 1/4 of a word, NOTE: This part assumes min_quarterword=0
-typedef unsigned short halfword;//typedef int halfword; // min_halfword..max_halfword, 1/2 of a word, NOTE: This part assumes min_halfword=0
+typedef int halfword; // min_halfword..max_halfword, 1/2 of a word, NOTE: This part assumes min_halfword=0
 
 // 155
 #define ho(n) n - min_halfword // to take a sixteen bit item from a halfword
