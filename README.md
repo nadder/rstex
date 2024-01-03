@@ -33,7 +33,7 @@ These two files must be preprocessed by another program `CreatePoolFile` which c
 special strings in the program to numbers (as the original tangle program does),
 and makes a string pool file.
 After this preprocessing we are left with three files: `rstex.h`, `rstex.cpp`, and `tex.pool`.
-rstex.cpp can then be compiled by any non-ancient C++ compiler, and the executable can be run.
+`rstex.cpp` can then be compiled by any non-ancient C++ compiler, and the executable can be run.
 
 #### Notable omissions
 * Currently no path searching is done so all files the program needs are supposed
@@ -63,7 +63,7 @@ will exist some day.
 
 # Copyright
 These programs are copyright (C) 2023 by Richard Sandberg (mylodon at gmail dot com).
-The original tex.web is copyright (C) 1982 by Donald Knuth.
+The original `tex.web` is copyright (C) 1982 by Donald Knuth.
 
 # License
 These programs are for educational purpose only, all commercial use is strictly forbidden.
