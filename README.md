@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.com/nadder/rstex.svg?branch=master)](https://travis-ci.com/nadder/rstex)
 # rsTeX and related programs
+## rse-TeX
+**NEWS** Recently added the long overdue implementation of e-TeX!
+e-TeX is required to run LaTeX so this is a very welcome addition to the family of TeX programs.
 
 ## rsTeX
 This is a manual translation of [tex.web](https://ctan.org/pkg/tex) version 3.14159265 into standard C++.
@@ -19,7 +22,7 @@ Another aspect was that I was interested in knowing how long it would take
 to write the program. I didn't keep a stop watch at hand but a rough estimate is
 that it took about 30 hours to type the whole program in and more than twice that to
 fix all typos and other bugs introduced before it finally passed the trip test.
-Which was kind of what I expected except I thought the debugging time would be on 
+This was kind of what I expected except I thought the debugging time would be on 
 par with the time it took to type it in. Had I been more systematic in my approach
 and introduced more asserts and checks from the beginning the debugging time would
 have been considerably shorter.
@@ -57,12 +60,11 @@ Far from complete program to read DVI files, only for Windows at the moment but 
 will exist some day.
 
 # Copyright
-These programs are copyright (C) 2018 by Richard Sandberg (mylodon at gmail dot com).
+These programs are copyright (C) 2023 by Richard Sandberg (mylodon at gmail dot com).
 The original tex.web is copyright (C) 1982 by Donald Knuth.
 
 # License
-These programs are for educational purpose only, all commercial use
-is strictly forbidden.
+These programs are for educational purpose only, all commercial use is strictly forbidden.
 
 # Donate
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/nadder1)
