@@ -1,0 +1,3691 @@
+/*
+Copyright (C) 2023 by Richard Sandberg.
+
+This is the unix specific version of rsetex.
+
+*/
+
+#pragma once
+#include <cstdio>
+#include <cassert>
+#include <array>
+
+#define array_size maxindex - minindex + 1
+template<typename T, int minindex, int maxindex>
+struct Array
+{
+	T& operator[](int x) {
+		assert(x >= minindex && x <= maxindex);
+		return _array[x - minindex];
+	}
+
+	T* get_c_str() {
+		assert(array_size > 0);
+		_array[array_size - 1] = T(0);
+		return &_array[0];
+	}
+	static const int _minindex = minindex;
+	static const int _maxindex = maxindex;	
+	std::array<T, array_size> _array;
+};
+
+// 2
+#define banner "This is rse-TeX, Version 1.0.0 for Unix (e-TeX 3.141592653-2.6)" // printed when rsTeX starts
+
+int expand_depth_count;
+
+
+#define TEX ETEX //{ change program name into | ETEX | }
+
+const int TeXXeT_code = 0; // { the \TeXXeT\ feature is optional }
+
+const int eTeX_states = 1; // {number of \eTeX\ state variables in | eqtb | }
+
+
+
+// 36
+#define loc cur_input.loc_field // location of first unread character in buffer
+
+// <The following parameters can be changed at compile time to extend or reduce rsTeX's capacity 11>
+const int mem_max = 500000; // Greatest index in rsTeX's internal mem array; must be strictly less than
+                           // max_halfword; must be equal to mem_top in INITEX, otherise >= mem_top
+//const int mem_max = 3000; // triptex
+const int mem_min = 0; // Smallest index in rsTeX's internal mem array; must be min_halfword or more;
+                       // must be equal to mem_bot in INITEX, otherwise <= mem_bot
+//const int mem_min = 1; // triptex
+const int buf_size = 500; // Maximum number of characters simultaneously present in current lines of open files
+                          // and in control sequences between \csname and \endcsname; must not exceed max_halfword
+const int error_line = 72; // Width of context lines on terminal error messages
+//const int error_line = 64; // triptex
+const int half_error_line = 42; // Width of first lines of contexts in terminal error messages; should be between
+                                // 30 and error_line - 15
+//const int half_error_line = 32; // triptex
+const int max_print_line = 79; // Width of longest text lines output; should be at least 60
+//const int max_print_line = 72; // triptex
+const int stack_size = 2000; // Maximum number of simultaneous input sources
+const int max_in_open = 60; // Maximum number of input files and error insertions that can be going on simultaneously
+const int font_max = 255; // Maximum internal font number; must not exceed max_quarterword and must be at most font_base + 256
+const int font_mem_size = 100000; // Number of words of font_info for all fonts
+const int param_size = 2000; // Maximum number of simultaneous macro parameters
+const int nest_size = 2000; // Maximum number of semantic levels simultaneously active
+const int max_strings = 30000; // Maximum number of strings; must not exceed max_halfword
+const int string_vacancies = 20000; // The minimum number of characters that should be available for the user's
+                                   // control sequences and font names, after rsTeX's own error messages are stored
+const int pool_size = 300000; // Maximum number of characters in strings, including all error messages and help texts,
+                             // and the names of all fonts and control sequences; must exceed string_vacancies by the
+							 // total length of rsTeX's own strings, which is currently about 23000
+const int save_size = 1200; // Space for saving values outside of current group; must be at most max_halfword
+const int trie_size = 8000; // Space for hyphenation patterns; should be larger for INITEX than it is in production
+                            // versions of rsTeX
+
+const int ssup_error_line = 255;
+const int ssup_max_strings = 2097151;
+
+const int ssup_trie_opcode = 65535;
+const int ssup_trie_size = 0x3FFFFF;
+
+const int ssup_hyph_size = 65535;// {Changing this requires changing(un)dumping!}
+const int iinf_hyphen_size = 610;// {Must be not less than | hyph_prime | !}
+
+const int max_font_max = 9000; //{maximum number of internal fonts; this can be increased, but | hash_size + max_font_max | should not exceed 29000.}
+const int font_base = 0; // { smallest internal font number; must be |>= min_quarterword | ; do not change this without modifying the dynamic definition of the font arrays. }
+
+
+
+const int hash_offset = 514; // {smallest index in hash array, i.e., |hash_base| }
+const int trie_op_size = 35111; // Space for ``opcodes'' in the hyphenation patterns
+const int neg_trie_op_size = -35111; // {for lower | trie_op_hash | array bound;
+const int min_trie_op = 0; //{first possible trie op code for any language}
+const int max_trie_op = ssup_trie_opcode; //{largest possible trie opcode for any language}
+
+const int inf_mem_bot = 0;
+const int sup_mem_bot = 1;
+
+
+
+const int inf_main_memory = 3000;
+const int sup_main_memory = 256000000;
+
+const int inf_trie_size = 8000;
+const int sup_trie_size = ssup_trie_size;
+
+const int inf_max_strings = 3000;
+const int sup_max_strings = ssup_max_strings;
+const int inf_strings_free = 100;
+const int sup_strings_free = sup_max_strings;
+
+const int inf_buf_size = 500;
+const int sup_buf_size = 30000000;
+
+const int inf_nest_size = 40;
+const int sup_nest_size = 4000;
+
+const int inf_max_in_open = 6;
+const int sup_max_in_open = 127;
+
+const int inf_param_size = 60;
+const int sup_param_size = 32767;
+
+const int inf_save_size = 600;
+const int sup_save_size = 30000000;
+
+const int inf_stack_size = 200;
+const int sup_stack_size = 30000;
+
+const int inf_dvi_buf_size = 800;
+const int sup_dvi_buf_size = 65536;
+
+const int inf_font_mem_size = 20000;
+const int sup_font_mem_size = 147483647; //{ | integer | -limited, so 2 could be prepended ? }
+
+const int sup_font_max = max_font_max;
+const int inf_font_max = 50; //{could be smaller, but why ? }
+
+const int inf_pool_size = 32000;
+const int sup_pool_size = 40000000;
+const int inf_pool_free = 1000;
+const int sup_pool_free = sup_pool_size;
+const int inf_string_vacancies = 8000;
+const int sup_string_vacancies = sup_pool_size - 23000;
+
+const int sup_hash_extra = sup_max_strings;
+const int inf_hash_extra = 0;
+
+const int sup_hyph_size = ssup_hyph_size;
+const int inf_hyph_size = iinf_hyphen_size; //{Must be not less than | hyph_prime | !}
+
+const int inf_expand_depth = 10;
+const int sup_expand_depth = 10000000;
+
+
+
+#define num_error(s) do {\
+	arith_error = true; s = 0;\
+} while (0)
+
+#define glue_error(s) do {\
+	arith_error = true;\
+	delete_glue_ref(s);\
+	s = new_spec(zero_glue);\
+} while (0)
+
+#define normalize_glue(s) do {\
+	if (stretch(s) == 0) stretch_order(s) = normal;\
+	if (shrink(s) == 0) shrink_order(s) = normal;\
+} while (0)
+
+#define expr_add_sub(s1,s2,s3) add_or_sub(s1,s2,s3,r == expr_sub)
+#define expr_a(s1, s2) expr_add_sub(s1, s2, max_dimen)
+
+const int expand_depth = 100000;//{limits recursive calls to the | expand | procedure}
+
+const int dvi_buf_size = 2400; // size of the output buffer; must be a multiple of 8
+const int file_name_size = 1024; // File names shouldn't be longer than this
+const char pool_name[] = "tex.pool"; // String of file_name_size; tells where the string pool appears
+
+
+// 13
+int bad; // is some ``constant'' wrong?
+
+// 18
+typedef unsigned char ASCII_code;
+
+// 19
+typedef unsigned char text_char; // The data type of characters in text files
+const int first_text_char = 0; // Ordinal number of the smallest element of text_char
+const int last_text_char = 255; // Ordinal number of the largest element of text_char
+
+// 20
+Array<ASCII_code, 0, 255> xord; // Specifies conversion of input characters
+Array<text_char, 0, 255> xchr; // Specifies conversion of output characters
+
+
+// 38
+#define so(s) s // convert from ASCII_code to packed_ASCII_code
+#define si(s) s // convert from packed_ASCII_code to ASCII_code
+
+typedef int pool_pointer; // 0 .. pool_size, for variables that point into str_pool
+typedef int str_number; // 0 .. max_strings, for variables that point into str_start
+typedef unsigned char packed_ASCII_code; // 0 .. 255, elements of str_pool array
+
+// 25
+typedef unsigned char eight_bits; // Unsigned one-byte quantity
+typedef FILE* alpha_file; // Files that contain textual data
+typedef FILE* byte_file; // Files that contain binary data
+
+// 32
+alpha_file term_in = stdin; // the terminal as an input file
+alpha_file term_out = stdout; // the terminal as an output file
+
+// 39
+Array<packed_ASCII_code, 0, pool_size> str_pool; // the characters
+Array<pool_pointer, 0, max_strings> str_start; // the starting pointers
+pool_pointer pool_ptr; // first unused position in str_pool
+str_number str_ptr; // number of the current string being created
+pool_pointer init_pool_ptr; // the starting value of pool_ptr
+str_number init_str_ptr; // the starting value of str_ptr
+
+// 50
+alpha_file pool_file; // the string-pool file output by TANGLE; NOTE: here we use the program CreatePoolFile for this purpose
+
+// 54
+const int no_print = 16; // selector setting that makes data disappear
+const int term_only = 17; // printing is destined for the terminal only
+const int log_only = 18; // printing is destined for the transcript file only
+const int term_and_log = 19; // normal selector setting
+const int pseudo = 20; // special selector setting for show_context
+const int new_string = 21; // printing is deflected to the string pool
+const int max_selector = 21; // highest selector setting
+
+alpha_file log_file; // transcript of rsTeX session
+int selector; // 0..max_selector, where to print a message
+unsigned char dig[23]; // 0..15, digits in a number being output
+int tally; // the number of characters recently printed
+int term_offset; // 0..max_print_line, the number of characters on the current terminal line
+int file_offset; // 0..max_print_line, the number of characters on the current file line
+
+Array<ASCII_code, 0, error_line> trick_buf; // circular buffer for pseudoprinting
+int trick_count; // threshold for pseudoprinting
+int first_count; // another variable for pseudoprinting
+
+// 56
+#define wterm_s(s) fputs(s, term_out)
+#define wterm_c(s) fputc(s, term_out)
+#define wterm_ln_s(s) do {fputs(s, term_out);fputc('\n',term_out);} while(0)
+#define wterm_cr fputc('\n',term_out)
+#define wlog_s(s) do{\
+	fputs(s, log_file);\
+} while(0)
+
+#define wlog_c(s) do{\
+	fputc(s, log_file);\
+} while(0)
+
+#define wlog_ln_s(s) do{\
+	fputs(s, log_file);\
+	fputc('\n', log_file);\
+} while (0)
+
+#define wlog_cr do{\
+	fputc('\n',log_file);\
+} while(0)
+
+// 16
+#define incr(n) (n++) // increase a variable by unity
+#define decr(n) (n--) // decrease a variable by unity
+#define negate(s) (s = -s) // change the sign of a variable ; NOTE: If we're paranoid we could check for overflow here
+const int empty = 0; // symbolic name for a null constant
+
+// 40
+#define length(num) (str_start[num + 1] - str_start[num]) // the number of characters in string number num
+
+// 41
+#define cur_length (pool_ptr - str_start[str_ptr])
+
+// 42
+// put ASCII_code thechar at the end of str_pool
+#define append_char(thechar) do{\
+	str_pool[pool_ptr] = thechar;\
+	pool_ptr++;\
+} while(0)
+
+#define flush_char pool_ptr-- // forget the last character in the pool
+
+// make sure that pool hasn't overflowed
+#define str_room(num) do{\
+	if (pool_ptr + num > pool_size)\
+		overflow(TEX_STRING("pool size"), pool_size - init_pool_ptr);\
+} while(0)
+
+// 44
+#define flush_string do {\
+	str_ptr--;\
+	pool_ptr = str_start[str_ptr];\
+} while(0)
+
+//48
+#define app_lc_hex(num) do {\
+	l = num;\
+	if(l < 10)\
+		append_char(l + TEX_STRING("0"));\
+	else\
+		append_char(l - 10 + TEX_STRING("a"));\
+} while(0)
+
+// 51
+// NOTE: Add extra parameter if we should close the file
+#define bad_pool(str, do_close) do {\
+	puts(str);\
+	if(do_close)\
+		a_close(pool_file);\
+	return false;\
+} while(0)
+
+// 68
+#define print_ASCII print
+
+// 71
+#define prompt_input(s) do{\
+	wake_up_terminal();\
+	print(s);\
+	term_input();\
+}while(0)
+
+// 73
+const int batch_mode = 0; // omits all stops and omits terminal output
+const int nonstop_mode = 1; // omits all stops
+const int scroll_mode = 2; // omits error stops
+const int error_stop_mode = 3; // stops at every opportunity to interact
+
+unsigned char interaction; // batch_mode..error_stop_mode, current level of interaction
+
+#define print_err(s) do {\
+	if(interaction == error_stop_mode)\
+		wake_up_terminal();\
+	print_nl(TEX_STRING("! "));\
+	print(s);\
+} while(0)
+
+const int eTeX_version = 2; // \eTeXversion
+const str_number eTeX_revision = TEX_STRING(".6"); // { \.{\\eTeXrevision} }
+
+const char* eTeX_version_string = "-2.6"; // {current \eTeX\ version}
+
+
+
+// 76
+const int spotless = 0; // history value when nothing has been amiss yet
+const int warning_issued = 1; // history value when begin_diagnostic has been called
+const int error_message_issued = 2; // history value when error has been called
+const int fatal_error_stop = 3; // history value when termination was premature
+
+bool deletions_allowed; // is it safe for error to call get_token?
+bool set_box_allowed; // is it safe to do a \setbox assignment?
+int history; // spotless..fatal_error_stop, has the source input been clean so far?
+int error_count; // -1..100, the number of scrolled errors since the last paragraph ended
+
+const int box_val = 4; // {the additional box registers}
+const int mark_val = 6; // {the additional mark classes}
+
+const int dimen_val_limit = 0x20; // {$2 ^ 4\cdot(| dimen_val | +1)$}
+const int mu_val_limit = 0x40; // {$2 ^ 4\cdot(| mu_val | +1)$}
+const int box_val_limit = 0x50; // {$2 ^ 4\cdot(| box_val | +1)$}
+const int tok_val_limit = 0x60; // {$2 ^ 4\cdot(| tok_val | +1)$}
+
+const int index_node_size = 9; // {size of an index node}
+#define sa_index type //{ a four - bit address or a type or both }
+#define sa_used subtype //{ count of non - null pointers }
+
+
+#define sa_lev sa_used //{ grouping level for the current value }
+const int pointer_node_size = 2; // {size of an element with a pointer value}
+#define sa_type(s) (sa_index(s) / 16) //{ type part of combined type / index }
+#define sa_ref(s) info(s + 1) //{ reference count of a sparse array element }
+#define sa_ptr(s) link(s + 1) // { a pointer value }
+
+const int word_node_size = 3; // {size of an element with a word value}
+#define sa_num sa_ptr //{ the register number }
+#define sa_int(s)  mem[s + 2].an_int //{ an integer }
+#define sa_dim(s)  mem[s + 2].sc //{ a dimension(a somewhat esotheric distinction) }
+
+const int mark_class_node_size = 4; // {size of an element for a mark class}
+
+#define fetch_box(s) do {\
+	if (cur_val < 256) s = box(cur_val);\
+	else {\
+		find_sa_element(box_val, cur_val, false);\
+		if (cur_ptr == null) s = null;\
+		else s = sa_ptr(cur_ptr);\
+	}\
+} while (0)
+
+
+
+#define if_cur_ptr_is_null_then_return_or_goto(s) do {\
+	if (cur_ptr == null)\
+		if (w) goto s;\
+		else return;\
+} while (0)
+
+#define hex_dig1(s)  s / 4096 //{the fourth lowest hexadecimal digit}
+#define hex_dig2(s) (s / 256) % 16 // {the third lowest hexadecimal digit}
+#define hex_dig3(s) (s / 16) % 16 // {the second lowest hexadecimal digit}
+#define hex_dig4(s) (s % 16) // {the lowest hexadecimal digit}
+
+#define get_sa_ptr do{\
+	if (myodd(i)) cur_ptr = link(q + (i / 2) + 1);\
+	else cur_ptr = info(q + (i / 2) + 1);\
+} while (0)
+
+#define put_sa_ptr(s) do{\
+	if (myodd(i)) link(q + (i / 2) + 1) = s;\
+	else info(q + (i / 2) + 1) = s;\
+} while (0)
+
+#define add_sa_ptr do {\
+	put_sa_ptr(cur_ptr); incr(sa_used(q));\
+} while (0)
+
+#define delete_sa_ptr do {\
+	put_sa_ptr(null); decr(sa_used(q));\
+} while (0)
+
+
+
+
+// 79
+// sometimes there might be no help
+#define help0 do{\
+	help_ptr = 0;\
+} while(0)
+
+// use this with one help line
+#define help1(s) do{\
+	help_ptr = 1;\
+	help_line[0] = s;\
+} while(0)
+
+// use this with two help lines
+#define help2(s1,s2) do{\
+	help_ptr = 2;\
+	help_line[1] = s1;\
+	help_line[0] = s2;\
+} while(0)
+
+// use this with three help lines
+#define help3(s1,s2,s3) do{\
+	help_ptr = 3;\
+	help_line[2] = s1;\
+	help_line[1] = s2;\
+	help_line[0] = s3;\
+} while(0) 
+
+// use this with four help lines
+#define help4(s1,s2,s3,s4) do{\
+	help_ptr = 4;\
+	help_line[3] = s1;\
+	help_line[2] = s2;\
+	help_line[1] = s3;\
+	help_line[0] = s4;\
+} while(0)
+
+// use this with five help lines
+#define help5(s1,s2,s3,s4,s5) do{\
+	help_ptr = 5;\
+	help_line[4] = s1;\
+	help_line[3] = s2;\
+	help_line[2] = s3;\
+	help_line[1] = s4;\
+	help_line[0] = s5;\
+} while(0)
+
+// use this with six help lines
+#define help6(s1,s2,s3,s4,s5,s6) do{\
+	help_ptr = 6;\
+	help_line[5] = s1;\
+	help_line[4] = s2;\
+	help_line[3] = s3;\
+	help_line[2] = s4;\
+	help_line[1] = s5;\
+	help_line[0] = s6;\
+} while(0) 
+
+Array<str_number, 0, 5> help_line; // helps for the next error
+char help_ptr; // 0..6, the number of help lines present
+bool use_err_help; // should err_help list be shown?
+
+// 93
+// NOTE: Made succumb a function instead
+
+
+// 96
+#define check_interrupt if(interrupt != 0) pause_for_instructions()
+
+int interrupt; // should rsTeX pause for instructions?
+bool OK_to_interrupt; // should interrupts be observed?
+
+int eTeX_mode; // 0..1 {identifies compatibility and extended mode}
+
+// 12
+const int mem_bot = 0; // smallest index in the mem array dumped by INITEX; must not be less than mem_min
+//const int mem_bot = 1; // triptex
+const int mem_top = 500000; // largest index in the mem_array dumped by INITEX; must be substantially larger
+                           // than mem_bot and not greater than mem_max
+//const int mem_top = 3000; // triptex
+//const int font_base = 0; // smallest internal font number; must not be less than min_quarterword
+const int hash_size = 21000; // maximum number of control sequences; it should be at most about (mem_max - mem_min) / 10
+const int hash_prime = 16249; // a prime number equal to about 85% of hash_size
+const int hyph_size = 307; // another prime; the number of \hyphenation exceptions
+
+// 22
+const int null_code = 0; // ASCII code that might disappear
+const int carriage_return = 015; // ASCII code used at end of line
+const int invalid_code = 0177; // ASCII code that many systems prohibit in text files
+
+// 26
+Array<char, 1, file_name_size + 1> name_of_file;
+//int name_length; // This many characters are actually relevant in name_of_file (the rest are blank) NOTE: We don't really follow this convention in C
+
+//////////////////////////////////////////////
+// System dependent addition for paths
+Array<char, 1, file_name_size + 1> real_name_of_file;
+
+
+//////////////////////////////////////////////
+
+
+// 30
+int first; // The first unused position in buffer
+int last; // End of the line just input to buffer
+int max_buf_stack; // Largest index used in buffer
+
+Array<ASCII_code, 0, buf_size> buffer; // lines of characters being read
+
+//101
+const int unity = 0200000; // 2^16, represents 1.00000
+const int two = 0400000; // 2^17, represents 2.00000
+typedef int scaled; // This type is used for scaled integers
+typedef int nonnegative_integer; // 0..017777777777, 0 <= x < 2^31
+typedef int small_number; // 0.. 63, this type is self-explanatory
+
+// 110
+const int min_quarterword = 0; // Smallest allowable value in quarterword
+const int max_quarterword = 255; // Largest allowable value in quarterword
+const int min_halfword = 0; // Smallest allowable value in halfword
+const int max_halfword = 1073741823; // Largest allowable value in halfword
+
+// 113
+#define sc an_int // Scaled data is equivalent to integer
+
+typedef unsigned char quarterword; // min_quarterword..max_quarterword, 1/4 of a word, NOTE: This part assumes min_quarterword=0
+typedef int halfword; // min_halfword..max_halfword, 1/2 of a word, NOTE: This part assumes min_halfword=0
+//typedef unsigned char two_choices; // 1..2, Used when there are two variants in a record
+//typedef unsigned char four_choices; // 1..4, Used when there are four variants in a record
+
+// 121
+// NOTE: made this function instead, to ease debugging
+//#define free_avail(s) do{link(s) = avail;avail=s;/*stat*/decr(dyn_used);/*tats*/}while(0)
+
+// 221
+#define eq_level_field(s) s.hh.b1
+#define eq_type_field(s) s.hh.b0
+#define equiv_field(s) s.hh.rh
+#define eq_level(s) eq_level_field(eqtb[s]) // level of definition
+#define eq_type(s) eq_type_field(eqtb[s]) // command code for equivalent
+#define equiv(s) equiv_field(eqtb[s]) // equivalent value
+const int level_zero = min_quarterword; // level for undefined quantities
+const int level_one = level_zero + 1; // outermost level for defined quantities
+
+// Region 2 of eqtb
+// 222
+enum equiv_region2_code : halfword
+{
+	active_base = 1, // beginning of region 1, for active character equivalents
+	single_base = active_base + 256, // equivalents of one-character control sequences
+	null_cs = single_base + 256, // equivalent of \csname\endcsname
+	hash_base = null_cs + 1, // beginning of region 2, for the hash table
+	frozen_control_sequence = hash_base + hash_size, // for error recovery
+	frozen_protection = frozen_control_sequence, // inaccessible but definable
+	frozen_cr = frozen_control_sequence + 1, // permanent `\cr'
+	frozen_end_group = frozen_control_sequence + 2, // permanent `\endgroup'
+	frozen_right = frozen_control_sequence + 3, // permanent `\right'
+	frozen_fi = frozen_control_sequence + 4, // permanent `\fi'
+	frozen_end_template = frozen_control_sequence + 5, // permanent `\endtemplate'
+	frozen_endv = frozen_control_sequence + 6, // second permanent `\endtemplate'
+	frozen_relax = frozen_control_sequence + 7, // permanent `\relax'
+	end_write = frozen_control_sequence + 8, // permanent `\endwrite'
+	frozen_dont_expand = frozen_control_sequence + 9, // permanent `\notexpanded'
+	frozen_null_font = frozen_control_sequence + 10, // permanent `\nullfont'
+	font_id_base = frozen_null_font - font_base, // begins table of 257 permanent font identifiers
+	undefined_control_sequence = frozen_null_font + 257, // dummy location
+	glue_base = undefined_control_sequence + 1, // beginnning of region 3
+};
+
+// Region 3 of eqtb
+// 224
+enum equiv_region3_code : halfword
+{
+	line_skip_code = 0, // interline glue if baseline_skip is infeasible
+	baseline_skip_code = 1, // desired glue between baselines
+	par_skip_code = 2, // extra glue just above a paragraph
+	above_display_skip_code = 3, // extra glue just above displayed math
+	below_display_skip_code = 4, // extra glue just below deisplayed math
+	above_display_short_skip_code = 5, // glue above displayed math following short lines
+	below_display_short_skip_code = 6,  // glue below displayed math following short lines
+	left_skip_code = 7, // glue at left of justified lines
+	right_skip_code = 8, // glue at right of justified lines
+	top_skip_code = 9, // glue at top of main pages
+	split_top_skip_code = 10, // glue at top of split pages
+	tab_skip_code = 11, // glue between aligned entries
+	space_skip_code = 12, // glue between words (if not zero_glue)
+	xspace_skip_code = 13, // glue after sentences (if not zero glue)
+	par_fill_skip_code = 14, // glue on last line of paragraph
+	thin_mu_skip_code = 15, // thin space in math formula
+	med_mu_skip_code = 16, // medium space in math formula
+	thick_mu_skip_code = 17, // thick space in math formula
+};
+const int glue_pars = 18; // total number of glue parameters
+const int skip_base = glue_base + glue_pars; // table of 256 ``skip'' registers
+const int mu_skip_base = skip_base + 256; // table of 256 ``muskip'' registers
+const int local_base = mu_skip_base + 256; // beginning of region 4
+
+#define skip(s) equiv(skip_base + s) // mem location of glue specification
+#define mu_skip(s) equiv(mu_skip_base+s) // mem location of math glue spec
+#define glue_par(s) equiv(glue_base+s) // mem location of glue specification
+#define line_skip glue_par(line_skip_code)
+#define baseline_skip glue_par(baseline_skip_code)
+#define par_skip glue_par(par_skip_code)
+#define above_display_skip glue_par(above_display_skip_code)
+#define below_display_skip glue_par(below_display_skip_code)
+#define above_display_short_skip glue_par(above_display_short_skip_code)
+#define below_display_short_skip glue_par(below_display_short_skip_code)
+#define left_skip glue_par(left_skip_code)
+#define right_skip glue_par(right_skip_code)
+#define top_skip glue_par(top_skip_code)
+#define split_top_skip glue_par(split_top_skip_code)
+#define tab_skip glue_par(tab_skip_code)
+#define space_skip glue_par(space_skip_code)
+#define xspace_skip glue_par(xspace_skip_code)
+#define par_fill_skip glue_par(par_fill_skip_code)
+#define thin_mu_skip glue_par(thin_mu_skip_code)
+#define med_mu_skip glue_par(med_mu_skip_code)
+#define thick_mu_skip glue_par(thick_mu_skip_code)
+
+// region 4 of eqtb
+// 230
+enum equiv_region4_loc : halfword
+{
+	par_shape_loc = local_base, // specifies paragraph shape
+	output_routine_loc = local_base + 1, // points to token list for \output
+	every_par_loc = local_base + 2, // points to token list for \everypar
+	every_math_loc = local_base + 3, // points to token list for \everymath
+	every_display_loc = local_base + 4, // points to token list for \everydisplay
+	every_hbox_loc = local_base + 5, // points to token list for \everyhbox
+	every_vbox_loc = local_base + 6, // points to token list for \everyvbox
+	every_job_loc = local_base + 7, // points to token list for \everyjob
+	every_cr_loc = local_base + 8, // points to token list for \everycr
+	err_help_loc = local_base + 9, // points to token list for \errhelp
+	//toks_base = local_base + 10, // table of 256 token list registers
+	tex_toks = local_base + 10, // end of TeX token list parameters
+	etex_toks_base = tex_toks, // base for eTeX's token list parameters
+	every_eof_loc = etex_toks_base, // points to token list for \everyof
+	etex_toks = etex_toks_base+1, // end of eTeX's token list parameters
+	toks_base = etex_toks, // table of 256 token list registers
+
+	//box_base = toks_base + 256, // table of 256 box registers
+
+	etex_pen_base = toks_base + 256, // {start of table of \eTeX's penalties}
+	inter_line_penalties_loc = etex_pen_base, //{ additional penalties between lines }
+	club_penalties_loc = etex_pen_base + 1, // {penalties for creating club lines}
+	widow_penalties_loc = etex_pen_base + 2, // {penalties for creating widow lines}
+	display_widow_penalties_loc = etex_pen_base + 3, // {ditto, just before a display}
+	etex_pens = etex_pen_base + 4, // {end of table of \eTeX's penalties}
+
+	box_base = etex_pens, //{ table of 256 box registers }
+
+	cur_font_loc = box_base + 256, // internal font number outside math mode
+};
+
+const int math_font_base = cur_font_loc + 1; // table of 48 math font numbers
+const int cat_code_base = math_font_base + 48; // table of 256 command codes (the ``catcodes'')
+const int lc_code_base = cat_code_base + 256; // table of 256 lowercase mappings
+const int uc_code_base = lc_code_base + 256; // table of 256 uppercase mappings
+const int sf_code_base = uc_code_base + 256; // table of 256 spacefactor mappings
+const int math_code_base = sf_code_base + 256; // table of 256 math mode mappings
+const int int_base = math_code_base + 256; // beginning of region 5
+
+#define par_shape_ptr equiv(par_shape_loc)
+#define output_routine equiv(output_routine_loc)
+#define every_par equiv(every_par_loc)
+#define every_math equiv(every_math_loc)
+#define every_display equiv(every_display_loc)
+#define every_hbox equiv(every_hbox_loc)
+#define every_vbox equiv(every_vbox_loc)
+#define every_job equiv(every_job_loc)
+#define every_cr equiv(every_cr_loc)
+#define err_help equiv(err_help_loc)
+#define toks(s) equiv(toks_base+s)
+#define box(s) equiv(box_base + s)
+#define cur_font equiv(cur_font_loc)
+#define fam_fnt(s) equiv(math_font_base+s)
+#define cat_code(s) equiv(cat_code_base+s)
+#define lc_code(s) equiv(lc_code_base+s)
+#define uc_code(s) equiv(uc_code_base+s)
+#define sf_code(s) equiv(sf_code_base+s)
+#define math_code(s) equiv(math_code_base+s)
+
+// 232
+#define null_font font_base
+const int var_code = 070000; // math code meaning ``use the current family''
+
+// 247
+enum equiv_region6_code : halfword
+{
+	par_indent_code = 0, // indentation of paragraphs
+	math_surround_code = 1, // space around math in text
+	line_skip_limit_code = 2, // threshold for line_skip instead of baseline_skip
+	hsize_code = 3, // line width in horizontal mode
+	vsize_code = 4, // page height in vertical mode
+	max_depth_code = 5, // maximum depth of boxes on main pages
+	split_max_depth_code = 6, // maximum depth of boxes on split pages
+	box_max_depth_code = 7, // maximum depth of explicit vboxes
+	hfuzz_code = 8, // tolerance for overfull hbox messages
+	vfuzz_code = 9, // tolerance for overfull vbox messages
+	delimiter_shortfall_code = 10, // maximum amount uncovered by variable delimiters
+	null_delimiter_space_code = 11, // blank space in null delimiters
+	script_space_code = 12, // extra space after subscript or superscript
+	pre_display_size_code = 13, // length of text preceding a display
+	display_width_code = 14, // length of line for displayed equation
+	display_indent_code = 15, // indentation of line for dispalyed equation
+	overfull_rule_code = 16, // width of rule that identifies overfull hboxes
+	hang_indent_code = 17, // amount of hanging indentation
+	h_offset_code = 18, // amount of horizontal offset when shipping pages out
+	v_offset_code = 19, // amount of vertical offset when shipping pages out
+	emergency_stretch_code = 20, // reduces badness on final pass of line-breaking
+};
+
+const int dimen_pars = 21; // total number of dimension parameters
+
+#define dimen(s) (eqtb[scaled_base+s].sc)
+#define dimen_par(s) (eqtb[dimen_base+s].sc)
+#define par_indent dimen_par(par_indent_code)
+#define math_surround dimen_par(math_surround_code)
+#define line_skip_limit dimen_par(line_skip_limit_code)
+#define hsize dimen_par(hsize_code)
+#define vsize dimen_par(vsize_code)
+#define max_depth dimen_par(max_depth_code)
+#define split_max_depth dimen_par(split_max_depth_code)
+#define box_max_depth dimen_par(box_max_depth_code)
+#define hfuzz dimen_par(hfuzz_code)
+#define vfuzz dimen_par(vfuzz_code)
+#define delimiter_shortfall dimen_par(delimiter_shortfall_code)
+#define null_delimiter_space dimen_par(null_delimiter_space_code)
+#define script_space dimen_par(script_space_code)
+#define pre_display_size dimen_par(pre_display_size_code)
+#define display_width dimen_par(display_width_code)
+#define display_indent dimen_par(display_indent_code)
+#define overfull_rule dimen_par(overfull_rule_code)
+#define hang_indent dimen_par(hang_indent_code)
+#define h_offset dimen_par(h_offset_code)
+#define v_offset dimen_par(v_offset_code)
+#define emergency_stretch dimen_par(emergency_stretch_code)
+
+// 236
+// Region five of eqtb
+enum equiv_region5_code : halfword
+{
+	pretolerance_code = 0, // badness tolerance before hyphenation
+	tolerance_code = 1, // badness tolerance after hyphenation
+	line_penalty_code = 2, // added to the badness of every line
+	hyphen_penalty_code = 3, // penalty for break after discretionary hyphen
+	ex_hyphen_penalty_code = 4, // penalty for break after explicit hyphen
+	club_penalty_code = 5, // penalty for creating a club line
+	widow_penalty_code = 6, // penalty for creating a widow line
+	display_widow_penalty_code = 7, // ditto, just before a display
+	broken_penalty_code = 8, // penalty for breaking a page at a broken line
+	bin_op_penalty_code = 9, // penalty for breaking after a binary operation
+	rel_penalty_code = 10, // penalty for breaking after a relation
+	pre_display_penalty_code = 11, // penalty for breaking just before a displayed formula
+	post_display_penalty_code = 12, // penalty for breaking just after a displayed formula
+	inter_line_penalty_code = 13, // additional penalty between lines
+	double_hyphen_demerits_code = 14, // demerits for double hyphen break
+	final_hyphen_demerits_code = 15, // demerits for final hyphen break
+	adj_demerits_code = 16, // demerits for adjacent incompatible lines
+	mag_code = 17, // magnification ratio
+	delimiter_factor_code = 18, // ratio for variable-size delimiters
+	looseness_code = 19, // change in number of lines for a paragraph
+	time_code = 20, // current time of day
+	day_code = 21, // current dat of the month
+	month_code = 22, // current month of the year
+	year_code = 23, // current year of our Lord
+	show_box_breadth_code = 24, // nodes per level in show_box
+	show_box_depth_code = 25, // maximum level in show_box
+	hbadness_code = 26, // hboxes exceeding this badness will be shown by hpack
+	vbadness_code = 27, // vboxes exceeding this badness will be shown in vpack
+	pausing_code = 28, // pause after each line is read from a file
+	tracing_online_code = 29, // show diagnostic output on terminal
+	tracing_macros_code = 30, // show macros as they are being expanded
+	tracing_stats_code = 31, // show memory usage if rsTeX knows it
+	tracing_paragraphs_code = 32, // show line-break calculations
+	tracing_pages_code = 33, // show page-break calculations
+	tracing_output_code = 34, // show boxes when they are shipped out
+	tracing_lost_chars_code = 35, // show characters that aren't in the font
+	tracing_commands_code = 36, // show command codes at big_switch
+	tracing_restores_code = 37, // show equivalents when they are restored
+	uc_hyph_code = 38, // hyphenate words beginning with a capital letter
+	output_penalty_code = 39, // penalty found at current page
+	max_dead_cycles_code = 40, // bound on consecutive dead cycles of output
+	hang_after_code = 41, // hanging indentation changes after this many lines
+	floating_penalty_code = 42, // penalty for insertions heldover after a split
+	global_defs_code = 43, // override \global specifications
+	cur_fam_code = 44, // current family
+	escape_char_code = 45, // escape character for token output
+	default_hyphen_char_code = 46, // value of \hyphenchar when a font is loaded
+	default_skew_char_code = 47, // value of \skewchar when a font is loaded
+	end_line_char_code = 48, // character placed at the right end of the buffer
+	new_line_char_code = 49, // character that prints as print_ln
+	language_code = 50, // current hyphenation table
+	left_hyphen_min_code = 51, // minimum left hyphenation fragment size
+	right_hyphen_min_code = 52, // minimum right hyphenation fragment size
+	holding_inserts_code = 53, // do not remove insertion nodes from \box255
+	error_context_lines_code = 54, // maximum intermediate line pairs shown
+};
+
+const int tex_int_pars = 55; //{total number of \TeX's integer parameters}
+
+const int etex_int_base = tex_int_pars;//{ base for \eTeX's integer parameters}
+const int tracing_assigns_code = etex_int_base;//{ show assignments }
+const int tracing_groups_code = etex_int_base + 1; //{show save / restore groups}
+const int tracing_ifs_code = etex_int_base + 2; //{show conditionals}
+const int tracing_scan_tokens_code = etex_int_base + 3; //{show pseudo file openand close}
+const int tracing_nesting_code = etex_int_base + 4; //{show incomplete groupsand ifs within files}
+const int pre_display_direction_code = etex_int_base + 5; //{text direction preceding a display}
+const int last_line_fit_code = etex_int_base + 6; //{adjustment for last line of paragraph}
+const int saving_vdiscards_code = etex_int_base + 7; //{save items discarded from vlists}
+const int saving_hyph_codes_code = etex_int_base + 8; //{save hyphenation codes for languages}
+const int eTeX_state_code = etex_int_base + 9; //{\eTeX\ state variables}
+const int etex_int_pars = eTeX_state_code + eTeX_states;//{ total number of \eTeX's integer parameters}
+
+const int int_pars = etex_int_pars;//  { total number of integer parameters }
+
+const int eTeX_state_base = int_base + eTeX_state_code;
+#define eTeX_state(s) eqtb[eTeX_state_base + s].an_int // { an \eTeX\ state variable }
+
+
+#define eTeX_ex (eTeX_mode==1) //{is this extended mode?}
+
+#define TeXXeT_state eTeX_state(TeXXeT_code)
+#define TeXXeT_en (TeXXeT_state > 0) // {is \TeXXeT\ enabled?}
+
+
+
+const int count_base = int_base + int_pars; // 256 user \count registers
+const int del_code_base = count_base + 256; // 256 delimiter code mappings
+const int dimen_base = del_code_base + 256; // beginning of region 6
+
+const int scaled_base = dimen_base + dimen_pars; // table of 256 user-defined \dimen registers
+
+const int eqtb_size = scaled_base + 255; // largest subscript of eqtb
+
+#define del_code(s) (eqtb[del_code_base + s].an_int)
+#define count(s) (eqtb[count_base + s].an_int)
+#define int_par(s) (eqtb[int_base + s].an_int) // an integer parameter
+
+#define pretolerance int_par(pretolerance_code);
+#define tolerance int_par(tolerance_code)
+#define line_penalty int_par(line_penalty_code)
+#define hyphen_penalty int_par(hyphen_penalty_code)
+#define ex_hyphen_penalty int_par(ex_hyphen_penalty_code)
+#define club_penalty int_par(club_penalty_code)
+#define widow_penalty int_par(widow_penalty_code)
+#define display_widow_penalty int_par(display_widow_penalty_code)
+#define broken_penalty int_par(broken_penalty_code)
+#define bin_op_penalty int_par(bin_op_penalty_code)
+#define rel_penalty int_par(rel_penalty_code)
+#define pre_display_penalty int_par(pre_display_penalty_code)
+#define post_display_penalty int_par(post_display_penalty_code)
+#define inter_line_penalty int_par(inter_line_penalty_code)
+#define double_hyphen_demerits int_par(double_hyphen_demerits_code)
+#define final_hyphen_demerits int_par(final_hyphen_demerits_code)
+#define adj_demerits int_par(adj_demerits_code)
+#define mag int_par(mag_code)
+#define delimiter_factor int_par(delimiter_factor_code)
+#define looseness int_par(looseness_code)
+#define _time int_par(time_code)
+#define day int_par(day_code)
+#define month int_par(month_code)
+#define year int_par(year_code)
+#define show_box_breadth int_par(show_box_breadth_code)
+#define show_box_depth int_par(show_box_depth_code)
+#define hbadness int_par(hbadness_code)
+#define vbadness int_par(vbadness_code)
+#define pausing int_par(pausing_code)
+#define tracing_online int_par(tracing_online_code)
+#define tracing_macros int_par(tracing_macros_code)
+#define tracing_stats int_par(tracing_stats_code)
+#define tracing_paragraphs int_par(tracing_paragraphs_code)
+#define tracing_pages int_par(tracing_pages_code)
+#define tracing_output int_par(tracing_output_code)
+#define tracing_lost_chars int_par(tracing_lost_chars_code)
+#define tracing_commands int_par(tracing_commands_code)
+#define tracing_restores int_par(tracing_restores_code)
+#define uc_hyph int_par(uc_hyph_code)
+#define output_penalty int_par(output_penalty_code)
+#define max_dead_cycles int_par(max_dead_cycles_code)
+#define hang_after int_par(hang_after_code)
+#define floating_penalty int_par(floating_penalty_code)
+#define global_defs int_par(global_defs_code)
+#define cur_fam int_par(cur_fam_code)
+#define escape_char int_par(escape_char_code)
+#define default_hyphen_char int_par(default_hyphen_char_code)
+#define default_skew_char int_par(default_skew_char_code)
+#define end_line_char int_par(end_line_char_code)
+#define new_line_char int_par(new_line_char_code)
+#define language int_par(language_code)
+#define left_hyphen_min int_par(left_hyphen_min_code)
+#define right_hyphen_min int_par(right_hyphen_min_code)
+#define holding_inserts int_par(holding_inserts_code)
+
+#define error_context_lines int_par(error_context_lines_code)
+
+#define tracing_assigns int_par(tracing_assigns_code)
+#define tracing_groups int_par(tracing_groups_code)
+#define tracing_ifs int_par(tracing_ifs_code)
+#define tracing_scan_tokens int_par(tracing_scan_tokens_code)
+#define tracing_nesting int_par(tracing_nesting_code)
+#define pre_display_direction int_par(pre_display_direction_code)
+#define last_line_fit int_par(last_line_fit_code)
+#define saving_vdiscards int_par(saving_vdiscards_code)
+#define saving_hyph_codes int_par(saving_hyph_codes_code)
+
+// 104
+bool arith_error; // has arithmetic overflow occurred recently?
+scaled _remainder; // amount subtracted to get an exact division
+
+// 105
+#define nx_plus_y(s1, s2, s3) mult_and_add(s1, s2, s3, 07777777777)
+#define mult_integers(s1, s2) mult_and_add(s1, s2, 0, 017777777777)
+
+// 108
+const int inf_bad = 10000; // infinitely bad value
+
+// 109
+#define set_glue_ratio_zero(n) n = 0.0f // store the representation of zero ratio
+#define set_glue_ratio_one(n) n = 1.0f // store the representation of unit ratio
+#define _float(n) float(n) // convert from glue_ratio to type real
+#define unfloat(n) glue_ratio(n) // convert from real to type glue_ratio
+
+// NOTE: We don't use this macro
+//#define float_constant(n) n.0 // convert integer constant to real
+
+typedef float glue_ratio; // one-word representation of a glue expansion factor
+
+// 112
+#define qi(n) (n + min_quarterword) // to put an eight_bits iten into a quarterword
+#define qo(n) (n - min_quarterword) // to take an eight_bits item out of a quarterword
+#define hi(n) (n + min_halfword) // to put a sixteen-bit item into a halfword
+#define ho(n) (n - min_halfword) // to take a sixteen-bit item from a halfword
+
+// 113
+typedef struct two_halves
+{
+	halfword rh;
+	union {
+		halfword lh;
+		struct {
+			quarterword b0;
+			quarterword b1;
+		};
+	};
+} two_halves;
+
+typedef struct {
+	quarterword b0;
+	quarterword b1;
+	quarterword b2;
+	quarterword b3;
+} four_quarters;
+
+typedef struct
+{
+	union {
+		int an_int;
+		glue_ratio gr;
+		two_halves hh;
+		four_quarters qqqq;
+	};
+} memory_word;
+
+typedef FILE* word_file;
+
+// 115
+#define pointer halfword // a flag or a location in mem or eqtb
+#define null min_halfword // the null pointer
+
+pointer temp_ptr; // a pointer variable for occasional emergency use
+
+// 116
+Array<memory_word, mem_min, mem_max> mem; // the big dynamic storage area
+pointer lo_mem_max; // the largest location of variable-size memory in use
+pointer hi_mem_min; // the smallest location of one-word memory in use
+
+// 117
+int var_used;
+int dyn_used; // how much memory is in use
+
+// 118
+#define link(n) mem[n].hh.rh // the link field of a memory word
+#define info(n) mem[n].hh.lh // the info field of a memory word
+
+pointer avail; // head of the list of available one-word nodes
+pointer mem_end; // the last one-word node used in mem
+
+// 124
+#define empty_flag max_halfword // the link of an empty variable-size node
+#define is_empty(n) (link(n) == empty_flag) // tests for empty node
+#define node_size info // the size field in empty variable-size nodes
+#define llink(n) (info(n + 1)) // left link in doubly-linked list of empty nodes
+#define rlink(n) (link(n + 1)) // right link in doubly-linked list of empty nodes
+
+pointer rover; // points to some node in the list of empties
+
+//133
+#define type(n) mem[n].hh.b0 // identifies what kind of node this is
+#define subtype(n) mem[n].hh.b1 // secondary identification in some cases
+
+// 134
+#define is_char_node(n) (n >= hi_mem_min) // does the argument point to a char_node?
+#define font type // the font code in a char_node
+#define character subtype // the character code in a char_node
+
+
+pointer sa_chain; //{chain of saved sparse array entries}
+quarterword sa_level; //{group level for |sa_chain|}
+
+
+
+// 135
+enum node_type : unsigned char
+{
+	hlist_node = 0, // type of hlist nodes
+	vlist_node = 1, // type of vlist nodes
+	rule_node = 2, // type of rule nodes
+	ins_node = 3, // type of insertion nodes
+	mark_node = 4, // type of mark node
+	adjust_node = 5, // type of an adjust node
+	ligature_node = 6, // type of a ligature node
+	disc_node = 7, // type of a discretionary node
+	whatsit_node = 8, // type of special extension nodes
+	math_node = 9, // type of a math node
+	glue_node = 10, // type of node that points to a glue specification
+	kern_node = 11, // type of a kern node
+	penalty_node = 12, // type of a penalty node
+	unset_node = 13, // type for an unset node
+	style_node = unset_node + 1, // type of a style node
+	choice_node = unset_node + 2, // type of a choice node
+	ord_noad = unset_node + 3, // type of a noad classified Ord
+	op_noad = ord_noad + 1, // type of a noad classified Op
+	bin_noad = ord_noad + 2, // type of a noad classified Bin
+	rel_noad = ord_noad + 3, // type of a noad classified Rel
+	open_noad = ord_noad + 4, // type of a noad classified Ope
+	close_noad = ord_noad + 5, // type of a noad classified Clo
+	punct_noad = ord_noad + 6, // type of a noad classified Pun
+	inner_noad = ord_noad + 7, // type of a noad classified Inn
+	radical_noad = inner_noad + 1, // type of a noad for square roots
+	fraction_noad = radical_noad + 1, // type of a noad for generalized fractions
+	under_noad = fraction_noad + 1, // type of a noad for underlining
+	over_noad = under_noad + 1, // type of a noad for overlining
+	accent_noad = over_noad + 1, // type of a noad for accented subformulas
+	vcenter_noad = accent_noad + 1, // type of a noad for \vcenter
+	left_noad = vcenter_noad + 1, // type of a noad for \left
+	right_noad = left_noad + 1, // type of a noad for \right
+};
+
+enum whatsit_type : unsigned char
+{
+	open_node = 0, // subtype in whatsits that represent files to \openout
+	write_node = 1, // subtype in whatsits that represent things to \write
+	close_node = 2, // subtype in whatsits that represent streams to \closeout
+	special_node = 3, // subtype in whatsits that represent \special things
+	language_node = 4, // subtype in whatsits that change the current language
+};
+
+// 135
+//const int hlist_node = 0;
+const int box_node_size = 7; // number of words to allocate for a box node
+const int width_offset = 1; // position of width field in a box node
+const int depth_offset = 2; // position of depth field in a box node
+const int height_offset = 3; // position of height field in a box node
+#define width(n) (mem[n + width_offset].sc) // width of the box, in sp
+#define depth(n) (mem[n + depth_offset].sc) // depth of the box, in sp
+#define height(n) (mem[n + height_offset].sc) // height of the box, in sp
+#define shift_amount(n) (mem[n + 4].sc) // repositioning distance, in sp
+const int list_offset = 5; // position of list_ptr field in a box node
+#define list_ptr(n) link(n + list_offset) // beginning of the list inside the box
+#define glue_order(n) subtype(n + list_offset) // applicable order of infinity
+#define glue_sign(n) type(n + list_offset) // stretching or shrinking
+const int normal = 0; // the most common case when several cases are named
+const int stretching = 1; // glue setting applies to the stretch components
+const int shrinking = 2; // glue setting applies to the shrink components
+const int glue_offset = 6; // position of glue_set in a box node
+#define glue_set(n) mem[n+glue_offset].gr // a word of type glue_ratio for glue setting
+
+// 137
+
+// 138
+const int rule_node_size = 4; // number of words to allocate for a rule node
+const int null_flag = -010000000000; // -2^30, signifies a missing item
+#define is_running(s) (s == null_flag) // tests for a running dimension
+
+// 140
+const int ins_node_size = 5; // number of words to allocate for an insertion
+#define float_cost(s) mem[s + 1].an_int // the floating_penalty to be used
+#define ins_ptr(s) info(s + 4) // the vertical list to be inserted
+#define split_top_ptr(s) link(s + 4) // the split_top_skip to be used
+
+// 141
+const int small_node_size = 2; // number of words to allocate for most node types
+//#define mark_ptr(s) mem[s + 1].an_int // head of token list for a mark
+#define mark_ptr(s) link(s+1) // head of the token list for a mark
+#define mark_class(s) info(s+1) // the mark class
+
+// 142
+//#define adjust_ptr mark_ptr // vertical list to be moved out of horizontal list
+#define adjust_ptr(s) mem[s+1].an_int // vertical list to be moved out of horizontal list
+
+// 143
+#define lig_char(s) (s + 1) // the word where the ligature is to be found
+#define lig_ptr(s) link(lig_char(s)) // the list of characters
+
+// 145
+#define replace_count subtype // how many subsequent nodes to replace
+#define pre_break llink // text that precedes a discretionary break
+#define post_break rlink // text that follows a discretionary break
+
+// 146
+
+// 147
+const int before = 0; // subtype for math node that introduces a formula
+const int after = 1; // subtype for math node that winds up a formula
+
+const int M_code = 2;
+const int begin_M_code = M_code + before; // subtype for \beginM node
+const int end_M_code = M_code + after; // subtype for \endM node
+const int L_code = 4;
+const int begin_L_code = L_code + begin_M_code; // subtype for \beginL node
+const int end_L_code = L_code + end_M_code; // subtype for \endL node
+const int R_code = L_code + L_code;
+const int begin_R_code = R_code + begin_M_code; // subtype for \beginR node
+const int end_R_code = R_code + end_M_code; // subtype for \endR node
+
+const int if_def_code=17; //{ `\.{\\ifdefined}' }
+const int if_cs_code=18; //{ `\.{\\ifcsname}' }
+const int if_font_char_code=19; //{ `\.{\\iffontchar}' }
+
+
+#define end_LR(s) myodd(subtype(s))
+#define end_LR_type(s) (L_code*(subtype(s) / L_code) + end_M_code)
+#define begin_LR_type(s) (s - after + before)
+
+#define put_LR(s) do {\
+	temp_ptr = get_avail(); info(temp_ptr) = s;\
+	link(temp_ptr) = LR_ptr; LR_ptr = temp_ptr;\
+} while (0)
+
+#define push_LR(s) put_LR(end_LR_type(s))
+
+#define pop_LR do {\
+	temp_ptr = LR_ptr; LR_ptr = link(temp_ptr);\
+	free_avail(temp_ptr);\
+} while (0)
+
+// 148
+#define precedes_break(n) (type(n) < math_node)
+#define non_discardable(n) (type(n) < math_node)
+
+// glue 149
+const int cond_math_glue = 98; // special subtype to suppress glue in the next node
+const int mu_glue = 99; // subtype for math glue
+const int a_leaders = 100; // subtype for aligned leaders
+const int c_leaders = 101; // subtype for centered leaders
+const int x_leaders = 102; // subtype for expanded leaders
+#define glue_ptr llink // pointer to a glue specification
+#define leader_ptr rlink // pointer to box or rule node for leaders
+
+// glue 150
+const int glue_spec_size = 4; // number of words to allocate for a glue specification
+#define glue_ref_count(n) link(n) // reference count of a glue specification
+#define stretch(n) (mem[n + 2].sc) // the stretchability of this glob of glue
+#define shrink(n) (mem[n + 3].sc) // the shrinkability of this glob of glue
+#define stretch_order type // order of infinity for stretching
+#define shrink_order subtype // order of infinity for shrinking
+const int fil = 1; // first-order infinity
+const int fill = 2; // second-order infinity
+const int filll = 3; // third-order infinity
+
+typedef int glue_ord; // normal .. filll, infinity to the 0, 1, 2, 3 power
+
+// 155
+const int _explicit = 1; // subtype of kern nodes from \kern and \/
+const int acc_kern = 2; // subtype of kern nodes from accents
+
+// 157
+const int inf_penalty = inf_bad; // ``infinite'' penalty value
+const int eject_penalty = -inf_penalty; // ``negatively infinite'' penalty value
+#define penalty(s) mem[s+1].an_int // the added cost of breaking a list here
+
+// 159
+#define glue_stretch(s) mem[s+glue_offset].sc // total stretch in an unset node
+#define glue_shrink shift_amount // total shrink in an unset node
+#define span_count subtype // indicates the number of spanned columns
+
+// 162
+const int zero_glue = mem_bot; // specification for 0pt plus 0pt minus 0pt
+const int fil_glue = zero_glue + glue_spec_size; // 0pt plus 1fil minus 0pt
+const int fill_glue = fil_glue + glue_spec_size; // 0pt plus 1fill minus 0pt
+const int ss_glue = fill_glue + glue_spec_size; // 0pt plus 1fil minus 1fil
+const int fil_neg_glue = ss_glue + glue_spec_size; // 0pt plus -1fil minus 0pt
+const int lo_mem_stat_max = fil_neg_glue + glue_spec_size - 1; // largest statically allocated word in the variable-size mem
+
+const int page_ins_head = mem_top; // list of insertion data for current page
+const int contrib_head = mem_top - 1; // vlist items not yet on current page
+const int page_head = mem_top - 2; // vlist for current page
+const int temp_head = mem_top - 3; // head of a temporary list of some kind
+const int hold_head = mem_top - 4; // head of a temporary list of another kind
+const int adjust_head = mem_top - 5; // head of adjustment list returned by hpack
+const int active = mem_top - 7; // head of active list in line_break, needs two words
+const int align_head = mem_top - 8; // head of preamble list for alignments
+const int end_span = mem_top - 9; // tail of spanned-width lists
+const int omit_template = mem_top - 10; // a constant token list
+const int null_list = mem_top - 11; // permanently empty list
+const int lig_trick = mem_top - 12; // a ligature masquerading as a char_node
+const int garbage = mem_top - 12; // used for scrap information
+const int backup_head = mem_top - 13; // head of token list built by scan_keyword
+const int hi_mem_stat_min = mem_top - 13; // smallest statically allocated word in the one-word mem
+const int hi_mem_stat_usage = 14; // the number of one-word nodes always present
+
+// 165
+//debug
+#ifndef NO_DEBUG
+Array<bool, 0, mem_max> _free; // free cells
+Array<bool, 0, mem_max> was_free; // free cells
+pointer was_mem_end;
+pointer was_lo_max;
+pointer was_hi_min; // previous mem_end, lo_mem_max, and hi_mem_min
+bool panicking; // do we want to check memory constantly?
+#endif
+//gubed
+
+// 173
+int font_in_short_display; // an internal font number
+
+// 180
+#define node_list_display(s) do{\
+	append_char(TEX_STRING("."));\
+	show_node_list(s);\
+	flush_char;\
+} while(0)
+
+// 181
+int depth_threshold; // maximum nesting depth in box displays
+int breadth_max; // maximum number of items shown at the same list level
+
+// 200
+#define token_ref_count(n) info(n) // reference count preceding a token list
+
+// 201
+#define fast_delete_glue_ref(s) do{\
+	if(glue_ref_count(s) == null)\
+		free_node(s, glue_spec_size);\
+	else\
+		decr(glue_ref_count(s));\
+} while(0)
+
+// 203
+#define add_token_ref(n) incr(token_ref_count(n)) // new reference to a token list
+#define add_glue_ref(n) incr(glue_ref_count(n)) // new reference to a glue spec
+
+// 207
+const int relax = 0; // do nothing ( \relax )
+const int endv = 9; // end <v_j> list in alignment template
+const int par_end = 13; // end of paragraph ( \par )
+const int match = 13; // match a macro parameter
+const int end_match = 14; // end of parameters to macro
+const int stop = 14; // end of job ( \end, \dump )
+const int delim_num = 15; // specify delimiter numerically ( \delimiter )
+const int max_char_code = 15; // the largest catcode for individual characters
+
+// 208
+const int min_internal = 68; // the smallest code that can follow \the
+const int max_non_prefixed_command = 70; // largest command code that can't be \global
+
+// 209
+const int max_internal = 89; // the largest code that can follow \the
+const int max_command = 100; // the largest command code seen at big_switch
+
+// 207
+enum cmd_code : halfword
+{
+	// cat codes
+	escape = 0, // escape delimiter (called \ in The TeXbook)
+	left_brace = 1, // beginning of group ( { )
+	right_brace = 2, // ending of group ( } )
+	math_shift = 3, // mathematics shift character ( $ )
+	tab_mark = 4, // alignment delimiter ( &, \span )
+	car_ret = 5, // end of line ( carriage_return, \cr, \crcr )
+	out_param = 5, // output a macro parameter
+	mac_param = 6, // macro parameter symbol ( # )
+	sup_mark = 7, // superscript ( ^ )
+	sub_mark = 8, // subscript ( _ )
+	ignore = 9, // characters to ignore ( ^^@ )
+	spacer = 10, // characters equivalent to blank space (   )
+	letter = 11, // character regarded as letters ( A..Z, a..z )
+	other_char = 12, // none of the special character types
+	active_char = 13, // characters that invoke macros ( ~ )
+	comment = 14, // characters that introduce comments ( % )
+	invalid_char = 15, // characters that shouldn't appear ( ^^? )
+
+	// other
+	char_num = 16, // character specified numerically ( \char )
+	math_char_num = 17, // explicit math code ( \mathchar )
+	mark = 18, // mark definition ( \mark )
+	xray = 19, // peek inside of rsTeX ( \show, \showbox, etc. )
+	make_box = 20, // make a box ( \box, \copy, \hbox, etc. )
+	hmove = 21, // horizontal motion ( \moveleft, \moveright )
+	vmove = 22, // vertical motion ( \raise, \lower )
+	un_hbox = 23, // unglue a box ( \unhbox, \unhcopy )
+	un_vbox = 24, // unglue a box ( \unvbox, \unvcopy )
+	remove_item = 25, // nullify last item ( \unpenalty, \unkern, \unskip )
+	hskip = 26, // horizontal glue ( \hskip, \hfil, etc. )
+	vskip = 27, // vertical glue ( \vskip, \vfil, etc. )
+	mskip = 28, // math glue ( \mskip )
+	kern = 29, // fixed space ( \kern )
+	mkern = 30, // math kern ( \mkern )
+	leader_ship = 31, // use a box ( \shipout, \leaders, etc. )
+	halign = 32, // horizontal table alignment ( \halign )
+	valign = 33, // vertical table alignment ( \valign )
+	no_align = 34, // temporary escape from alignment ( \noalign )
+	vrule = 35, // vertical rule ( \vrule )
+	hrule = 36, // horizontal rule ( \hrule )
+	insert = 37, // vlist inserted in box ( \insert )
+	vadjust = 38, // vlist inserted in enclosing paragraph ( \vadjust )
+	ignore_spaces = 39, // gobble spacer tokens ( \ignorespaces )
+	after_assignment = 40, // save till assignment is done ( \afterassignment )
+	after_group = 41, // save till group is done ( \aftergroup )
+	break_penalty = 42, // additional badness ( \penalty )
+	start_par = 43, // begin paragraph ( \indent, \noindent )
+	ital_corr = 44, // italic correction ( \/ )
+	accent = 45, // attach accent in text ( \accent )
+	math_accent = 46, // attach accent in math ( \mathaccent )
+	discretionary = 47, // discretionary texts ( \-, \discretionary )
+	eq_no = 48, // equation number ( \eqno, \leqno )
+	left_right = 49, // variable delimiter ( \left, \right )
+	math_comp = 50, // component of formula ( \mathbin, etc. )
+	limit_switch = 51, // diddle limit conventions ( \displaylimits, etc. )
+	above = 52, // generalized fraction ( \above, \atop, etc. )
+	math_style = 53, // style specification ( \displaystyle, etc. )
+	math_choice = 54, // choice specification ( \mathchoice )
+	non_script = 55, // conditional math glue ( \nonscript )
+	vcenter = 56, // vertically center a vbox ( \vcenter )
+	case_shift = 57, // force specific case ( \lowercase, \uppercase )
+	message = 58, // send to user ( \message, \errmessage )
+	extension = 59, // extensions to rsTeX (\write, \special, etc. )
+	in_stream = 60, // files for reading ( \openin, \closein )
+	begin_group = 61, // begin local grouping ( \begingroup )
+	end_group = 62, // end local grouping ( \endgroup )
+	omit = 63, // omit alignment template ( \omit )
+	ex_space = 64, // explicit space ( \  )
+	no_boundary = 65, // suppress boundary ligatures ( \noboundary )
+	radical = 66, // square root and similar signs ( \radical )
+	end_cs_name = 67, // end control sequence ( \endcsname )
+
+	char_given = 68, // character code defined by \chardef
+	math_given = 69, // math code defined by \mathchardef
+	last_item = 70, // most recent item ( \lastpenalty, \lastkern, \lastskip )
+
+	toks_register = 71, // token list register ( \toks )
+	assign_toks = 72, // special token list ( \output, \everypar, etc. )
+	assign_int = 73, // user-defined integer ( \tolerance, \day, etc. )
+	assign_dimen = 74, // user-defined length ( \hsize, etc. )
+	assign_glue = 75, // user-defined glue ( \baselineskip, etc. )
+	assign_mu_glue = 76, // user-defined muglue ( \thinmuskip, etc. )
+	assign_font_dimen = 77, // user-defined font dimension ( \fontdimen )
+	assign_font_int = 78, // user-defined font integer ( \hyphenchar, \skewchar )
+	set_aux = 79, // specify state info ( \spacefactor, \prevdepth )
+	set_prev_graf = 80, // specify state info ( \prevgraf )
+	set_page_dimen = 81, // specify state info ( \pagegoal, etc. )
+	set_page_int = 82, // specify state info ( \deadcycles, \insertpenalties )
+	set_box_dimen = 83, // change dimension of box ( \wd, \ht, \dp )
+	set_shape = 84, // specify fancy paragraph shape ( \parshape )
+	def_code = 85, // define a character code ( \catcode, etc. )
+	def_family = 86, // declare math fonts ( \textfont, etc. )
+	set_font = 87, // set current font ( font identifiers )
+	def_font = 88, // define a font file ( \font )
+	_register = 89, // internal register ( \count, \dimen, etc. )
+
+	advance = 90, // advance a register or parameter ( \advance )
+	multiply = 91, // multiply a register or parameter ( \multiply )
+	divide = 92, // divide a register or parameter ( \divide )
+	prefix = 93, // qualify a definition ( \global, \long, \outer )
+	let = 94, // assign a command code ( \let, \futurelet )
+	shorthand_def = 95, // code definition ( \chardef, \countdef, etc. )
+	read_to_cs = 96, // read into a control sequence ( \read )
+	def = 97, // macro definition ( \def, \gdef, \xdef, \edef )
+	set_box = 98, // set a box ( \setbox )
+	hyph_data = 99, // hyphenation data ( \hyphenation, \patterns )
+	set_interaction = 100, // define level of interaction ( \batchmode, etc. )
+
+	undefined_cs = max_command + 1, // initial state of most eq_type fields
+	expand_after = max_command + 2, // special expansion ( \expandafter )
+	no_expand = max_command + 3, // special nonexpansion ( \noexpand )
+	input = max_command + 4, // input a source file ( \input, \endinput )
+	if_test = max_command + 5, // conditional text ( \if, \ifcase, etc. )
+	fi_or_else = max_command + 6, // delimiters for conditionals ( \else, etc. )
+	cs_name = max_command + 7, // make a control sequence from tokens ( \csname )
+	convert = max_command + 8, // convert to text ( \number, \string, etc. )
+	the = max_command + 9, // expand an internal quantity ( \the )
+	top_bot_mark = max_command + 10, // inserted mark ( \topmark, etc. )
+	call = max_command + 11, // non-long, non-outer control sequence
+	long_call = max_command + 12, // long, non-outer control sequence
+	outer_call = max_command + 13, // non-long, outer control sequence
+	long_outer_call = max_command + 14, // long, outer control sequence
+	end_template = max_command + 15, // end of an alignment template
+	dont_expand = max_command + 16, // the following token was marked by \noexpand
+	glue_ref = max_command + 17, // the equivalent points to a glue specification
+	shape_ref = max_command + 18, // the equivalent points to a parshape specification
+	box_ref = max_command + 19, // the equivalent points to a box node, or is null
+	data = max_command + 20, // the equivalent is simply a halfword number
+};
+
+// 211
+enum mode_type : short
+{
+	undefined_mode = 0,
+	vmode = 1, // vertical mode
+	hmode = vmode + max_command + 1, // horizontal mode
+	mmode = hmode + max_command + 1, // math mode
+	neg_vmode = -vmode,
+	neg_hmode = -hmode,
+	neg_mmode = -mmode
+};
+
+// 212
+typedef struct
+{
+	mode_type mode_field; // -mmode..mmode
+	pointer head_field;
+	pointer tail_field;
+	pointer eTeX_aux_field;
+	int pg_field;
+	int ml_field;
+	memory_word aux_field;
+} list_state_record;
+
+const int ignore_depth = -65536000; // prev_depth value that is ignored
+
+// 213
+#define mode cur_list.mode_field // current mode
+#define head cur_list.head_field // header node of current list
+#define tail cur_list.tail_field // final node on current list
+#define eTeX_aux cur_list.eTeX_aux_field // auxiliary data for \eTeX
+#define LR_save eTeX_aux // LR stack when a paragraph is interrupted
+#define LR_box eTeX_aux // prototype box for display
+#define delim_ptr eTeX_aux // most recent left or right noad of a math left group
+
+#define prev_graf cur_list.pg_field // number of paragraph lines accumulated
+#define aux cur_list.aux_field // auxiliary data about the current list
+#define prev_depth aux.sc // the name of aux in vertical mode
+#define space_factor aux.hh.lh // part of aux in horizontal mode
+#define clang aux.hh.rh // the other part of aux in horizontal mode
+#define incompleat_noad aux.an_int // the name of aux in math mode
+#define mode_line cur_list.ml_field // source file line number at beginning of list
+
+Array<list_state_record, 0, nest_size> nest;
+int nest_ptr; // 0..nest_size, first unused location of nest
+int max_nest_stack; // 0..nest_size, maximum of nest_ptr when pushing
+list_state_record cur_list; // the ``top'' semantic state
+short shown_mode; // -mmode..mmode, most recent mode shown by \tracingcommands
+
+// 214
+#define tail_append(s) do{\
+  link(tail) = s;\
+  tail = link(tail);\
+}while(0)
+
+// 246
+int old_setting; // 0..max_selector
+
+// 256
+#define next(n) (hash[n].lh) // link for coalesced lists
+#define text(n) (hash[n].rh) // string number for control sequence name
+#define hash_is_full (hash_used == hash_base) // test if all positions are occupied
+#define font_id_text(n) text(font_id_base+n) // a frozen font identifier's name
+
+Array<two_halves, hash_base, undefined_control_sequence - 1> hash; // the hash table
+pointer hash_used; // allocation pointer for hash
+bool no_new_control_sequence; // are new identifiers legal?
+int cs_count; // total number of known identifiers
+
+// 268
+#define save_type(n) (save_stack[n].hh.b0) // classifies a save_stack entry
+#define save_level(n) (save_stack[n].hh.b1) // saved level for regions 5 and 6, or group code
+#define save_index(n) (save_stack[n].hh.rh) // eqtb location or token or save_stack location
+
+enum save_type_type : quarterword
+{
+	restore_old_value = 0, // save_type when a value should be restored later
+	restore_zero = 1, // save_type when an undefined entry should be restored
+	insert_token = 2, // save_type when a token is being saved for later use
+	level_boundary = 3, // save_type corresponding to beginning of group
+	restore_sa = 4 // save_type when sparse array entries should be restored
+};
+
+// 269
+enum group_code : quarterword
+{
+	bottom_level = 0, // group code for the outside world
+	simple_group = 1, // group code for local structure only
+	hbox_group = 2, // code for `\hbox{...}'
+	adjusted_hbox_group = 3, // code for `\hbox{...}' in vertical mode
+	vbox_group = 4, // code for `\vbox{...}'
+	vtop_group = 5, // code for `\vtop{...}'
+	align_group = 6, // code for `\halign{...}', `\valign{...}'
+	no_align_group = 7, // code for `\noalign{...}'
+	output_group = 8, // code for output routine
+	math_group = 9, // code for, e.g., `^{...}'
+	disc_group = 10, // code for `\discretionary{...}{...}{...}'
+	insert_group = 11, // code for `\insert{...}', `\vadjust{...}'
+	vcenter_group = 12, // code for `\vcenter{...}'
+	math_choice_group = 13, // code for `\mathchoice{...}{...}{...}'
+	semi_simple_group = 14, // code for `\begingroup...\endgroup'
+	math_shift_group = 15, // code for `$...$'
+	math_left_group = 16, // code for `\left...\right'
+};
+const quarterword max_group_code = 16;
+
+// 271
+Array<memory_word, 0, save_size> save_stack;
+int save_ptr; // first unused entry on save_stack
+int max_save_stack; // maximum usage of save stack
+quarterword cur_level; // current nesting level for groups
+group_code cur_group; // current group type
+int cur_boundary; // where the current level begins
+
+// 273
+#define check_full_save_stack do\
+{\
+	if(save_ptr > max_save_stack)\
+	{\
+		max_save_stack=save_ptr;\
+		if(max_save_stack > save_size-7)\
+		overflow(TEX_STRING("save size"),save_size);\
+	}\
+}while(0)
+
+// 274
+#define saved(s) save_stack[save_ptr+s].an_int
+
+// 277
+#ifndef NO_STAT
+#define assign_trace(p, s) if (tracing_assigns>0) restore_trace(p, s)
+#else
+#define assign_trace(p, s)
+#endif
+
+// 286
+int mag_set; // if nonzero, this magnification should be used henceforth
+
+// 289
+const int cs_token_flag = 07777; // amount added to the eqtb location in a token that stands for a control
+                                 // sequence; is a multiple of 256, less 1
+const int left_brace_token = 0400; // 2^8*left_brace
+const int left_brace_limit = 01000; // 2^8*(left_brace+1)
+const int right_brace_token = 01000; // 2^8*right_brace
+const int right_brace_limit = 01400; // 2^8*(right_brace+1)
+const int math_shift_token = 01400; // 2^8*math_shift
+const int tab_token = 02000; // 2^8*tab_mark
+const int out_param_token = 02400; // 2^8*out_param
+const int space_token = 05040; // 2^8*spacer + " "
+const int letter_token = 05400; // 2^8*letter
+const int other_token = 06000; // 2^8*other_char
+const int match_token = 06400; // 2^8*match
+const int end_match_token = 07000; // 2^8*end_match
+const int protected_token = 07001; // 2^8*end_match+1
+
+// 297
+eight_bits cur_cmd; // current command set by get_next
+halfword cur_chr; // operand of current command
+pointer cur_cs; // control sequence found here, zero if none found
+halfword cur_tok; // packed representative of cur_cmd and cur_chr
+
+// 298
+#define chr_cmd(s) do{ print(s); print_ASCII(chr_code); } while(0)
+
+// 303
+enum input_state_var : quarterword
+{
+	token_list = 0, // state code when scanning a token list
+	mid_line = 1, // state code when scanning a line of characters
+	skip_blanks = 2 + max_char_code, // state code when ignoring blanks
+	new_line = 3 + max_char_code + max_char_code // state code at start of line
+};
+
+enum enum_token_type : quarterword
+{
+	parameter = 0, // token type code for parameter
+	u_template = 1, // token type code for <u_j> template
+	v_template = 2, // token type code for  <v_j> template
+	backed_up = 3, // token type code for text to be reread
+	inserted = 4, // token type code for inserted texts
+	macro = 5, // token type code for defined control sequences
+	output_text = 6, // token type code for output routines
+	every_par_text = 7, // token type code for \everypar
+	every_math_text = 8, // token type code for \everymath
+	every_display_text = 9, // token type code for \everydisplay
+	every_hbox_text = 10, // token type code for \everyhbox
+	every_vbox_text = 11, // token type code for \everyvbox
+	every_job_text = 12, // token type code for \everyjob
+	every_cr_text = 13, // token type code for \everycr
+	mark_text = 14, // token type code for \topmark
+};
+
+const int eTeX_text_offset = output_routine_loc - output_text; // token_type code for \everyof
+const int every_eof_text = every_eof_loc - eTeX_text_offset;
+const int write_text = toks_base - eTeX_text_offset; // token type code for \write
+
+#define every_eof equiv(every_eof_loc)
+
+// 300
+typedef struct
+{
+	input_state_var state_field;
+	enum_token_type index_field;
+	halfword start_field;
+	halfword loc_field;
+	halfword limit_field;
+	halfword name_field;
+} in_state_record;
+
+// 301
+Array<in_state_record, 0, stack_size> input_stack;
+int input_ptr; // 0..stack_size, first unused location of input_stack
+int max_in_stack; // 0..stack_size, largest value of input_ptr when pusing
+in_state_record cur_input; // the ``top'' input state
+
+// 302
+#define state cur_input.state_field // current scanner state
+#define index cur_input.index_field // reference for buffer information
+#define start cur_input.start_field // starting position in buffer
+#define limit cur_input.limit_field // end of current line in buffer
+#define name cur_input.name_field // name of the current file
+
+// 304
+#define terminal_input (name == 0) // are we reading from the terminal?
+#define cur_file input_file[index] // the current alpha_file variable
+
+int in_open; // 0..max_in_open, the number of lines in the buffer, less one
+int open_parens; // 0..max_in_open, the number of open text files
+Array<alpha_file, 1, max_in_open> input_file;
+int line; // current line number in the current source file
+Array<int, 1, max_in_open> line_stack;
+// 305
+const int skipping = 1; // scanner_status when passing conditional text
+const int defining = 2; // scanner_status when reading a macro definition
+const int matching = 3; // scanner_status when reading macro arguments
+const int aligning = 4; // scanner_status when reading an alignment preamble
+const int absorbing = 5; // scanner_status when reading a balanced text
+
+char scanner_status; // normal..absorbing, can a subfile end now?
+pointer warning_index; // identifier relevant to non-normal scanner status
+pointer def_ref; // reference count of token list being defined
+
+// 307
+#define token_type index // type of current token list
+#define param_start limit // base of macro parameters in param_stack
+
+// 308
+Array<pointer, 0, param_size> param_stack; // token list pointers for parameters
+int param_ptr; // 0..param_size, first unused entry in param_stack
+int max_param_stack; // largest value of param_ptr, will be <= param_size + 9
+
+Array<bool, 1, max_in_open> eof_seen; // {has eof been seen ? }
+
+typedef int save_pointer; // {index into |save_stack|}
+Array<save_pointer, 0, max_in_open> grp_stack; // {initial | cur_boundary | }
+Array<pointer, 0, max_in_open> if_stack; // {initial | cond_ptr | }
+
+// 309
+int align_state; // group level with respect to current alignment
+
+// 310
+int base_ptr; // 0..stack_size, shallowest level shown by show_context
+
+// 316
+#define begin_pseudoprint do {l = tally;tally=0;selector=pseudo;trick_count=1000000;}while(0)
+#define set_trick_count do {first_count = tally;trick_count=tally+1+error_line-half_error_line;if(trick_count<error_line)trick_count=error_line;}while(0)
+
+// 321
+// enter a new input level, save the old
+#define push_input do{\
+	if(input_ptr > max_in_stack){\
+		max_in_stack = input_ptr;\
+	if(input_ptr == stack_size)\
+		overflow(TEX_STRING("input stack size"), stack_size);\
+	}\
+	input_stack[input_ptr] = cur_input;\
+	incr(input_ptr);\
+} while(0)
+
+// 322
+// leave an input level, re-enter the old
+#define pop_input do{\
+	decr(input_ptr);\
+	cur_input = input_stack[input_ptr];\
+} while(0)
+
+// 323
+#define back_list(s) begin_token_list(s,backed_up) // backs up a simple token list
+#define ins_list(s) begin_token_list(s,inserted) // inserts a simple token list
+
+// 333
+pointer par_loc; // location of `\par' in eqtb
+halfword par_token; // token representing `\par'
+
+// 344
+#define any_state_plus(s) \
+	mid_line+s:\
+	case skip_blanks+s:\
+	case new_line+s
+
+// 347
+#define add_delims_to(s) \
+	s+math_shift:\
+	case s+tab_mark:\
+	case s+mac_param:\
+	case s+sub_mark:\
+	case s+letter:\
+	case s+other_char
+
+// 352
+#define is_hex(s) ((s >= TEX_STRING("0") && s <= TEX_STRING("9")) || (s >= TEX_STRING("a") && s <= TEX_STRING("f")))
+
+#define hex_to_cur_chr do{\
+	if(c <= TEX_STRING("9")) \
+		cur_chr = c-TEX_STRING("0");\
+	else \
+		cur_chr=c-TEX_STRING("a") + 10;\
+	if(cc <= TEX_STRING("9")) cur_chr = 16 * cur_chr + cc - TEX_STRING("0");\
+	else cur_chr = 16 * cur_chr + cc - TEX_STRING("a") + 10;\
+} while(0)
+
+// 358
+const int no_expand_flag = 257; // this characterizes a special variant of relax
+
+// 360
+#define end_line_char_inactive (end_line_char < 0 || end_line_char > 255)
+
+// 361
+bool force_eof; // should the next \input be aborted early
+
+// 122
+// NOTE: I use get_avail instead of fast_get_avail
+// #define fast_get_avail(s) ...
+
+// 371
+#define store_new_token(s) do{\
+	q = get_avail();\
+	link(p) = q;\
+	info(q) = s;\
+	p = q;\
+} while(0)
+
+// NOTE: I use store_new_token instead of fast_store_new_token
+//#define fast_store_new_token(s) do{fast_get_avail(q);link(p)=q;info(q) = s;p=q;}while(0)
+
+// 382
+const int marks_code = 5; // add this for \topmarks etc.
+const int top_mark_code = 0; // the mark in effect at the previous page break
+const int first_mark_code = 1; // the first mark between top_mark and bot_mark
+const int bot_mark_code = 2; // the mark in effect at the current page break
+const int split_first_mark_code = 3; // the first mark found by \vsplit
+const int split_bot_mark_code = 4; // the last mark found by \vsplit
+#define top_mark cur_mark[top_mark_code]
+#define first_mark cur_mark[first_mark_code]
+#define bot_mark cur_mark[bot_mark_code]
+#define split_first_mark cur_mark[split_first_mark_code]
+#define split_bot_mark cur_mark[split_bot_mark_code]
+
+Array<pointer, top_mark_code, split_bot_mark_code> cur_mark; // token list for marks
+
+// 387
+int long_state; // call..long_outer_call, governs the acceptance of \par
+
+// 388
+Array<pointer, 0, 8> pstack; // arguments supplied to a macro
+
+
+// 410
+const int int_val = 0; // integer values
+const int dimen_val = 1; // dimension values
+const int glue_val = 2; // glue specifications
+const int mu_val = 3; // math glue specifications
+const int ident_val = 4; // font identifier
+const int tok_val = 5; // token lists
+
+int cur_val; // value returned by numeric scanners
+int cur_val_level; // int_val..tok_val, the ``level'' of this value
+
+Array<pointer, int_val, mark_val> sa_root; // {roots of sparse arrays}
+pointer cur_ptr; // {value returned by | new_index | and | find_sa_element | }
+memory_word sa_null; // {two | null | pointers}
+
+#define sa_mark sa_root[mark_val] //{root for mark classes}
+
+// 413
+#define scanned_result(s,t) do{\
+	cur_val = s;\
+	cur_val_level = t;\
+} while(0)
+
+// 416
+const int last_node_type_code = glue_val + 1; // {code for \.{\\lastnodetype}}
+const int input_line_no_code = glue_val + 2; // {code for \.{\\inputlineno}}
+const int badness_code = input_line_no_code + 1; // {code for \.{\\badness}}
+
+const int eTeX_int = badness_code + 1; // {first of \eTeX\ codes for integers}
+const int eTeX_dim = eTeX_int + 8; // {first of \eTeX\ codes for dimensions}
+const int eTeX_glue = eTeX_dim + 9; // {first of \eTeX\ codes for glue}
+const int eTeX_mu = eTeX_glue + 1; // {first of \eTeX\ codes for muglue}
+const int eTeX_expr = eTeX_mu + 1; // {first of \eTeX\ codes for expressions}
+
+
+const int eTeX_version_code = eTeX_int; // { code for \.{\\eTeXversion} }
+
+
+const int current_group_level_code = eTeX_int + 1; //{code for \.{\\currentgrouplevel}}
+const int current_group_type_code = eTeX_int + 2; //{code for \.{\\currentgrouptype}}
+
+const int current_if_level_code = eTeX_int + 3; // {code for \.{\\currentiflevel}}
+const int current_if_type_code = eTeX_int + 4; // {code for \.{\\currentiftype}}
+const int current_if_branch_code = eTeX_int + 5; // {code for \.{\\currentifbranch}}
+
+const int font_char_wd_code = eTeX_dim; //{ code for \.{\\fontcharwd} }
+const int font_char_ht_code = eTeX_dim + 1; // {code for \.{\\fontcharht}}
+const int font_char_dp_code = eTeX_dim + 2; // {code for \.{\\fontchardp}}
+const int font_char_ic_code = eTeX_dim + 3; // {code for \.{\\fontcharic}}
+
+const int par_shape_length_code = eTeX_dim + 4; // {code for \.{\\parshapelength}}
+const int par_shape_indent_code = eTeX_dim + 5; // {code for \.{\\parshapeindent}}
+const int par_shape_dimen_code = eTeX_dim + 6; // {code for \.{\\parshapedimen}}
+
+const int glue_stretch_order_code = eTeX_int + 6; // {code for \.{\\gluestretchorder}}
+const int glue_shrink_order_code = eTeX_int + 7; // {code for \.{\\glueshrinkorder}}
+const int glue_stretch_code = eTeX_dim + 7; // {code for \.{\\gluestretch}}
+const int glue_shrink_code = eTeX_dim + 8; // {code for \.{\\glueshrink}}
+
+const int mu_to_glue_code = eTeX_glue; //{ code for \.{\\mutoglue} }
+const int glue_to_mu_code = eTeX_mu; //{ code for \.{\\gluetomu} }
+
+
+halfword max_reg_num; //{largest allowed register number}
+str_number max_reg_help_line; //{first line of help message}
+
+// 421
+const int max_dimen = 07777777777; // 2^30 - 1
+
+// 424
+#define find_effective_tail_eTeX do{\
+  tx = tail;\
+  if (!is_char_node(tx))\
+    if (type(tx) == math_node && subtype(tx) == end_M_code) {\
+      r = head;\
+      do {\
+        q = r;\
+        r = link(q);\
+      } while (!(r == tx));\
+      tx = q;\
+    }\
+} while (0)
+
+#define find_effective_tail find_effective_tail_eTeX
+  
+
+const int expr_node_size = 4; // {number of words in stack entry for subexpressions}
+#define expr_e_field(s) mem[s + 1].an_int //{ saved expression so far }
+#define expr_t_field(s) mem[s + 2].an_int //{ saved term so far }
+#define expr_n_field(s) mem[s + 3].an_int //{ saved numerator }
+
+const int expr_none = 0; // { \.(seen, or \.($\langle\it expr\rangle$ \.) seen }
+const int expr_add = 1; //{\.($\langle\it expr\rangle$ \. + seen}
+const int expr_sub = 2; //{\.($\langle\it expr\rangle$ \. - seen}
+const int expr_mult = 3; //{$\langle\it term\rangle$ \.*seen}
+const int expr_div = 4; //{$\langle\it term\rangle$ \. / seen}
+const int expr_scale = 5; //{$\langle\it term\rangle$ \.* $\langle\it factor\rangle$ \. / seen}
+
+
+
+// 438
+const int octal_token = other_token + TEX_STRING("'"); // apostrophe, indicates an octal constant
+const int hex_token = other_token + TEX_STRING(""""); // double quote, indicates a hex constant
+const int alpha_token = other_token + TEX_STRING("`"); // reverse apostrophe, precedes alpha constants
+const int point_token = other_token + TEX_STRING("."); // decimal point
+const int continental_point_token = other_token + TEX_STRING(","); // decimal point, Eurostyle
+
+small_number radix; // scan_int sets this to 8, 10, 16, or zero
+
+// 445
+const int _infinity = 017777777777; // the largest positive value that rsTeX knows
+const int zero_token = other_token + TEX_STRING("0"); // zero, the smallest digit
+const int A_token = letter_token + TEX_STRING("A"); // the smallest special hex digit
+const int other_A_token = other_token + TEX_STRING("A"); // special hex digit of type other_char
+
+// 447
+glue_ord cur_order; // order of infinity found by scan_dimen
+
+// 448
+const int attach_fraction = 88; // go here to pack cur_val and f into cur_val
+const int attach_sign = 89; // go here when cur_val is correct except perhaps for sign
+#define scan_normal_dimen scan_dimen(false, false, false)
+
+//458
+#define set_conversion(s, t) do{ num = s; denom = t; } while(0)
+
+// 463
+const int default_rule = 26214; // 0.4pt
+
+// 468
+const int number_code = 0; // command code for \number
+const int roman_numeral_code = 1; // command code for \romannumeral
+const int string_code = 2; // command code for \string
+const int meaning_code = 3; // command code for \meaning
+const int font_name_code = 4; // command code for \fontname
+
+const int etex_convert_base = 5;// {base for \eTeX's command codes}
+const int eTeX_revision_code = etex_convert_base;//{ command code for \.{\\eTeXrevision} }
+const int etex_convert_codes = etex_convert_base + 1;// {end of \eTeX's command codes}
+const int job_name_code = etex_convert_codes;// { command code for \.{\\jobname} }
+
+
+// 480
+const int closed = 2; // not open, or at end of file
+const int just_open = 1; // newly opened, first line not yet read
+
+Array<alpha_file, 0, 15> read_file; // used for \read
+Array<int, 0, 16> read_open; // normal..closed, state of read_file[n]
+
+// 487
+const int if_char_code = 0; // `\if'
+const int if_cat_code = 1; // `\ifcat'
+const int if_int_code = 2; // `\ifnum'
+const int if_dim_code = 3; // `\ifdim'
+const int if_odd_code = 4; // `\ifodd'
+const int if_vmode_code = 5; // `\ifvmode'
+const int if_hmode_code = 6; // `\ifhmode'
+const int if_mmode_code = 7; // `\ifmmode'
+const int if_inner_code = 8; // `\ifinner'
+const int if_void_code = 9; // `\ifvoid'
+const int if_hbox_code = 10; // `\ifhbox'
+const int if_vbox_code = 11; // `\ifvbox'
+const int ifx_code = 12; // `\ifx'
+const int if_eof_code = 13; // `\ifeof'
+const int if_true_code = 14; // `\iftrue'
+const int if_false_code = 15; // `\iffalse'
+const int if_case_code = 16; // `\ifcase'
+
+const int unless_code = 32;// {amount added for `\.{\\unless}' prefix}
+// 489
+const int if_node_size = 2; // number of words in stack entry for conditionals
+#define if_line_field(s) mem[s+1].an_int
+const int if_code = 1; // code for \if... being evaluated
+const int fi_code = 2; // code for \fi
+const int else_code = 3; // code for \else
+const int or_code = 4; // code for \or
+
+pointer cond_ptr; // top of the condition stack
+int if_limit; // normal..or_code, upper bound on fi_or_else codes
+small_number cur_if; // type of conditional being worked on
+int if_line; // line where that conditional began
+
+// 493
+int skip_line; // skipping began here
+
+// 506
+#define get_x_token_or_active_char do{\
+	get_x_token();\
+	if(cur_cmd == relax)\
+		if(cur_chr == no_expand_flag){\
+			cur_cmd = active_char; cur_chr = cur_tok - cs_token_flag - active_base;\
+		}\
+} while(0)
+
+// 512
+str_number cur_name; // name of file just scanned
+str_number cur_area; // file area just scanned, or ""
+str_number cur_ext; // file extension just scanned, or ""
+
+// 513
+pool_pointer area_delimiter; // the most recent `/', if any
+pool_pointer ext_delimiter; // the most recent `.', if any
+
+//514
+//#define TEX_area TEX_STRING("") // NOTE: I don't use any paths at all for now
+//#define TEX_font_area TEX_STRING("") // NOTE: I don't use any paths at all for now
+
+// 527
+bool name_in_progress; // is a file name being scanned?
+str_number job_name; // principal file name
+bool log_opened; // has the transcript file been opened?
+
+// 519
+#define append_to_name(s) do{\
+	c = s;\
+	incr(k);\
+	if(k <= file_name_size)\
+		name_of_file[k] = xchr[c];\
+} while(0)
+
+// 529
+#define pack_cur_name pack_file_name(cur_name, cur_area, cur_ext)
+
+// 532
+#define ensure_dvi_open do{\
+	if(output_file_name == 0) {\
+		if(job_name == 0)\
+			open_log_file();\
+		pack_job_name(TEX_STRING(".dvi"));\
+		while(!b_open_out(&dvi_file))\
+			prompt_file_name(TEX_STRING("file name for output"), TEX_STRING(".dvi"));\
+		output_file_name = b_make_name_string(dvi_file);\
+	}\
+} while(0)
+
+byte_file dvi_file; // the device-independent output goes here
+str_number output_file_name; // full name of the output file
+str_number log_name; // full name of the log file
+
+// 539
+byte_file tfm_file;
+
+// 544
+const int no_tag = 0; // vanilla character
+const int lig_tag = 1; // character has a ligature/kerning program
+const int list_tag = 2; // character has a successor in a charlist
+const int ext_tag = 3; // character is extensible
+
+// 545
+#define stop_flag qi(128) // value indicating `STOP' in a lig/kern program
+#define kern_flag qi(128) // op code for a kern step
+#define skip_byte(s) s.b0
+#define next_char(s) s.b1
+#define op_byte(s) s.b2
+#define rem_byte(s) s.b3
+
+// 546
+#define ext_top(s) s.b0 // top piece in a recipe
+#define ext_mid(s) s.b1 // mid piece in a recipe
+#define ext_bot(s) s.b2 // bot piece in a recipe
+#define ext_rep(s) s.b3 // rep piece in a recipe
+
+// 547
+const int slant_code = 1;
+const int space_code = 2;
+const int space_stretch_code = 3;
+const int space_shrink_code = 4;
+const int x_height_code = 5;
+const int quad_code = 6;
+const int extra_space_code = 7;
+
+// 548
+typedef int internal_font_number; // font_base .. font_max
+typedef int font_index; // 0 .. font_mem_size
+
+// 549
+#define non_char qi(256) // a halfword code that can't match a real character
+const int non_address = 0; // a spurious bchar_label
+
+Array<memory_word, 0, font_mem_size> font_info; // the big collection of font data
+font_index fmem_ptr; // first unused word of font_info
+internal_font_number font_ptr; // largest internal font number in use
+
+Array<four_quarters, font_base, font_max> font_check; // check sum
+Array<scaled, font_base, font_max> font_size; // ``at'' size
+Array<scaled, font_base, font_max> font_dsize; // ``design'' size
+Array<font_index, font_base, font_max> font_params; // how many font parameters are present
+Array<str_number, font_base, font_max> font_name; // name of the font
+Array<str_number, font_base, font_max> font_area; // area of the font
+Array<eight_bits, font_base, font_max> font_bc; // beginning (smallest) character code
+Array<eight_bits, font_base, font_max> font_ec; // ending (largest) character code
+Array<pointer, font_base, font_max> font_glue; // glue specification for interword space, null if not allocated
+Array<bool, font_base, font_max> font_used; // has a character from this font actually appeared in the output?
+Array<int, font_base, font_max> hyphen_char; // current \hyphenchar values
+Array<int, font_base, font_max> skew_char; // current \skewchar values
+Array<font_index, font_base, font_max> bchar_label; // start of lig_kern program for left boundary character, non_address if there is none
+Array<int, font_base, font_max> font_bchar; // right boundary character, non_char if there is none
+Array<int, font_base, font_max> font_false_bchar; // font_bchar if it doesn't exist in the font, otherwise non_char
+
+// 550
+Array<int, font_base, font_max> char_base; // base addresses for char_info
+Array<int, font_base, font_max> width_base; // base addresses for widths
+Array<int, font_base, font_max> height_base; // base addresses for heights
+Array<int, font_base, font_max> depth_base; // base addresses for depths
+Array<int, font_base, font_max> italic_base; // base addresses for italic corrections
+Array<int, font_base, font_max> lig_kern_base; // base addresses for ligature/kerning programs
+Array<int, font_base, font_max> kern_base; // base addresses for kerns
+Array<int, font_base, font_max> exten_base; // base addresses for extensible recipes
+Array<int, font_base, font_max> param_base; // base addresses for font parameters
+
+// 554
+#define char_info(s,t) font_info[char_base[s] + t].qqqq
+#define char_width(s,t) font_info[width_base[s] + t.b0].sc
+#define char_exists(s) (s.b0 > min_quarterword)
+#define char_italic(s,t) font_info[italic_base[s]+(qo(t.b2)) / 4].sc
+#define height_depth(s) qo(s.b1)
+#define char_height(s,t) font_info[height_base[s] + (t) / 16].sc
+#define char_depth(s,t) font_info[depth_base[s] + (t) % 16].sc
+#define char_tag(s) ((qo(s.b2)) % 4)
+
+// 555
+four_quarters null_character; // nonexistent character information
+
+// 557
+#define char_kern(s,t) font_info[kern_base[s] + 256*op_byte(t)+rem_byte(t)].sc
+#define kern_base_offset 256*(128+min_quarterword)
+#define lig_kern_start(s,t) lig_kern_base[s]+rem_byte(t) // beginning of lig/kern program
+#define lig_kern_restart(s,t) lig_kern_base[s]+256*op_byte(t)+rem_byte(t)+32768-kern_base_offset
+
+// 558
+#define slant(s) font_info[slant_code+param_base[s]].sc // slant to the right, per unit distance upward
+#define space(s) font_info[space_code+param_base[s]].sc // normal space between words
+#define space_stretch(s) font_info[space_stretch_code+param_base[s]].sc // stretch between words
+#define space_shrink(s) font_info[space_shrink_code+param_base[s]].sc // shrink between words
+#define x_height(s) font_info[x_height_code+param_base[s]].sc // one ex
+#define quad(s) font_info[quad_code+param_base[s]].sc // one em
+#define extra_space(s) font_info[extra_space_code+param_base[s]].sc // additional space at end of sentence
+
+// 587
+const int id_byte = 2; // identifies the kind of DVI files described here
+
+// 560
+#define _abort goto bad_tfm // do this when the TFM data is wrong
+
+// 561
+#define start_font_error_message do{\
+	print_err(TEX_STRING("Font "));\
+	sprint_cs(u);\
+	print_char(TEX_STRING("="));\
+	print_file_name(nom,aire,TEX_STRING(""));\
+	if(s>=0) {\
+		print(TEX_STRING(" at "));\
+		print_scaled(s);\
+		print(TEX_STRING("pt"));\
+	}\
+	else if(s!=-1000) {\
+		print(TEX_STRING(" scaled "));\
+		print_int(-s);\
+	}\
+}while(0)
+
+// 564
+#define read_sixteen(s) do{\
+	unsigned char s1;\
+	unsigned char s2;\
+	s1 = fgetc(tfm_file);\
+	s2 = fgetc(tfm_file);\
+	if(s1>127) _abort;\
+	s = s1 * 0400 + s2;\
+} while(0)
+
+#define store_four_quarters(s) do{\
+	a = fgetc(tfm_file);\
+	b = fgetc(tfm_file);\
+	c = fgetc(tfm_file);\
+	d = fgetc(tfm_file);\
+	qw.b0 = qi(a);\
+	qw.b1 = qi(b);\
+	qw.b2 = qi(c);\
+	qw.b3 = qi(d);\
+	s=qw;\
+} while(0)
+
+// 570
+#define check_byte_range(s) do{ if(s < bc || s > ec) _abort; } while(0)
+#define current_character_being_worked_on k+bc-fmem_ptr
+
+// 571
+#define store_scaled(s) do{\
+	a=fgetc(tfm_file);\
+	b=fgetc(tfm_file);\
+	c=fgetc(tfm_file);\
+	d=fgetc(tfm_file);\
+	sw = (((((d*z)/0400)+(c*z)) / 0400)+(b*z)) / beta;\
+	if(a==0) s=sw;\
+	else if(a==255) s = sw - alpha;\
+	else _abort;\
+} while(0)
+
+// 573
+#define check_existence(s) do{\
+	check_byte_range(s);\
+	qw = char_info(f,s);\
+	if(!char_exists(qw)) _abort;\
+} while(0)
+
+// 576
+#define adjust(s) s[f] = qo(s[f]) // correct for the excess min_quarterword that was added
+
+// 253
+Array<memory_word, active_base, eqtb_size> eqtb;
+Array<quarterword, int_base, eqtb_size> xeq_level;
+
+///////////////////////////////////////////////////////////////////////////
+// System specific addition on windows
+
+#define MAX_INPUT_CHARS 1600
+#define default_input_path ".:..:/home/tex/local/lib:/home/tex/dist/lib"
+#define MAX_OTH_PATH_CHARS 1600
+#define default_font_path "/home/fonts"
+#define default_format_path ".:/home/tex/local/tex"
+#define default_pool_path ".:/home/tex/local/tex"
+
+#define edit_file input_stack[base_ptr]
+
+pool_pointer ed_name_start;
+int ed_name_length;
+int edit_line;
+
+char input_path[MAX_INPUT_CHARS] = default_input_path;
+char font_path[MAX_OTH_PATH_CHARS] = default_font_path;
+char format_path[MAX_OTH_PATH_CHARS] = default_format_path;
+char pool_path[MAX_OTH_PATH_CHARS] = default_pool_path;
+
+const int no_file_path = 0;
+const int input_file_path = 1;
+const int read_file_path = 2;
+const int font_file_path = 3;
+const int format_file_path = 4;
+const int pool_file_path = 5;
+
+///////////////////////////////////////////////////////////////////////////
+
+
+// 520
+// NOTE: string length of filenames and such could probably be cleaned up a bit,
+// but I leave this for now until/if I put in some path searching.
+const int format_default_length = 9; // length of TEX_format_default string ; NOTE: used to be 20
+const int format_area_length = 0; // length of its area part NOTE: used to be 11
+const int format_ext_length = 4; // length of its `.fmt' part
+#define format_extension TEX_STRING(".fmt") // the extension as a WEB constant
+Array<char, 1, format_default_length+1> TEX_format_default;
+
+// 586
+namespace dvi_op {
+	const int set_char_0 = 0; // typeset a character 0 and move right
+	const int set1 = 128; // typeset a character and move right
+	const int set_rule = 132; // typeset a rule and move right
+	const int put_rule = 137; // typeset a rule
+	const int nop = 138; // no operation
+	const int bop = 139; // beginning of page
+	const int eop = 140; // ending of page
+	const int push = 141; // save the current positions
+	const int pop = 142; // restore previous positions
+	const int right1 = 143; // move right
+	const int w0 = 147; // move right by w
+	const int w1 = 148; // move right and set w
+	const int x0 = 152; // move right by x
+	const int x1 = 153; // move right and set x
+	const int down1 = 157; // move down
+	const int y0 = 161; // move down by y
+	const int y1 = 162; // move down and set y
+	const int z0 = 166; // move down by z
+	const int z1 = 167; // move down and set z
+	const int fnt_num_0 = 171; // set current font to 0
+	const int fnt1 = 235; // set current font
+	const int xxx1 = 239; // extension to DVI primitives
+	const int xxx4 = 242; // potentially long extension to DVI primitives
+	const int fnt_def1 = 243; // define the meaning of a font number
+	const int pre = 247; // preamble
+	const int post = 248; // postamble beginning
+	const int post_post = 249; // postamble ending
+}
+
+// 592
+int total_pages; // the number of pages that have been shipped out
+scaled max_v; // maximum height-plus-depth of pages shipped so far
+scaled max_h; // maximum width of pages shipped so far
+int max_push; // deepest nesting of push commands encountered so far
+int last_bop; // location of previous bop in the DVI output
+int dead_cycles; // recent outputs that didn't ship anything out
+bool doing_leaders; // are we inside a leader box?
+
+quarterword c;
+quarterword f; // character and font in current char_node
+scaled rule_ht;
+scaled rule_dp;
+scaled rule_wd; // size of current rule being output
+pointer g; // current glue specification
+int lq;
+int lr; // quantities used in calculations for leaders
+
+//594
+typedef int dvi_index; // 0..dvi_buf_size, an index into the output buffer
+
+// 595
+Array<eight_bits, 0, dvi_buf_size> dvi_buf; // buffer for DVI output
+dvi_index half_buf; // half of dvi_buf_size
+dvi_index dvi_limit; // end of the current half buffer
+dvi_index dvi_ptr; // the next available buffer address
+int dvi_offset; // dvi_buf_size times the number of times the output buffer has been fully emptied
+int dvi_gone; // the number of bytes already output to dvi_file
+
+// 598
+#define dvi_out(s) do {\
+	dvi_buf[dvi_ptr] = s;\
+	incr(dvi_ptr);\
+	if (dvi_ptr == dvi_limit)\
+		dvi_swap();\
+} while(0)
+
+// 605
+const int movement_node_size = 3; // number of words per entry in the down and right stacks
+#define location(s) mem[s+2].an_int // DVI byte number for a movement command
+
+pointer down_ptr;
+pointer right_ptr; // heads of down and right stacks
+
+// 608
+const int y_here = 1; // info when the movement entry points to a y command
+const int z_here = 2; // info when the movement entry points to a z command
+const int yz_OK = 3; // info corresponding to an unconstrained down command
+const int y_OK = 4; // info corresponding to a down that can't become a z
+const int z_OK = 5; // info corresponding to a down that can't become a y
+const int d_fixed = 6; // info corresponding to a down that can't change
+
+// 611
+const int none_seen = 0; // no y_here or z_here nodes have been encountered yet
+const int y_seen = 6; // we have seen y_here but not z_here
+const int z_seen = 12; // we have seen z_here but not y_here
+
+pointer LR_ptr; //{stack of LR codes for |hpack|, |ship_out|, and |init_math|}
+int LR_problems; //{counts missing begins and ends}
+small_number cur_dir; //{current text direction}
+
+
+pointer pseudo_files; //{stack of pseudo files}
+
+// 616
+
+const int reversed = 1;// {subtype for an | hlist_node | whose hlist has been reversed}
+const int dlist = 2;// {subtype for an | hlist_node | from display math mode}
+#define box_lr(s)  (qo(subtype(s))) // { direction mode of a box }
+#define set_box_lr(s1, s2) (subtype(s1) = set_box_lr_end(s2))
+#define set_box_lr_end(s) qi(s)
+
+const int left_to_right = 0;
+const int right_to_left = 1;
+#define reflected (1 - cur_dir) //{ the opposite of | cur_dir | }
+
+#define synch_h do{\
+	if(cur_h != dvi_h) {\
+		movement(cur_h-dvi_h, dvi_op::right1);\
+		dvi_h=cur_h;\
+	}\
+} while(0)
+
+#define synch_v do{\
+	if(cur_v != dvi_v) {\
+		movement(cur_v-dvi_v, dvi_op::down1);\
+		dvi_v=cur_v;\
+	}\
+} while(0)
+
+scaled dvi_h;
+scaled dvi_v; // a DVI reader program thinks we are here
+scaled cur_h;
+scaled cur_v; // rsTeX thinks we are here
+internal_font_number dvi_f; // the current font
+int cur_s; // current depth of output box nesting, initially -1
+
+// 625
+#define billion 1000000000.0f
+#define vet_glue(s) do{\
+	glue_temp = s;\
+	if(glue_temp > billion)\
+		glue_temp = billion;\
+	else if(glue_temp < -billion)\
+		glue_temp = -billion;\
+} while(0)
+
+#define round_glue do{\
+	g = glue_ptr(p);\
+	rule_wd = width(g) - cur_g;\
+	if (g_sign != normal)\
+	{\
+		if (g_sign == stretching)\
+		{\
+			if (stretch_order(g) == g_order)\
+			{\
+				cur_glue = cur_glue+stretch(g);\
+				vet_glue(_float(glue_set(this_box))*cur_glue);\
+				cur_g = round(glue_temp);\
+		    }\
+		}\
+		else if (shrink_order(g) == g_order)\
+		{\
+			cur_glue = cur_glue-shrink(g);\
+			vet_glue(_float(glue_set(this_box))*cur_glue);\
+			cur_g = round(glue_temp);\
+		}\
+	}\
+	rule_wd = rule_wd + cur_g;\
+} while(0)
+
+// 644
+const int exactly = 0; // a box dimension is pre-specified
+const int additional = 1; // a box dimension is increased from the natural one
+
+#define natural 0,additional // shorthand for parameters to hpack and vpack
+
+// 646
+Array<scaled, normal, filll> total_stretch;
+Array<scaled, normal, filll> total_shrink; // glue found by hpack or vpack
+int last_badness; // badness of the most recently packaged box
+
+// 647
+pointer adjust_tail; // tail of adjustment list
+
+// 661
+int pack_begin_line; // source file line where the current paragraph or alignment began; a negative
+                     // value denotes alignment
+
+// 668
+// NOTE: made vpack a function instead
+//#define vpack(s, t, u) vpackage(s, t, u, max_dimen) // special case of unconstrained depth
+
+// 681
+const int noad_size = 4; // number of words in a normal noad
+#define nucleus(s) (s + 1) // the nucleus field of a noad
+#define supscr(s) (s + 2) // the supscr field of a noad
+#define subscr(s) (s + 3) // the subscr field of a noad
+#define math_type link // a halfword in mem
+#define fam font // a qurterword in mem
+const int math_char = 1; // math_type when the attribute is simple
+const int sub_box = 2; // math_type when the attribute is a box
+const int sub_mlist = 3; // math_type when the attribute is a formula
+const int math_text_char = 4; // math_type when italic correction is dubious
+
+// 682
+const int limits = 1; // subtype of op_noad whose scripts are to be above, below
+const int no_limits = 2; // subtype of op_noad whose scripts are to be normal
+
+// 683
+#define left_delimiter(s) (s + 4) // first delimiter field of a noad
+#define right_delimiter(s) (s + 5) // second delimiter field of a fraction noad
+
+const int radical_noad_size = 5; // number of mem words in a radical noad
+const int fraction_noad_size = 6; // number of mem words in a fraction noad
+#define small_fam(s) mem[s].qqqq.b0 // fam for ``small'' delimiter
+#define small_char(s) mem[s].qqqq.b1 // character for ``small'' delimiter
+#define large_fam(s) mem[s].qqqq.b2 // fam for ``large'' delimiter
+#define large_char(s) mem[s].qqqq.b3 // character for ``large'' delimiter
+#define thickness width // thickness field in a fraction noad
+const int default_code = 010000000000; // denotes default_rule_thickness
+#define numerator supscr // numerator field in a fraction noad
+#define denominator subscr // denominator field in a fraction noad
+
+
+// 684
+two_halves empty_field;
+four_quarters null_delimiter;
+
+// 687
+const int accent_noad_size = 5; // number of mem words in an accent noad
+#define accent_chr(s) (s+4) // the accent_chr field of an accent noad
+
+#define delimiter nucleus // delimiter field in left and right noads
+const int middle_noad = 1; // {|subtype| of right noad representing \.{\\middle}}
+#define scripts_allowed(s) (type(s) >= ord_noad && type(s) < left_noad)
+
+// 688
+const int style_node_size = 3; // number of words in a style node
+
+enum math_style : small_number
+{
+	display_style = 0, // subtype for \displaystyle
+	text_style = 2, // subtype for \textstyle
+	script_style = 4, // subtype for \scriptstyle
+	script_script_style = 6, // subtype for \scriptscriptstyle
+};
+
+const int cramped = 1; // add this to an uncramped style if you want to cramp it
+
+// 689
+#define display_mlist(s) info(s+1) // mlist to be used in display style
+#define text_mlist(s) link(s+1) // mlist to be used in text style
+#define script_mlist(s) info(s+2) // mlist to be used in script style
+#define script_script_mlist(s) link(s+2) // mlist to be used in scriptscript style
+
+// 699
+enum math_size : small_number {
+	text_size = 0, // size code for the largest size in a family
+	script_size = 16, // size code for the medium size in a family
+	script_script_size = 32, // size code for the smallest size in a family
+};
+
+// 700
+#define math_x_height(s) font_info[5+param_base[fam_fnt(2+s)]].sc
+#define math_quad(s) font_info[6+param_base[fam_fnt(2+s)]].sc
+#define num1(s) font_info[8+param_base[fam_fnt(2+s)]].sc // numerator shift-up in display styles
+#define num2(s) font_info[9+param_base[fam_fnt(2+s)]].sc // numerator shift-up in non-display, non-\atop
+#define num3(s) font_info[10+param_base[fam_fnt(2+s)]].sc // numerator shift-up in non-display \atop
+#define denom1(s) font_info[11+param_base[fam_fnt(2+s)]].sc // denominator shift-down in display styles
+#define denom2(s) font_info[12+param_base[fam_fnt(2+s)]].sc // denominator shift-down in non-display styles
+#define sup1(s) font_info[13+param_base[fam_fnt(2+s)]].sc // superscript shift-up in uncramped display style
+#define sup2(s) font_info[14+param_base[fam_fnt(2+s)]].sc // superscript shift-up in uncramped non-display
+#define sup3(s) font_info[15+param_base[fam_fnt(2+s)]].sc // superscript shift-up in cramped styles
+#define sub1(s) font_info[16+param_base[fam_fnt(2+s)]].sc // subscript shift-down if superscript is absent
+#define sub2(s) font_info[17+param_base[fam_fnt(2+s)]].sc // subscript shift-down if superscript is present
+#define sup_drop(s) font_info[18+param_base[fam_fnt(2+s)]].sc // superscript baseline below top of large box
+#define sub_drop(s) font_info[19+param_base[fam_fnt(2+s)]].sc // subscript baseline below bottom of large box
+#define delim1(s) font_info[20+param_base[fam_fnt(2+s)]].sc // size of \atopwithdelims delimiters in display styles
+#define delim2(s) font_info[21+param_base[fam_fnt(2+s)]].sc // size of \atopwithdelims delimiters in non-displays
+#define axis_height(s) font_info[22+param_base[fam_fnt(2+s)]].sc // height of fraction lines above the baseline
+
+const int total_mathsy_params = 22;
+
+// 701
+#define default_rule_thickness font_info[8+param_base[fam_fnt(3+cur_size)]].sc // thickness of \over bars
+#define big_op_spacing1 font_info[9+param_base[fam_fnt(3+cur_size)]].sc // minimum clearance above a displayed op
+#define big_op_spacing2 font_info[10+param_base[fam_fnt(3+cur_size)]].sc // minimum clearance below a displayed op
+#define big_op_spacing3 font_info[11+param_base[fam_fnt(3+cur_size)]].sc // minimum baselineskip above displayed op
+#define big_op_spacing4 font_info[12+param_base[fam_fnt(3+cur_size)]].sc // minimum baselineskip below displayed op
+#define big_op_spacing5 font_info[13+param_base[fam_fnt(3+cur_size)]].sc // padding above and below displayed limits
+const int total_mathex_params = 13;
+
+//702
+#define cramped_style(s) (2 * (s / 2) + cramped) // cramp the style
+#define sub_style(s) (2 * (s / 4) + script_style + cramped) // smaller and cramped
+#define sup_style(s) (2 * (s / 4) + script_style + (s % 2)) // smaller
+#define num_style(s) (s + 2 - 2* (s / 6)) // smaller unless already script-script
+#define denom_style(s) (2 * (s / 2) + cramped + 2 - 2 * (s / 6)) // smaller, cramped
+
+// 716
+#define mu_mult(s) nx_plus_y(n, s, xn_over_d(s, f, 0200000))
+
+// 719
+pointer cur_mlist; // beginning of mlist to be translated
+small_number cur_style; // style code at current place in the list
+small_number cur_size; // size code corresponding to cur_style
+scaled cur_mu; // the math unit width corresponding to cur_size
+bool mlist_penalties; // should mlist_to_hlist insert penalties?
+
+// 724
+internal_font_number cur_f; // the font field of a math_char
+quarterword cur_c; // the character field of a math_char
+four_quarters cur_i; // the char_info of a math_char, or a lig/kern instruction
+
+// 725
+#define new_hlist(s) mem[nucleus(s)].an_int // the translation of an mlist
+
+// 731
+#define choose_mlist(s) do { p = s(q); s(q) = null; } while(0)
+
+// 764
+#define math_spacing TEX_STRING("0234000122*4000133**3**344*0400400*000000234000111*1111112341011")
+int magic_offset; // used to find inter-element spacing
+
+// 769
+#define u_part(s) mem[s+height_offset].an_int // pointer to <u_j> token list
+#define v_part(s) mem[s+depth_offset].an_int // pointer to <v_j> token list
+#define extra_info(s) info(s+list_offset) // info to remember during template
+
+// 770
+#define preamble link(align_head) // the current preamble list
+const int align_stack_node_size = 5; // number of mem words to save alignment states
+
+pointer cur_align; // current position in preamble list
+pointer cur_span; // start of currently spanned columns in preamble list
+pointer cur_loop; // place to copy when extending a periodic preamble
+pointer align_ptr; // most recently pushed-down alignment stack node
+pointer cur_head;
+pointer cur_tail; // adjustment list pointers
+
+// 780
+const int span_code = 256; // distinct from any character
+const int cr_code = 257; // distinct from span_code and from any character
+const int cr_cr_code = cr_code + 1; // this distinguishes \crcr from \cr
+const int end_template_token = cs_token_flag + frozen_end_template;
+
+// 797
+const int span_node_size = 2; // number of words for a span node
+
+// 814
+pointer just_box; // the hlist_node for the last line of the new paragraph
+
+// 817
+const int tight_fit = 3; // fitness classification for lines shrinking 0.5 to 1.0 of their shrinkability
+const int loose_fit = 1; // fitness classification for lines stretching 0.5 to 1.0 of their stretchability
+const int very_loose_fit = 0; // fitness classification for lines stretching more than their stretchability
+const int decent_fit = 2; // fitness classification for all other lines
+
+// 819
+const int active_node_size_normal = 3; // number of words in normal active nodes
+#define fitness subtype // very_loose_fit..tight_fit on final line for this break
+#define break_node rlink // pointer to the corresponding passive node
+#define line_number llink // line that begins at this breakpoint
+#define total_demerits(s) mem[s+2].an_int // the quantity that rsTeX minimizes
+const int unhyphenated = 0; // the type of a normal active break node
+const int hyphenated = 1; // the type of an active node that breaks at a disc_node
+#define last_active active // the active list ends where it begins
+
+// 821
+const int passive_node_size = 2; // number of words in passive nodes
+#define cur_break rlink // in passive node, points to position of this breakpoint
+#define prev_break llink // points to passive node that should precede this one
+#define serial info // serial number for symbolic identification
+
+pointer passive; // most recent node on passive list
+pointer printed_node; // most recent node that has been printed
+halfword pass_number; // the number of passive nodes allocated on this pass
+
+//822
+const int delta_node_size = 7; // number of words in a delta node
+const int delta_node = 2; // type field in a delta node
+
+// 823
+#define do_all_six(s) do{s(1); s(2); s(3); s(4); s(5); s(6);} while(0)
+
+Array<scaled, 1, 6> active_width; // distance from first active node to cur_p
+Array<scaled, 1, 6> cur_active_width; // distance from current active node
+Array<scaled, 1, 6> background; // length of an ``empty'' line
+Array<scaled, 1, 6> break_width; // length being computed after current break
+
+// 825
+#define check_shrinkage(s) do{\
+	if (shrink_order(s) != normal && shrink(s) != 0)\
+		s = finite_shrink(s);\
+} while(0)
+
+bool no_shrink_error_yet; // have we complained about infinite shrinkage?
+
+// 828
+pointer cur_p; // the current breakpoint under consideration
+bool second_pass; // is this our second attempt to break this paragraph
+bool final_pass; // is this our final attempt to break this paragraph
+int threshold; // maximum badness on feasible lines
+
+//829
+#define copy_to_cur_active(s) cur_active_width[s] = active_width[s]
+const int deactivate = 60; // go here when node r should be deactivated
+
+//832
+#define update_width(s) cur_active_width[s] += mem[r+s].sc
+
+// 833
+const int awful_bad = 07777777777; // more than a billion demerits
+
+Array<int, very_loose_fit, tight_fit> minimal_demerits; // best total demerits known for current line class and position, given the fitness
+int minimum_demerits; // best total demerits known for current line class and position
+
+Array<pointer, very_loose_fit, tight_fit> best_place; // how to achieve minimal_demerits
+Array<halfword, very_loose_fit, tight_fit> best_pl_line; // corresponding line number
+
+//837
+#define set_break_width_to_background(s) break_width[s] = background[s]
+
+// 839
+scaled disc_width; // the length of discretionary material preceding a break
+
+// 843
+#define convert_to_break_width(s) do{\
+	mem[prev_r+s].sc = mem[prev_r+s].sc - cur_active_width[s] + break_width[s];\
+} while(0)
+
+#define store_break_width(s) do{\
+	active_width[s] = break_width[s];\
+} while(0)
+
+#define new_delta_to_break_width(s) do{\
+	mem[q+s].sc = break_width[s] - cur_active_width[s];\
+} while(0)
+
+// 844
+#define new_delta_from_break_width(s) do{\
+	mem[q+s].sc = cur_active_width[s] - break_width[s];\
+} while(0)
+
+// 847
+halfword easy_line; // line numbers > easy_line are equivalent in break nodes
+halfword last_special_line; // line numbers > last_special_line all have the same width
+scaled first_width; // the width of all lines <= last_special_line, if no \parshape has been specified
+scaled second_width; // the width of all lines > last_special_line
+scaled first_indent; // left margin to go with first_width
+scaled second_indent; // left margin to go with second_width
+
+// 860
+#define combine_two_deltas(s) mem[prev_r+s].sc += mem[r+s].sc
+#define downdate_width(s) cur_active_width[s] -= mem[prev_r+s].sc
+
+// 861
+#define update_active(s) active_width[s] += mem[r+s].sc
+
+//864
+#define store_background(s) active_width[s] = background[s]
+
+//866
+#define act_width active_width[1]
+#define kern_break do{\
+	if(!is_char_node(link(cur_p)) && auto_breaking)\
+		if(type(link(cur_p)) == glue_node)\
+			try_break(0, unhyphenated);\
+	act_width += width(cur_p);\
+} while(0)
+
+// 872
+pointer best_bet; // use this passive node and its predecessors
+int fewest_demerits; // the demerits associated with best_bet
+halfword best_line; // line number following the last line of the new paragraph
+int actual_looseness; // the difference between line_number(best_bet) and the optimum best_line
+int line_diff; // the difference between the current line number and the optimum best_line
+
+//877
+#define next_break prev_break // new name for prev_break after links are reversed
+
+// 892
+Array<int, 0, 65> hc; // word to be hyphenated
+small_number hn; // the number of positions occupied in hc
+pointer ha;
+pointer hb; // nodes ha..hb should be replaced by the hyphenated result
+internal_font_number hf; // font number of the letters in hc
+Array<int, 0, 63> hu; // like hc, before conversion to lowercase
+
+int hyf_char; // hyphen character of the relevant font
+ASCII_code cur_lang;
+ASCII_code init_cur_lang; // current hyphenation table of interest
+int l_hyf;
+int r_hyf;
+int init_l_hyf;
+int init_r_hyf; // limits on fragment sizes
+halfword hyf_bchar; // boundary character after c_n
+
+// 900
+Array<char, 0, 64> hyf; // 0..9, odd values indicate discretionary hyphens
+pointer init_list; // list of punctuation characters preceding the word
+bool init_lig; // does init_list represent a ligature?
+bool init_lft; // if so, did the ligature invovle a left boundary?
+
+// 905
+small_number hyphen_passed; // first hyphen in a ligature, if any
+
+// 907
+halfword cur_l;
+halfword cur_r; // characters before and after the cursor
+pointer cur_q; // where a ligature should be detached
+pointer lig_stack; // unfinished business to the right of the cursor
+bool ligature_present; // should a ligature node be made for cur_l?
+bool lft_hit;
+bool rt_hit; // did we hit a ligature with a boundary character?
+
+// 908
+#define append_charnode_to_t(s) do{\
+	link(t) = get_avail();\
+	t = link(t);\
+	font(t) = hf;\
+	character(t) = s;\
+} while(0)
+
+#define set_cur_r do{\
+	if(j < n)\
+		cur_r = qi(hu[j + 1]);\
+	else\
+		cur_r = bchar;\
+	if(myodd(hyf[j]))\
+		cur_rh = hchar;\
+	else\
+		cur_rh = non_char;\
+} while(0)
+
+//910
+#define wrap_lig(s) do{\
+	if(ligature_present) {\
+		p = new_ligature((quarterword)hf,(quarterword)cur_l,link(cur_q));\
+	if(lft_hit) {\
+		subtype(p) = 2;\
+		lft_hit = false;\
+	}\
+	if (s)\
+		if (lig_stack == null) {\
+			incr(subtype(p));\
+			rt_hit = false;\
+		}\
+	link(cur_q) = p;\
+	t = p;\
+	ligature_present = false;\
+  }\
+} while(0)
+
+#define pop_lig_stack do{\
+	if(lig_ptr(lig_stack) > null) {\
+		link(t) = lig_ptr(lig_stack);\
+		t = link(t); incr(j);\
+	}\
+	p = lig_stack;\
+	lig_stack = link(p);\
+	free_node(p, small_node_size);\
+	if (lig_stack == null)\
+		set_cur_r;\
+	else\
+		cur_r = character(lig_stack);\
+} while(0)
+
+//914
+#define advance_major_tail do{\
+	major_tail = link(major_tail);\
+	incr(r_count);\
+} while(0)
+
+// 920
+typedef int trie_pointer; // 0..trie_size, an index into trie
+
+// 921
+#define trie_link(s) trie[s].rh // ``downward'' link in a trie
+#define trie_char(s) trie[s].b1 // character matched at this trie location
+#define trie_op(s) trie[s].b0 // program for hyphenation at this trie location
+
+Array<two_halves, 0, trie_size> trie; // trie_link, trie_char, trie_op
+Array<small_number, 1, trie_op_size> hyf_distance; // position k - j of n_j
+Array<small_number, 1, trie_op_size> hyf_num; // value of n_j
+Array<quarterword, 1, trie_op_size> hyf_next; // continuation code
+Array<int, 0, 255> op_start; // 0..trie_opsize, offset for current language
+
+// 925
+typedef int hyph_pointer; // 0..hyph_size, an index into the ordered hash table
+
+// 926
+Array<str_number, 0, hyph_size> hyph_word; // exception words
+Array<pointer, 0, hyph_size> hyph_list; // lists of hyphen positions
+hyph_pointer hyph_count; // the number of words in the exception dictionary
+
+// 934
+#define set_cur_lang do{\
+	if (language <= 0) cur_lang = 0;\
+	else if(language > 255) cur_lang = 0;\
+	else cur_lang = language;\
+} while(0)
+
+// 943
+//init
+#ifndef NO_INIT
+Array<unsigned, -trie_op_size, trie_op_size> trie_op_hash; // trie op codes for quadruples
+Array<quarterword, 0, 255> trie_used; // largest opcode used so far for this language
+Array<ASCII_code, 1, trie_op_size> trie_op_lang; // language part of a hashed quadruple
+Array<quarterword, 1, trie_op_size> trie_op_val; // opcode corresponding to a hashed quadruple
+int trie_op_ptr; // 0..trie_op_size, number of stored ops so far
+//tini
+
+#endif
+// 947
+#define trie_root trie_l[0] // root of the linked trie
+
+//init
+#ifndef NO_INIT
+Array<packed_ASCII_code, 0, trie_size> trie_c; // characters to match
+Array<packed_ASCII_code, 0, trie_size> trie_o; // operations to perform
+Array<trie_pointer, 0, trie_size> trie_l; // left subtrie links
+Array<trie_pointer, 0, trie_size> trie_r; // right subtrie links
+trie_pointer trie_ptr; // the number of nodes in the trie
+Array<trie_pointer, 0, trie_size> trie_hash; // used to identify equivalent subtries
+#endif
+//tini
+
+// 950
+#define trie_ref trie_hash // where linked trie families go into trie
+#define trie_back(s) trie[s].lh // backward links in trie holes
+
+
+#define hyph_root trie_r[0] //{root of the linked trie for |hyph_codes|}
+
+
+// init
+#ifndef NO_INIT
+Array<bool, 1, trie_size>  trie_taken; // does a family start here?
+Array<trie_pointer, 0, 255> trie_min; // the first possible slot for each character
+trie_pointer trie_max; // largest location used in trie
+bool trie_not_ready; // is the trie still in linked form?
+#endif
+// tini
+
+// 970
+#define active_height active_width // new name for the six distance variables
+#define cur_height active_height[1] // the natural height
+#define set_height_zero(s) active_height[s] = 0 // initialize the height to zero
+
+// 971
+scaled best_height_plus_depth; // height of the best box, without stretching or shrinking
+
+// 974
+const int deplorable = 100000; // more than inf_bad, but less than awful_bad
+
+// 980
+const int inserts_only = 1; // page_contents when an insert node has been contributed, but no boxes
+const int box_there = 2; // page_contents when a box or rule has been contributed
+
+pointer page_tail; // the final node on the current page
+char page_contents; // what is on the current page so far?
+scaled page_max_depth; // maximum box depth on page being built
+pointer best_page_break; // break here to get the best page known so far
+int least_page_cost; // the score for this currently best page
+scaled best_size; // its page_goal
+
+// 981
+const int page_ins_node_size = 4; // number of words for a page insertion node
+const int inserting = 0; // an insertion class that has not yet overflowed
+const int split_up = 1; // an overflowed insertion class
+#define broken_ptr(s) link(s + 1) // an insertion for this class will break here if anywhere
+#define broken_ins(s) info(s + 1) // this insertion might break at broken_ptr
+#define last_ins_ptr(s) link(s + 2) // the most recent insertion for this subtype
+#define best_ins_ptr(s) info(s + 2) // the optimum most recent insertion
+
+// 982
+#define page_goal page_so_far[0] // desired height of information on page being built
+#define page_total page_so_far[1] // height of the current page
+#define page_shrink page_so_far[6] // shrinkability of the current page
+#define page_depth page_so_far[7] // depth of the current page
+
+Array<scaled, 0, 7> page_so_far; // height and glue of the current page
+pointer last_glue; // used to implement \lastskip
+int last_penalty; // used to implement \lastpenalty
+scaled last_kern; // used to implement \lastkern
+int last_node_type; // {used to implement \.{\\lastnodetype}}
+int insert_penalties; // sum of the penalties for held-over insertions
+
+// 985
+#define print_plus(s,t) do {\
+	if(page_so_far[s] != 0) {\
+		print(TEX_STRING(" plus "));\
+		print_scaled(page_so_far[s]);\
+		print(t);\
+	}\
+} while(0)
+
+// 987
+#define set_page_so_far_zero(s) page_so_far[s] = 0
+
+// 989
+bool output_active; // are we in the midst of an output routine?
+
+// 995
+#define contrib_tail nest[0].tail_field // tail of the contribution list
+
+// 1032
+internal_font_number main_f; // the current font
+four_quarters main_i; // character information bytes for cur_l
+four_quarters main_j; // ligature/kern command
+font_index main_k; // index into font_info
+pointer main_p; // temporary register for list manipulation
+int main_s; // space factor value
+halfword bchar; // right boundary character of current font, or non_char
+halfword false_bchar; // nonexistent character matching bchar, or non_char
+bool cancel_boundary; // should the left boundary character be ignored?
+bool ins_disc; // should we insert a discretionary node?
+
+// 1034
+#define adjust_space_factor do{\
+	main_s = sf_code(cur_chr);\
+	if(main_s == 1000)\
+		space_factor = 1000;\
+	else if(main_s < 1000) {\
+		if(main_s > 0)\
+			space_factor = main_s;\
+	}\
+	else if(space_factor < 1000)\
+		space_factor = 1000;\
+	else space_factor = main_s;\
+} while(0)
+
+
+// 1035
+#define pack_lig(s) \
+do{\
+	main_p = new_ligature((quarterword)main_f, (quarterword)cur_l, link(cur_q));\
+	if(lft_hit) {\
+		subtype(main_p) = 2;\
+		lft_hit = false;\
+	}\
+	if (s) \
+		if(lig_stack == null) {\
+			incr(subtype(main_p));\
+			rt_hit = false;\
+		}\
+	link(cur_q) = main_p;\
+	tail = main_p;\
+	ligature_present = false;\
+} while (0)
+
+#define wrapup(s) do{\
+	if(cur_l < non_char) {\
+		if(link(cur_q) > null)\
+			if(character(tail) == qi(hyphen_char[main_f]))\
+				ins_disc = true;\
+		if(ligature_present)\
+			pack_lig(s);\
+		if(ins_disc){\
+			ins_disc = false;\
+			if(mode > 0) tail_append(new_disc());\
+		}\
+	}\
+} while(0)
+
+// 1045
+#define any_mode(s) vmode+s:case hmode+s:case mmode+s // for mode-independent commands
+
+// 1046
+#define non_math(s) vmode+s:case hmode+s
+
+// 1058
+const int fil_code = 0; // identifies \hfil and \vfil
+const int fill_code = 1; // identifies  \hfill and \vfill
+const int ss_code = 2; // identifies \hss and \vss
+const int fil_neg_code = 3; // identifies \hfilneg and \vfilneg
+const int skip_code = 4; // identifies \hskip and \vskip
+const int mskip_code = 5; // identifies \mskip
+
+#define fetch_effective_tail_eTeX(s) do {\
+	q=head; p=null;\
+	do {\
+		r = p; p = q; fm = false;\
+		if (!is_char_node(q))\
+			if (type(q) == disc_node)\
+			{\
+				for (m = 1; m <= replace_count(q); m++) p = link(p);\
+				if (p == tx) s;\
+			}\
+			else if (type(q) == math_node && subtype(q) == begin_M_code)\
+				fm = true;\
+		q = link(p);\
+    } while (!(q == tx));\
+	q = link(tx); link(p) = q; link(tx) = null;\
+	if (q == null)\
+		if (fm) confusion(TEX_STRING("tail1"));\
+		else tail = p;\
+	else if (fm)\
+	{\
+		tail = r; link(r) = null; flush_node_list(p);\
+	}\
+} while (0)
+
+#define check_effective_tail find_effective_tail_eTeX
+#define fetch_effective_tail(s) fetch_effective_tail_eTeX(s)
+// 1071
+enum enum_context_code : int
+{
+	box_flag = 010000000000, // context code for `\setbox0'
+	global_box_flag=010000100000, // {context code for `\.{\\global\\setbox0}'}
+	ship_out_flag=010000200000, // {context code for `\.{\\shipout}'}
+	leader_flag=010000200001, // {context code for `\.{\\leaders}'}
+};
+
+enum enum_chr_code : int
+{
+	box_code = 0, // chr_code for `\box'
+	copy_code = 1, // chr_code for `\copy'
+	last_box_code = 2, // chr_code for `\lastbox'
+	vsplit_code = 3, // chr_code for `\vsplit'
+	vtop_code = 4, // chr_code for `\vtop'
+};
+
+// 1074
+pointer cur_box; // box to be placed into its context
+
+// 1151
+#define fam_in_range ((cur_fam >= 0) && (cur_fam < 16))
+
+// 1178
+const int above_code = 0; // `\above'
+const int over_code = 1; // `\over'
+const int atop_code = 2; // `\atop'
+const int delimited_code = 3; // `\abovewithdelims', etc.
+
+// 1214
+#define global (a >= 4)
+#define define(s,t,u) if(global) geq_define(s,t,u); else eq_define(s,t,u)
+#define word_define(s,t) if(global) geq_word_define(s,t); else eq_word_define(s,t)
+
+// 1222
+enum enum_def_code : halfword
+{
+	char_def_code = 0, // shorthand_def for \chardef
+	math_char_def_code = 1, // shorthand_def for \mathchardef
+	count_def_code = 2, // shorthand_def for \countdef
+	dimen_def_code = 3, // shorthand_def for \dimendef
+	skip_def_code = 4, // shorthand_def for \skipdef
+	mu_skip_def_code = 5, // shorthand_def for \muskipdef
+	toks_def_code = 6, // shorthand_def for \toksdef
+};
+
+// 1266
+halfword after_token; // zero, or a saved token
+
+// 1281
+bool long_help_seen; // has the long \errmessage help been used?
+
+// 1291
+const int show_code = 0; // \show
+const int show_box_code = 1; // \showbox
+const int show_the_code = 2; // \showthe
+const int show_lists_code = 3; // \showlists
+
+// 1299
+str_number format_ident;
+
+// 1303
+#define too_small(s) do{\
+	wake_up_terminal();\
+	wterm_s("---! Must increase the ");\
+	wterm_ln_s(s);\
+	goto bad_fmt;\
+} while(0)
+
+// 1306
+#define undump(a,b,c) do{\
+	undump_int(&x);\
+	if(x<a||x>b) goto bad_fmt;\
+	else c = x;\
+} while(0)
+
+#define undump_size(a,b,c,d) do{\
+	undump_int(&x);\
+	if(x<a) goto bad_fmt;\
+	if(x>b) too_small(c);\
+	else d = x;\
+} while(0)
+
+// 1309
+#define dump_four_ASCII do {\
+	w.b0 = qi(so(str_pool[k]));\
+	w.b1 = qi(so(str_pool[k+1]));\
+	w.b2 = qi(so(str_pool[k+2]));\
+	w.b3 = qi(so(str_pool[k+3]));\
+	dump_qqqq(w);\
+} while(0)
+
+word_file fmt_file;
+
+// 1310
+#define undump_four_ASCII do{\
+	undump_qqqq(&w);\
+	str_pool[k] = si(qo(w.b0));\
+	str_pool[k+1] = si(qo(w.b1));\
+	str_pool[k+2] = si(qo(w.b2));\
+	str_pool[k+3] = si(qo(w.b3));\
+} while(0)
+
+
+Array<pointer, copy_code, vsplit_code> disc_ptr; // {list pointers}
+
+#define tail_page_disc disc_ptr[copy_code] //{last item removed by page builder}
+#define page_disc disc_ptr[last_box_code] //{first item removed by page builder}
+#define split_disc disc_ptr[vsplit_code] //{first item removed by \.{\\vsplit}}
+
+
+// 1331
+// NOTE: this is not used in any meaningful way now, could be removed (and the code that uses it)
+//int ready_already; // a sacrifice of purity for economy
+
+// 1341
+const int write_node_size = 2; // number of words in a write/whatsit node
+const int open_node_size = 3; // number of words in an open/whatsit node
+
+#define what_lang(s) link(s+1) // language number, in the range 0..255
+#define what_lhm(s) type(s+1) // minimum left fragment, in the range 1..63
+#define what_rhm(s) subtype(s+1) // minimum right fragment, in the range 1..63
+#define write_tokens(s) link(s+1) // reference count of token list to write
+#define write_stream(s) info(s+1) // stream number (0 to 17)
+#define open_name(s) link(s+1) // string number of file name to open
+#define open_area(s) info(s+2) // string number of file area for open_name
+#define open_ext(s) link(s+2) // string number of file extension for open_name
+
+
+// 1342
+Array<alpha_file, 0, 15> write_file;
+Array<bool, 0, 17> write_open;
+
+// 1344
+const int immediate_code = 4; // command modifier for \immediate
+const int set_language_code = 5; // command modifier for \setlanguage
+
+// 1345
+pointer write_loc; // eqtb address of \write
+
+trie_pointer hyph_start; //{root of the packed trie for |hyph_codes|}
+trie_pointer hyph_index; //{pointer to hyphenation codes for |cur_lang|}
+
+
+//1362
+#define adv_past(s) do{\
+	if(subtype(s) == language_node) {\
+		cur_lang = (ASCII_code)what_lang(s);\
+		l_hyf = what_lhm(s);\
+		r_hyf = what_rhm(s);\
+		set_hyph_index;\
+	}\
+} while(0)
+
+// 1371
+#define end_write_token cs_token_flag + end_write
+
+#define print_if_line(s) do{\
+	if (s != 0)\
+	{\
+		print(TEX_STRING(" entered on line ")); print_int(s);\
+	}\
+} while (0)
+
+
+pointer last_line_fill; //{the |par_fill_skip| glue node of the new paragraph}
+bool do_last_line_fit; //{special algorithm for last line of paragraph?}
+small_number active_node_size; //{number of words in active nodes}
+
+Array<scaled, 0, 2> fill_width;//{infinite stretch components of |par_fill_skip|}
+Array<scaled, very_loose_fit, tight_fit> best_pl_short;//{|shortfall| corresponding to |minimal_demerits|}
+Array<scaled, very_loose_fit, tight_fit> best_pl_glue;//{corresponding glue stretch or shrink}
+
+#define sa_define(s1,s2,s3,s4,s5) do {\
+	if (e)\
+		if (global) gsa_def(s1,s2);\
+		else sa_def(s1,s2);\
+  else define(s3,s4,s5);\
+} while (0)
+
+//{assign |cur_box| to |box(cur_val)|}
+#define sa_def_box do {\
+  find_sa_element(box_val,cur_val,true);\
+  if (global) gsa_def(cur_ptr,cur_box);\
+  else sa_def(cur_ptr,cur_box);\
+} while (0)
+
+#define sa_word_define(s1, s2) do {\
+	if (e)\
+		if (global) gsa_w_def(s1, s2);\
+		else sa_w_def(s1, s2);\
+	else word_define(s1, s2);\
+} while (0)
+
+// {set |hyph_index| for current language}
+#define set_hyph_index do {\
+	if (trie_char(hyph_start + cur_lang) != qi(cur_lang))\
+		hyph_index = 0;\
+	else hyph_index = trie_link(hyph_start + cur_lang);\
+} while (0)
+
+//{set |hc[0]| to hyphenation or lc code for |#|}
+#define set_lc_code(s) do {\
+  if (hyph_index == 0) hc[0] = lc_code(s);\
+  else if (trie_char(hyph_index+s) != qi(s)) hc[0] = 0;\
+  else hc[0] = qo(trie_op(hyph_index+s));\
+} while (0)
+
+
+const int vsplit_init=0; //{action code for |vsplit| initialization}
+const int fire_up_init=1; //{action code for |fire_up| initialization}
+const int fire_up_done=2; //{action code for |fire_up| completion}
+const int destroy_marks=3; //{action code for |final_cleanup|}
+
+#define sa_top_mark(s) info(s+1) //{\.{\\topmarks}|n|}
+#define sa_first_mark(s) link(s+1) //{\.{\\firstmarks}|n|}
+#define sa_bot_mark(s) info(s+2) //{\.{\\botmarks}|n|}
+#define sa_split_first_mark(s) link(s+2) //{\.{\\splitfirstmarks}|n|}
+#define sa_split_bot_mark(s) info(s+3) //{\.{\\splitbotmarks}|n|}
+
+#define add_sa_ref(s) incr(sa_ref(s)) //{increase reference count}
+
+//{change |box(cur_val)|, the |eq_level| stays the same}
+#define change_box(s) do {\
+	if (cur_val < 256)\
+		box(cur_val) = s;\
+	else set_sa_box(s);\
+} while (0)
+
+#define set_sa_box(s) do {\
+	find_sa_element(box_val,cur_val,false);\
+	if (cur_ptr != null)\
+    {\
+		sa_ptr(cur_ptr) = s; add_sa_ref(cur_ptr); delete_sa_ref(cur_ptr);\
+    }\
+} while (0)
+
+const int show_groups = 4; // { \.{\\showgroups} }
+
+const int show_ifs = 6; // { \.{\\showifs} }
+
+
+#define cancel_glue(s1, s2, s3, s4, s5) do {\
+	j = new_skip_param(s1);\
+	link(s2) = j;\
+	link(j) = s3;\
+	j = glue_ptr(s4);\
+	stretch_order(temp_ptr) = stretch_order(j);\
+	shrink_order(temp_ptr) = shrink_order(j); width(temp_ptr) = s5 - width(j);\
+	stretch(temp_ptr) = -stretch(j); shrink(temp_ptr) = -shrink(j);\
+} while (0)
+
+
+#define sa_loc sa_ref //{location of saved item}
+
+#define inter_line_penalties_ptr equiv(inter_line_penalties_loc)
+#define club_penalties_ptr equiv(club_penalties_loc)
+#define widow_penalties_ptr equiv(widow_penalties_loc)
+#define display_widow_penalties_ptr equiv(display_widow_penalties_loc)
+
+const int show_tokens=5; // { \.{\\showtokens} , must be odd! }
+
+#define edge_node style_node //{a |style_node| does not occur in hlists}
+const int edge_node_size = style_node_size; // {number of words in an edge node}
+#define edge_dist(s) depth(s) //{new |left_edge| position relative to |cur_h| (after |width| has been taken into account)}
+
+
+const int active_node_size_extended=5; // {number of words in extended active nodes}
+#define active_short(s) mem[s+3].sc //{|shortfall| of this line}
+#define active_glue(s) mem[s+4].sc //{corresponding glue stretch or shrink}
+
+#define LR_dir(s) (subtype(s) / R_code) //{text direction of a `math node'}
+
+#define expr_d(s) s = quotient(s, f)
+#define expr_m(s) s = nx_plus_y(s, f, 0)
+#define expr_s(s) s = fract(s, n, f, max_dimen)
+
+// function headers
+bool a_open_in(FILE **f, int path_specifier);
+bool a_open_out(FILE **f);
+bool b_open_in(FILE **f);
+bool b_open_out(FILE **f);
+bool w_open_in(FILE **f);
+bool w_open_out(FILE **f);
+void a_close(FILE *f);
+void b_close(FILE *f);
+void w_close(FILE *f);
+bool input_ln(FILE *fp, bool bypass_eoln);
+void print(int s);
+void print_char(ASCII_code s);
+void print_the_digs(eight_bits k);
+void print_int(int n);
+void print_ln();
+void print_nl(str_number s);
+void slow_print(int s);
+void print_esc(str_number s);
+void overflow(str_number s, int n);
+str_number make_string();
+bool str_eq_buf(str_number s, int k);
+bool str_eq_str(str_number s, str_number t);
+bool get_strings_started();
+void jump_out();
+void open_log_file();
+void debug_help();
+void error();
+str_number make_name_string();
+str_number w_make_name_string(word_file f);
+str_number b_make_name_string(byte_file f);
+str_number a_make_name_string(alpha_file f);
+void print_two(int n);
+void close_files_and_terminate();
+void do_end_of_TEX();
+void fatal_error(str_number s);
+void final_cleanup();
+void init_prim();
+void fix_date_and_time();
+void primitive(str_number s, quarterword c, halfword o);
+void end_token_list();
+void give_err_help();
+void pack_file_name(str_number n, str_number a, str_number e);
+void pause_for_instructions();
+void get_token();
+void get_next();
+void main_control();
+void begin_token_list(pointer p, quarterword t);
+void begin_diagnostic();
+void end_diagnostic(bool blank_line);
+void print_cs(int p);
+void print_skip_param(int n);
+void store_fmt_file();
+void token_show(pointer p);
+pointer id_lookup(int j, int l);
+void check_outer_validity();
+pointer get_avail();
+void back_input();
+void ins_error();
+void back_error();
+void runaway();
+void show_token_list(int p, int q, int l);
+void app_space();
+void get_x_token();
+void macro_call();
+void expand();
+pointer str_toks(pool_pointer b);
+void conv_toks();
+void conditional();
+void ins_the_toks();
+void change_if_limit(small_number l, pointer p);
+pointer new_param_glue(small_number n);
+pointer new_spec(pointer p);
+scaled xn_over_d(scaled x, int n, int d);
+pointer new_glue(pointer q);
+pointer get_node(int s);
+pointer the_toks();
+void print_scaled(scaled s);
+void print_spec(int p, str_number s);
+void print_glue(scaled d, int order, str_number s);
+void scan_something_internal(small_number level, bool negative);
+void show_cur_cmd_chr();
+void print_mode(int m);
+void mu_error();
+void scan_int();
+void scan_font_ident();
+void scan_eight_bit_int();
+void scan_four_bit_int();
+void scan_fifteen_bit_int();
+void int_error(int n);
+void find_font_dimen(bool writing);
+void check_mem(bool print_locs);
+void geq_define(pointer p, quarterword t, halfword e);
+void geq_word_define(pointer p, int w);
+void scan_optional_equals();
+void get_r_token();
+void alter_integer();
+void alter_page_so_far();
+void alter_prev_graf();
+void alter_aux();
+void alter_box_dimen();
+//int myabs(int c);
+void report_illegal_case();
+bool scan_keyword(str_number s);
+void read_toks(int n, pointer r);
+pointer scan_toks(bool macro_def, bool xpand);
+bool privileged();
+void you_cant();
+void new_font(small_number a);
+void new_hyph_exceptions();
+void new_interaction();
+pointer new_null_box();
+void new_patterns();
+internal_font_number read_font_info(pointer u, str_number nom, str_number aire, scaled s);
+void scan_file_name();
+void scan_left_brace();
+pointer new_penalty(int m);
+void build_page();
+void sprint_cs(pointer p);
+halfword badness(scaled t, scaled s);
+void fire_up(pointer c);
+void scan_dimen(bool mu, bool inf, bool shortcut);
+void scan_glue(small_number level);
+void trap_zero_glue();
+void do_register_command(small_number a);
+void scan_box(int box_context);
+void insert_dollar_sign();
+pointer scan_rule_spec();
+scaled x_over_n(scaled x, int n);
+void ensure_vbox(eight_bits n);
+void freeze_page_specs(small_number s);
+void box_error(eight_bits n);
+void show_box(pointer p);
+void show_node_list(int p);
+void print_current_string();
+void print_totals();
+pointer vert_break(pointer p, scaled h, scaled d);
+pointer new_skip_param(small_number n);
+pointer scan_rule_spec();
+pointer new_rule();
+void do_extension();
+void new_write_whatsit(small_number w);
+void new_whatsit(small_number s, small_number w);
+void out_what(pointer p);
+void special_out(pointer p);
+void movement(scaled w, eight_bits o);
+small_number norm_min(int h);
+void append_kern();
+void append_glue();
+pointer new_kern(scaled w);
+void after_math();
+void new_save_level(group_code c);
+void unsave();
+void off_save();
+void new_graf(bool indented);
+void indent_in_hmode();
+void normal_paragraph();
+void end_graf();
+void head_for_vmode();
+void begin_insert_or_adjust();
+void make_mark();
+void append_penalty();
+void delete_last();
+void unpackage();
+void append_to_vlist(pointer b);
+void package(small_number c);
+void extra_right_brace();
+pointer vpackage(pointer p, scaled h, small_number m, scaled l);
+void pop_nest();
+void push_nest();
+void build_discretionary();
+void flush_node_list(pointer p);
+void align_peek();
+pointer new_noad();
+void build_choices();
+pointer fin_mlist(pointer p);
+void fin_align();
+void init_span(pointer p);
+void init_row();
+void init_col();
+void push_math(group_code c);
+void pop_alignment();
+void push_alignment();
+pointer hpack(pointer p, scaled w, small_number m);
+void box_end(int box_context);
+void ship_out(pointer p);
+pointer copy_node_list(pointer p);
+void flush_math();
+pointer new_math(scaled w, small_number s);
+void mlist_to_hlist();
+int half(int x);
+void resume_after_display();
+pointer vsplit(eight_bits n, scaled h);
+void scan_spec(group_code c, bool three_codes);
+pointer new_lig_item(quarterword c);
+pointer new_ligature(quarterword f, quarterword c, pointer q);
+pointer new_disc();
+void line_break(bool d);
+void append_italic_correction();
+pointer prune_page_top(pointer p, bool s);
+void append_discretionary();
+void make_accent();
+void align_error();
+void omit_error();
+void no_align_error();
+void init_align();
+void do_endv();
+void cs_error();
+void init_math();
+void start_eq_no();
+void scan_math(pointer p);
+void set_math_char(int c);
+void scan_twenty_seven_bit_int();
+pointer new_style(small_number s);
+void fix_language();
+void open_or_close_in();
+void issue_message();
+void shift_case();
+void show_whatever();
+void save_for_after(halfword t);
+void math_limit_switch();
+void math_radical();
+void math_ac();
+void scan_delimiter(pointer p, bool r);
+void show_activities();
+void math_left_right();
+void math_fraction();
+void sub_sup();
+void append_choices();
+pointer new_choice();
+void char_warning(internal_font_number f, eight_bits c);
+void print_meaning();
+void pack_job_name(str_number s);
+void dump_wd(memory_word memword);
+void dump_int(int n);
+void dump_hh(two_halves halves);
+void dump_qqqq(four_quarters fq);
+void sort_avail();
+void write_out(pointer p);
+void start_input();
+void firm_up_the_line();
+bool open_fmt_file();
+void pack_buffered_name(small_number n, int a, int b);
+bool load_fmt_file();
+void undump_wd(memory_word *memword);
+void undump_int(int *anint);
+void undump_hh(two_halves *hh);
+void undump_qqqq(four_quarters *qqqq);
+void print_font_and_char(int p);
+void print_mark(int p);
+void print_rule_dimen(scaled d);
+void print_write_whatsit(str_number s, pointer p);
+void print_file_name(int n, int a, int e);
+void short_display(int p);
+void init_trie();
+void first_fit(trie_pointer p);
+void trie_pack(trie_pointer p);
+trie_pointer compress_trie(trie_pointer p);
+void trie_fix(trie_pointer p);
+trie_pointer trie_node(trie_pointer p);
+void x_token();
+scaled round_decimals(small_number k);
+scaled mult_and_add(int n, scaled x, scaled y, scaled max_answer);
+void print_roman_int(int n);
+void pass_text();
+void insert_relax();
+pointer finite_shrink(pointer p);
+pointer new_character(internal_font_number f, eight_bits c);
+void hyphenate();
+void post_line_break(bool d);
+void dvi_swap();
+void dvi_four(int x);
+void do_assignments();
+quarterword new_trie_op(small_number d, small_number n, quarterword v);
+void scan_char_num();
+void restore_trace(pointer p, str_number s);
+void show_eqtb(pointer n);
+void print_param(int n);
+void print_length_param(int n);
+void print_style(int c);
+void print_hex(int n);
+void print_size(int s);
+bool fin_col();
+void fin_row();
+void begin_box(int box_context);
+void hlist_out();
+void vlist_out();
+void dvi_font_def(internal_font_number f);
+void prune_movements(int l);
+void dvi_pop(int l);
+void get_preamble_token();
+void make_fraction(pointer q);
+scaled make_op(pointer q);
+void make_ord(pointer q);
+void make_radical(pointer q);
+void make_over(pointer q);
+void make_under(pointer q);
+void make_vcenter(pointer q);
+void make_math_accent(pointer q);
+pointer math_glue(pointer g, scaled m);
+void math_kern(pointer p, scaled m);
+small_number make_left_right(pointer q, small_number style, scaled max_d, scaled max_h);
+pointer var_delimiter(pointer d, small_number s, scaled v);
+pointer char_box(internal_font_number f, quarterword c);
+void stack_into_box(pointer b, internal_font_number f, quarterword c);
+scaled height_plus_depth(internal_font_number f, quarterword c);
+pointer rebox(pointer b, scaled w);
+pointer fraction_rule(scaled t);
+pointer overbar(pointer b, scaled k, scaled t);
+void fetch(pointer a);
+void make_scripts(pointer q, scaled delta);
+void print_subsidiary_data(pointer p, ASCII_code c);
+void show_info();
+void print_fam_and_char(pointer p);
+void print_delimiter(pointer p);
+void normalize_selector();
+void search_mem(pointer p);
+void free_avail(pointer s);
+void do_final_end();
+void succumb();
+pointer vpack(halfword aa, scaled bb, small_number cc);
+bool test_access(int filepath);
+void call_edit(packed_ASCII_code *filename, int fnlength, int linenumber);
+void pseudo_close();
+void print_sa_num(pointer q);
+bool pseudo_input();
+void file_warning();
+void delete_sa_ref(pointer q);
+void scan_register_num();
+void find_sa_element(small_number t, halfword n, bool w);
+void scan_expr();
+void scan_normal_glue();
+void scan_mu_glue();
+int add_or_sub(int x, int y, int max_answer, bool negative);
+void get_x_or_protected();
+void group_trace(bool e);
+void sa_restore();
+void group_warning();
+void scan_general_text();
+void if_warning();
+void pseudo_start();
+pointer reverse(pointer this_box, pointer t, scaled& cur_g, float& cur_glue);
+void gsa_def(pointer p, halfword e);
+void sa_def(pointer p, halfword e);
+void show_save_groups();
+bool do_marks(small_number a, small_number l, pointer q);
+void app_display(pointer j, pointer b, scaled d);
+void gsa_w_def(pointer p, int w);
+void sa_w_def(pointer p, int w);
+void print_group(bool e);
+void just_copy(pointer p,pointer h, pointer t);
+void just_reverse(pointer p);
+pointer new_edge(small_number s, scaled w);
+int quotient(int n, int d);
+int fract(int x, int n, int d, int max_answer);
+
