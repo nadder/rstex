@@ -12911,7 +12911,7 @@ void show_activities()
 			break;
 		case 2:
 			if (a.an_int != null) {
-				print(TEX_STRING("this will be denominator of:")); show_box(a.an_int);
+				print(TEX_STRING("this will begin denominator of:")); show_box(a.an_int);
 			}
 			break;
 		}
