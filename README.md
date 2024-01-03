@@ -1,8 +1,9 @@
 [![Build Status](https://travis-ci.com/nadder/rstex.svg?branch=master)](https://travis-ci.com/nadder/rstex)
 # rsTeX and related programs
 ## rse-TeX
-**NEWS** Recently added the long overdue implementation of e-TeX!
-e-TeX is required to run LaTeX so this is a very welcome addition to the family of TeX programs.
+**NEWS!** Recently added the long overdue implementation of e-TeX!
+The e-TeX extension is required to run LaTeX so this is a very welcome addition to the
+family of TeX programs. See the Readme.txt for instruction on how to setup LaTeX.
 
 ## rsTeX
 This is a manual translation of [tex.web](https://ctan.org/pkg/tex) version 3.14159265 into standard C++.
@@ -12,8 +13,8 @@ class to keep the same indexing as in the original and to also get boundscheckin
 
 What is the purpose of this program? Well, I've long been fascinated by
 Donald Knuth and his work and especially TeX. TeX is one of the most well
-documented programs out there and the source code is of course readily available
-but, one lacking feature of current implementations is that because the source code is
+documented programs out there and the source code is of course readily available.
+But, one lacking feature of current implementations is that because the source code is
 machine converted into C it's not easy to understand or step through the code
 in a debugger. So that's why I decided to translate the program to C++. By doing so
 one also hopefully gains some understanding of what the code does.
@@ -37,7 +38,7 @@ rstex.cpp can then be compiled by any non-ancient C++ compiler, and the executab
 #### Notable omissions
 * Currently no path searching is done so all files the program needs are supposed
   to exist in the current directory. (See the Unix and Windows specific versions to avoid this).
-* No other files needed for a complete system is included, i.e. fmt files, fonts, tfm files
+* No other files needed for a complete system is included, i.e. fmt files, fonts, tfm files,
   macro packages etc.
 
 #### Disclaimer
