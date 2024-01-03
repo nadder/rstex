@@ -3,7 +3,7 @@
 ## rse-TeX
 **NEWS!** Recently added the long overdue implementation of e-TeX!
 The e-TeX extension is required to run LaTeX so this is a very welcome addition to the
-family of TeX programs. See the Readme.txt for instruction on how to setup LaTeX.
+family of TeX programs. See the `Readme.txt` for instruction on how to setup LaTeX.
 
 ## rsTeX
 This is a manual translation of [tex.web](https://ctan.org/pkg/tex) version 3.14159265 into standard C++.
@@ -28,11 +28,11 @@ par with the time it took to type it in. Had I been more systematic in my approa
 and introduced more asserts and checks from the beginning the debugging time would
 have been considerably shorter.
 
-The program consists of two files rstex.h.pre and rstex.cpp.pre.
-These two files must be preprocessed by another program which converts all
+The program consists of two files `rstex.h.pre` and `rstex.cpp.pre`.
+These two files must be preprocessed by another program `CreatePoolFile` which converts all
 special strings in the program to numbers (as the original tangle program does),
 and makes a string pool file.
-After this preprocessing we are left with three files rstex.h, rstex.cpp, and tex.pool.
+After this preprocessing we are left with three files: `rstex.h`, `rstex.cpp`, and `tex.pool`.
 rstex.cpp can then be compiled by any non-ancient C++ compiler, and the executable can be run.
 
 #### Notable omissions
@@ -50,7 +50,8 @@ It is not meant to be a working typesetting system, it is meant for educational 
 for those who want to understand how this complex software works.
 
 ## rsMetaFont
-I have also translated [mf.web](https://ctan.org/pkg/metafont) for Windows and Unix but currently only the Windows version supports graphical screen output.
+I have also translated [mf.web](https://ctan.org/pkg/metafont) for Windows and Unix but currently
+only the Windows version supports graphical screen output.
 
 ## TeXFontViewerQt
 A small program to view the original TeX font bitmaps (PXL, GF, PK, or MF).

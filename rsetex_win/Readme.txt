@@ -19,5 +19,5 @@ To use LaTeX the following procedure may be followed:
 
 Tips:
 * If rsetex complains about not finding a file, locate the file on your disc
-  and add the path the appropriate environment variable.
+  and add the path to the appropriate environment variable.
 * If rsetex complains about capacity exceeded, locate the relevant parameter in rsetex.h and increase it.
