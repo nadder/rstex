@@ -9,10 +9,10 @@ To use LaTeX the following procedure may be followed:
             /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/knuth-lib:
             /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/latex-fonts
             
-* Run ">rsetex *latex.ltx"
+* Run "./rsetex *latex.ltx"
   (you may need to escape the asterisk depending on shell)
 * The previous step should create the file "latex.fmt" in your current directory.
-* Run ">rsetex -format=latex mysimplelatex.tex" with any simple latex document.
+* Run "./rsetex -format=latex mysimplelatex.tex" with any simple latex document.
 * If everything works, no errors should be printed, and the files "mysimplelatex.dvi" and
   "mysimplelatex.log" should be created.
 * Celebrate!
