@@ -30,7 +30,7 @@ struct Array
 };
 
 // 2
-#define banner "This is rsTeX, Version 1.1.7 for Win" // printed when rsTeX starts
+#define banner "This is rsTeX, Version 1.1.8 for Win (TeX 3.14159265)" // printed when rsTeX starts
 
 // 36
 #define loc cur_input.loc_field // location of first unread character in buffer
