@@ -7,7 +7,7 @@ To use LaTeX the following procedure may be followed:
              /usr/local/texlive/2018/texmf-dist/tex/generic/hyphen
  - TEXFONTS=/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm:
             /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/knuth-lib:
-            /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/latex-fonts:
+            /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/latex-fonts
             
 * Run ">rsetex *latex.ltx"
   (you may need to escape the asterisk depending on shell)
