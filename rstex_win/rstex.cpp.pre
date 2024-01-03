@@ -11647,17 +11647,27 @@ void copypath(char *s1, char *s2, int n)
 	}
 }
 
-void set_paths()
+bool set_paths()
 {
 	char *envpath;
-	if ((envpath = getenv("TEXINPUTS")) != NULL)
-		copypath(input_path, envpath, MAX_INPUT_CHARS);
-	if ((envpath = getenv("TEXFONTS")) != NULL)
-		copypath(font_path, envpath, MAX_INPUT_CHARS);
-	if ((envpath = getenv("TEXFORMATS")) != NULL)
-		copypath(format_path, envpath, MAX_INPUT_CHARS);
-	if ((envpath = getenv("TEXPOOL")) != NULL)
-		copypath(pool_path, envpath, MAX_INPUT_CHARS);
+	bool ret = true;
+	if ((envpath = getenv("TEXINPUTS")) != NULL) {
+		ret = copypath(input_path, envpath, MAX_INPUT_CHARS);
+		if (!ret) return ret;
+	}
+	if ((envpath = getenv("TEXFONTS")) != NULL) {
+		ret = copypath(font_path, envpath, MAX_OTH_PATH_CHARS);
+		if (!ret) return ret;
+	}
+	if ((envpath = getenv("TEXFORMATS")) != NULL) {
+		ret = copypath(format_path, envpath, MAX_OTH_PATH_CHARS);
+		if (!ret) return ret;
+	}
+	if ((envpath = getenv("TEXPOOL")) != NULL) {
+		ret = copypath(pool_path, envpath, MAX_OTH_PATH_CHARS);
+		if (!ret) return ret;
+	}
+	return true;
 }
 
 void pack_real_name_of_file(char **cpp)
@@ -13077,7 +13087,7 @@ void show_activities()
 			break;
 		case 2:
 			if (a.an_int != null) {
-				print(TEX_STRING("this will be denominator of:")); show_box(a.an_int);
+				print(TEX_STRING("this will begin denominator of:")); show_box(a.an_int);
 			}
 			break;
 		}
@@ -17400,7 +17410,8 @@ int main(int argc, char **argv)
 	// t_open_out open the terminal for ouput
 	// no need to do this in C
 
-	set_paths();
+	bool ret = set_paths();
+	if (!ret) exit(1);
 	
 	#pragma region <check the constant values for consistency 14>
 	bad = 0;

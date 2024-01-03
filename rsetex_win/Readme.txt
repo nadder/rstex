@@ -1,14 +1,14 @@
 This is a version of rstex_win with e-tex extensions.
 
 To use LaTeX the following procedure may be followed:
-* Download the LaTeX files, e.g. TeXLive.
+* Download the LaTeX files from a TeX distribution, e.g. TeXLive.
 * Set the environment variables pointing to the LaTeX files e.g.
  - TEXINPUTS=.;E:\texlive\2018\texmf-dist\tex\latex\base;
-             E:\texlive\2018\texmf-var\tex\generic\config
+             E:\texlive\2018\texmf-dist\tex\generic\hyphen
  - TEXFONTS=E:\texlive\2018\texmf-dist\fonts\tfm\public\cm;
             E:\texlive\2018\texmf-dist\fonts\tfm\public\knuth-lib;
-            E:\texlive\2018\texmf-dist\fonts\tfm\public\latex-fonts;
-            E:\texlive\2018\texmf-dist\tex\generic\hyphen
+            E:\texlive\2018\texmf-dist\fonts\tfm\public\latex-fonts
+
 * Run ">rsetex *latex.ltx"
   (you may need to escape the asterisk depending on shell)
 * The previous step should create the file "latex.fmt" in your current directory.

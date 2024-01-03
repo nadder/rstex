@@ -1,14 +1,14 @@
 This is a version of rstex_unix with e-tex extensions.
 
 To use LaTeX the following procedure may be followed:
-* Download the LaTeX files from TeX distribution, e.g. TeXLive.
+* Download the LaTeX files from a TeX distribution, e.g. TeXLive.
 * Set the environment variables pointing to the LaTeX files on your system e.g.
  - TEXINPUTS=.:/usr/local/texlive/2018/texmf-dist/tex/latex/base:
-             /usr/local/texlive/2018/texmf-var/tex/generic/config
+             /usr/local/texlive/2018/texmf-dist/tex/generic/hyphen
  - TEXFONTS=/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm:
             /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/knuth-lib:
             /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/latex-fonts:
-            /usr/local/texlive/2018/texmf-dist/tex/generic/hyphen
+            
 * Run ">rsetex *latex.ltx"
   (you may need to escape the asterisk depending on shell)
 * The previous step should create the file "latex.fmt" in your current directory.
