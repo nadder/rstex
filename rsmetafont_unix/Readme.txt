@@ -18,11 +18,11 @@ Now you can start rsmf with
 and start with plain preloaded.
 
 Another option is to run
-rsMetaFont plain input modes dump
+./rsmf plain input modes dump
 as before, but now compile the program with the defines NO_INIT and NO_DEBUG set.
 This will create a leaner version of Metafont unable to create base files.
 Now you can run this version with the command
-rsMetaFont '&plain'
+./rsmf '&plain'
 Traditionally this was the way Metafont was used to save some precious memory.
 
 
@@ -30,5 +30,5 @@ The following environment variables can be set e.g.:
 MFINPUTS=.:/home/local/mfinputs
 MFBASES=.:/home/local/mfbases
 MFPOOL=.
-MFEDIT=emacs +%d %s
+MFEDIT="emacs +%d %s"
 

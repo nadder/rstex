@@ -1,4 +1,4 @@
-This is a version of rstex_win with e-tex extensions.
+This is a version of rstex_win with e-TeX extensions.
 
 To use LaTeX the following procedure may be followed:
 * Download the LaTeX files from a TeX distribution, e.g. TeXLive.

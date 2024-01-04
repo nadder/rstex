@@ -3,7 +3,7 @@
 ## rse-TeX
 **NEWS!** Recently added the long overdue implementation of e-TeX!
 The e-TeX extension is required to run LaTeX so this is a very welcome addition to the
-family of TeX programs. See the `Readme.txt` for instruction on how to setup LaTeX.
+family of TeX programs. See the `Readme.txt` for instructions on how to setup LaTeX.
 
 ## rsTeX
 This is a manual translation of [tex.web](https://ctan.org/pkg/tex) version 3.14159265 into standard C++.

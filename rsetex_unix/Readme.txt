@@ -1,4 +1,4 @@
-This is a version of rstex_unix with e-tex extensions.
+This is a version of rstex_unix with e-TeX extensions.
 
 To use LaTeX the following procedure may be followed:
 * Download the LaTeX files from a TeX distribution, e.g. TeXLive.
@@ -10,7 +10,7 @@ To use LaTeX the following procedure may be followed:
             /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/latex-fonts
             
 * Run "./rsetex *latex.ltx"
-  (you may need to escape the asterisk depending on shell)
+  (you may need to escape the asterisk depending on your shell)
 * The previous step should create the file "latex.fmt" in your current directory.
 * Run "./rsetex -format=latex mysimplelatex.tex" with any simple latex document.
 * If everything works, no errors should be printed, and the files "mysimplelatex.dvi" and
