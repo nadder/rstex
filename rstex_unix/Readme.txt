@@ -8,7 +8,7 @@ The following extra features are added
   environment variable TEXEDIT, e.g. TEXEDIT="emacs +%d %s"
 
 To create a plain format file make sure you have plain.tex nearby and run:
-./rstex plain dump
+./rstex plain '\dump'
 
 Now you can run a texjob with
 ./rstex -format=plain mytexfile.tex
