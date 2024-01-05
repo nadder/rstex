@@ -153,9 +153,9 @@ alpha_file term_out = stdout; // the terminal as an output file
 ///////////////////////////////////////////////////////////////////////////
 // System specific addition on windows
 
-#define MAX_INPUT_CHARS 700
+#define MAX_INPUT_CHARS 1600
 #define default_input_path ".;c:\\mf\\src"
-#define MAX_OTH_PATH_CHARS 200
+#define MAX_OTH_PATH_CHARS 1600
 #define default_base_path ".;c:\\tex\\local\\mf"
 #define default_pool_path ".;c:\\tex\\local\\mf"
 

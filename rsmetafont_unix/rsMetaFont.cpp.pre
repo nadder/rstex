@@ -36,26 +36,35 @@ bool myodd(int c)
 ///////////////////////////////////////////////////////////////////////////
 // System specific addition for paths on unix
 
-void copypath(char *s1, char *s2, int n)
+bool copypath(char *s1, char *s2, int n)
 {
 	while ((*s1++ = *s2++) != 0) {
 		if (--n == 0) {
 			fprintf(stderr, "! Environment search path is too big\n");
 			*--s1 = 0;
-			return;
+			return false;
 		}
 	}
+	return true;
 }
 
-void set_paths()
+bool set_paths()
 {
 	char *envpath;
-	if ((envpath = getenv("MFINPUTS")) != NULL)
-		copypath(input_path, envpath, MAX_INPUT_CHARS);
-	if ((envpath = getenv("MFBASES")) != NULL)
-		copypath(base_path, envpath, MAX_INPUT_CHARS);
-	if ((envpath = getenv("MFPOOL")) != NULL)
-		copypath(pool_path, envpath, MAX_INPUT_CHARS);
+	bool ret = true;
+	if ((envpath = getenv("MFINPUTS")) != NULL) {
+		ret = copypath(input_path, envpath, MAX_INPUT_CHARS);
+		if (!ret) return ret;
+	}
+	if ((envpath = getenv("MFBASES")) != NULL) {
+		ret = copypath(base_path, envpath, MAX_OTH_CHARS);
+		if (!ret) return ret;
+	}
+	if ((envpath = getenv("MFPOOL")) != NULL) {
+		ret = copypath(pool_path, envpath, MAX_OTH_CHARS);
+		if (!ret) return ret;
+	}
+	return true;
 }
 
 void pack_real_name_of_file(char **cpp)
@@ -16572,7 +16581,8 @@ int main(int argc, char**argv)
 	//t_open_out();
 
 	// set environment variables
-	set_paths();
+	if (!set_paths())
+		exit(1);
 
 #pragma warning(push)
 #pragma warning(disable:4127)

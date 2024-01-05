@@ -397,9 +397,9 @@ const int no_operation = max_keyword+1;
 //const int read_access_mode=4; // ``read'' mode for test_access
 //const int write_access_mode=2; // ``write'' mode for test_access
 
-#define MAX_INPUT_CHARS 700
+#define MAX_INPUT_CHARS 1600
 #define default_input_path ".;..;c:\\tex\\local\\lib"
-#define MAX_OTH_PATH_CHARS 200
+#define MAX_OTH_PATH_CHARS 1600
 #define default_font_path "c:\\tex\\fonts"
 #define default_format_path ".;c:\\tex\\local\\tex"
 #define default_pool_path ".;c:\\tex\\local\\tex"

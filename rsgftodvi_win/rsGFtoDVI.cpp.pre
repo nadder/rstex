@@ -32,28 +32,39 @@ bool myodd(int c)
 ///////////////////////////////////////////////////////////////////////////
 // System specific addition for paths on windows
 
-void copypath(char *s1, char *s2, int n)
+bool copypath(char *s1, char *s2, int n)
 {
 	while ((*s1++ = *s2++) != 0) {
 		if (--n == 0) {
 			fprintf(stderr, "! Environment search path is too big\n");
 			*--s1 = 0;
-			return;
+			return false;
 		}
 	}
+	return true;
 }
 
-void set_paths()
+bool set_paths()
 {
 	char *envpath;
-	if ((envpath = getenv("TEXINPUTS")) != NULL)
-		copypath(input_path, envpath, MAX_INPUT_CHARS);
-	if ((envpath = getenv("TEXFONTS")) != NULL)
-		copypath(font_path, envpath, MAX_INPUT_CHARS);
-	if ((envpath = getenv("TEXFORMATS")) != NULL)
-		copypath(format_path, envpath, MAX_INPUT_CHARS);
-	if ((envpath = getenv("TEXPOOL")) != NULL)
-		copypath(pool_path, envpath, MAX_INPUT_CHARS);
+	bool ret = true;
+	if ((envpath = getenv("TEXINPUTS")) != NULL) {
+		ret = copypath(input_path, envpath, MAX_INPUT_CHARS);
+		if (!ret) return ret;
+	}
+	if ((envpath = getenv("TEXFONTS")) != NULL) {
+		ret = copypath(font_path, envpath, MAX_OTH_PATH_CHARS);
+		if (!ret) return ret;
+	}
+	if ((envpath = getenv("TEXFORMATS")) != NULL) {
+		ret = copypath(format_path, envpath, MAX_OTH_PATH_CHARS);
+		if (!ret) return ret;
+	}
+	if ((envpath = getenv("TEXPOOL")) != NULL) {
+		ret = copypath(pool_path, envpath, MAX_OTH_PATH_CHARS);
+		if (!ret) return ret;
+	}
+	return true;
 }
 
 void pack_real_name_of_file(char **cpp)
@@ -1527,6 +1538,9 @@ found:
 
 int main(int argc, char *argv[])
 {
+	if (!set_paths()) // {Initialize paths for TFM files from environment if needed}
+		exit(1);
+
 	initialize();
 
 
@@ -1576,8 +1590,6 @@ int main(int argc, char *argv[])
 
 
 	//@<Initialize the strings@>=
-
-	set_paths(); // {Initialize paths for TFM files from environment if needed}
 
 	start_gf(argc, argv); // open the input and output files
 
