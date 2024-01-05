@@ -1941,8 +1941,8 @@ word_file fmt_file;
 
 int myabs(int x);
 bool myodd(int c);
-void copypath(char *s1, char *s2, int n);
-void set_paths();
+bool copypath(char *s1, char *s2, int n);
+bool set_paths();
 void pack_real_name_of_file(char **cpp);
 bool test_access(int filepath);
 bool a_open_in(FILE **f, int path_specifier);
