@@ -9,11 +9,11 @@ matrix:
       dist: trusty
       os: linux
       script: 
-        - "$CXX -o cpf -std=c++17 CreatePoolFile/CreatePoolFile.cpp"
+        - "$CXX -o cpf CreatePoolFile/CreatePoolFile.cpp"
         - "./cpf TEX_STRING rstex.cpp.pre rstex.h.pre"
-        - "$CXX -o rstex -std=c++17 rstex.cpp"
+        - "$CXX -o rstex rstex.cpp"
         - "./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre"
-        - "$CXX -o rstex -std=c++17 rstex_unix/rstex.cpp"
+        - "$CXX -o rstex rstex_unix/rstex.cpp"
         - "cd TeXFontViewerQt"
         - "qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX TeXFontViewerQt.pro"
         - make
