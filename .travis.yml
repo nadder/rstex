@@ -28,7 +28,7 @@ matrix:
         - ./build.sh
         - "cd rstex_unix"
         - ./build.sh
-        - "cd TeXFontViewerQt"
+        - "cd ../TeXFontViewerQt"
         - ./build.sh
         - "cd .."
     - 
