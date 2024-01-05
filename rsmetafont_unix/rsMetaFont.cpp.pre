@@ -57,11 +57,11 @@ bool set_paths()
 		if (!ret) return ret;
 	}
 	if ((envpath = getenv("MFBASES")) != NULL) {
-		ret = copypath(base_path, envpath, MAX_OTH_CHARS);
+		ret = copypath(base_path, envpath, MAX_OTH_PATH_CHARS);
 		if (!ret) return ret;
 	}
 	if ((envpath = getenv("MFPOOL")) != NULL) {
-		ret = copypath(pool_path, envpath, MAX_OTH_CHARS);
+		ret = copypath(pool_path, envpath, MAX_OTH_PATH_CHARS);
 		if (!ret) return ret;
 	}
 	return true;
