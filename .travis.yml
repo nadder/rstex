@@ -9,14 +9,19 @@ matrix:
       dist: trusty
       os: linux
       script: 
-        - "$CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp"
-        - "./cpf TEX_STRING rstex.cpp.pre rstex.h.pre"
-        - "$CXX -o rstex -std=c++11 rstex.cpp"
-        - "./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre"
-        - "$CXX -o rstex -std=c++11 rstex_unix/rstex.cpp"
-        - "cd TeXFontViewerQt"
-        - "qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX TeXFontViewerQt.pro"
-        - make
+        - ./build.sh
+        - "cd rstex_unix"
+        - ./build.sh
+        - "cd ../TeXFontViewerQt"
+        - ./build.sh
+        - "cd ../rsetex_unix"
+        - ./build.sh
+        - "cd ../rsgftodvi_unix"
+        - ./build.sh
+        - "cd ../rsdvitype_unix"
+        - ./build.sh
+        - "cd ../rsmetafont_unix"
+        - ./build.sh
         - "cd .."
     - 
       before_install:
@@ -29,6 +34,14 @@ matrix:
         - "cd rstex_unix"
         - ./build.sh
         - "cd ../TeXFontViewerQt"
+        - ./build.sh
+        - "cd ../rsetex_unix"
+        - ./build.sh
+        - "cd ../rsgftodvi_unix"
+        - ./build.sh
+        - "cd ../rsdvitype_unix"
+        - ./build.sh
+        - "cd ../rsmetafont_unix"
         - ./build.sh
         - "cd .."
     - 
