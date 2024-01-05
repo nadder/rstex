@@ -11293,7 +11293,7 @@ void debug_help() //{routine to display various things}
 			breakpoint: m = 0; @{'BREAKPOINT'@}@\
 			*/
 			// Instead print something and continue
-			print_nl(TEX_STRING("Option 0 not implemented, sorry."));
+			printf("Option 0 not implemented, sorry.\n");
 			continue;
 		}
 		else {

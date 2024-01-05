@@ -11365,7 +11365,7 @@ void debug_help()
 			breakpoint: m = 0; @{'BREAKPOINT'@}@\
 			*/
 			// Instead print something and continue
-			print_nl(TEX_STRING("Option 0 not implemented, sorry."));
+			printf("Option 0 not implemented, sorry.\n");
 			continue;
 		}
 		else {
@@ -11642,9 +11642,10 @@ void copypath(char *s1, char *s2, int n)
 		if (--n == 0) {
 			fprintf(stderr, "! Environment search path is too big\n");
 			*--s1 = 0;
-			return;
+			return false;
 		}
 	}
+	return true;
 }
 
 bool set_paths()
