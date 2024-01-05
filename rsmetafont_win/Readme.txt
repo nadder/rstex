@@ -30,4 +30,4 @@ The following environment variables can be set e.g.:
 MFINPUTS=.;c:\mfinputs
 MFBASES=.;c:\mfbases
 MFPOOL=.
-MFEDIT="notepad++ -n%d "%s"
+MFEDIT="notepad++ -n%d %s"

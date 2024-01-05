@@ -3,38 +3,33 @@ language: cpp
 matrix: 
   include: 
     - 
-      before_install: 
-        - "sudo apt-get update"
+      before_install:
         - "sudo apt-get install qt5-default"
       compiler: gcc
       dist: trusty
       os: linux
       script: 
-        - "$CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp"
+        - "$CXX -o cpf -std=c++17 CreatePoolFile/CreatePoolFile.cpp"
         - "./cpf TEX_STRING rstex.cpp.pre rstex.h.pre"
-        - "$CXX -o rstex -std=c++11 rstex.cpp"
+        - "$CXX -o rstex -std=c++17 rstex.cpp"
         - "./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre"
-        - "$CXX -o rstex -std=c++11 rstex_unix/rstex.cpp"
+        - "$CXX -o rstex -std=c++17 rstex_unix/rstex.cpp"
         - "cd TeXFontViewerQt"
         - "qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX TeXFontViewerQt.pro"
         - make
         - "cd .."
     - 
-      before_install: 
-        - "sudo apt-get update"
+      before_install:
         - "sudo apt-get install qt5-default"
       compiler: clang
       dist: trusty
       os: linux
-      script: 
-        - "$CXX -o cpf -std=c++11 CreatePoolFile/CreatePoolFile.cpp"
-        - "./cpf TEX_STRING rstex.cpp.pre rstex.h.pre"
-        - "$CXX -o rstex -std=c++11 -Wno-dangling-else rstex.cpp"
-        - "./cpf TEX_STRING rstex_unix/rstex.cpp.pre rstex_unix/rstex.h.pre"
-        - "$CXX -o rstex -std=c++11 -Wno-dangling-else rstex_unix/rstex.cpp"
+      script:
+        - ./build.sh
+        - "cd rstex_unix"
+        - ./build.sh
         - "cd TeXFontViewerQt"
-        - "qmake QMAKE_CXX=$CXX QMAKE_LINK=$CXX QMAKE_CXXFLAGS+=-Wno-inconsistent-missing-override TeXFontViewerQt.pro"
-        - make
+        - ./build.sh
         - "cd .."
     - 
       os: windows
@@ -50,5 +45,7 @@ matrix:
         - "cd ../rstex_win"
         - ./build.bat
         - "cd ../rsdvitype_win"
+        - ./build.bat
+        - "cd ../rsetex_win"
         - ./build.bat
         - "cd .."
