@@ -9,6 +9,7 @@ No Unix version exists yet, this should be easy to add though.
 
 #include "rsGFtoDVI.h"
 #include <io.h>
+#include <cctype>
 
 int myabs(int x)
 {

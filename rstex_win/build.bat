@@ -2,5 +2,3 @@ call "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Auxiliar
 cl /EHsc /Fecpf /std:c++14 ..\CreatePoolFile\CreatePoolFile.cpp
 cpf TEX_STRING rstex.cpp.pre rstex.h.pre
 cl /EHsc rstex.cpp
-echo "errorcode"
-echo %errorlevel%
