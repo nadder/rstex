@@ -24,7 +24,7 @@ int myabs(int x)
 {
 	// overflow check
 	if (x == INT_MIN && -(INT_MIN + 1) == INT_MAX) {
-		fprintf(stederr, "! Overflow myabs.\n");
+		fprintf(stderr, "! Overflow myabs.\n");
 		exit(1);
 	}
 	///////////////////////
@@ -2822,7 +2822,7 @@ void show_node_list(int p)
 							// Check for overflow
 							float ftemp = round(unity*g);
 							if(ftemp > 2147483583 || ftemp < -2147483583) {
-								fprintf(stederr, "! Overflow in 186.\n");
+								fprintf(stderr, "! Overflow in 186.\n");
 								exit(1);
 							}
 							/////////////////////////
@@ -6168,7 +6168,7 @@ void fin_align()
 								// Check for overflow
 								float ftemp = round(_float(glue_set(p)) * stretch(v));
 								if(ftemp > 2147483583 || ftemp < -2147483583) {
-									fprintf(stederr, "! Overflow in 809.\n");
+									fprintf(stderr, "! Overflow in 809.\n");
 									exit(1);
 								}
 								/////////////////////////
@@ -6182,7 +6182,7 @@ void fin_align()
 								// Check for overflow
 								float ftemp = round(_float(glue_set(p)) * shrink(v));
 								if(ftemp > 2147483583 || ftemp < -2147483583) {
-									fprintf(stederr, "! Overflow in 809.\n");
+									fprintf(stderr, "! Overflow in 809.\n");
 									exit(1);
 								}
 								/////////////////////////
@@ -8068,7 +8068,7 @@ void scan_dimen(bool mu, bool inf, bool shortcut)
 					
 					// overflow check
 					if (info(p) > 255) {
-						fprintf(stederr, "! Overflow in 452\n");
+						fprintf(stderr, "! Overflow in 452\n");
 						exit(1);
 					}
 					//////////////////
@@ -10125,7 +10125,7 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
 
 	// overflow check
 	if (bc < 0 || bc > 255 || ec < 0 || ec > 255) {
-		fprintf(stederr, "! Overflow in 576\n");
+		fprintf(stderr, "! Overflow in 576\n");
 		exit(1);
 	}
 	/////////////////
@@ -12645,7 +12645,7 @@ void new_interaction()
 	
 	// Overflow check
 	if (cur_chr > 255) {
-		fprintf(stederr, "! Overflow in 1265\n");
+		fprintf(stderr, "! Overflow in 1265\n");
 		exit(1);
 	}
 	///////////////////
@@ -14163,7 +14163,7 @@ void append_kern()
 	
 	// overflow check
 	if (cur_chr > 255) {
-		fprintf(stederr, "! Overflow assignment append_kern\n");
+		fprintf(stderr, "! Overflow assignment append_kern\n");
 		exit(1);
 	}
 	//--------
@@ -14524,7 +14524,7 @@ void open_or_close_in()
 	
 	// overflow check
 	if (cur_chr > 255) {
-		fprintf(stederr, "! Overflow assignment open_or_close_in\n");
+		fprintf(stderr, "! Overflow assignment open_or_close_in\n");
 		exit(1);
 	}
 	// ----
@@ -14552,7 +14552,7 @@ void issue_message()
 
 	// overflow check
 	if (cur_chr > 255) {
-		fprintf(stederr, "! Overflow assignment issue_message\n");
+		fprintf(stderr, "! Overflow assignment issue_message\n");
 		exit(1);
 	}
 	//////////////////
@@ -14765,7 +14765,7 @@ void math_limit_switch()
 {
 	// overflow check
 	if (cur_chr > 255) {
-		fprintf(stederr, "! Overflow assignment math_limit_switch\n");
+		fprintf(stderr, "! Overflow assignment math_limit_switch\n");
 		exit(1);
 	}
 	////////////////
@@ -16726,7 +16726,7 @@ bool fin_col()
 
 			//overflow check
 			if (n > 255) {
-				fprintf(stederr, "! Overflow assignment fin_col 796\n");
+				fprintf(stderr, "! Overflow assignment fin_col 796\n");
 				exit(1);
 			}
 			//--------------------------
@@ -17149,7 +17149,7 @@ reswitch:
 	case mmode+math_comp:
 		// overflow check
 		if (cur_chr > 255) {
-			fprintf(stederr, "! Overflow assignment 1158\n");
+			fprintf(stderr, "! Overflow assignment 1158\n");
 			exit(1);
 		}
 		//////////////////
@@ -17310,7 +17310,7 @@ main_loop:
 	
 	// overflow check
 	if (cur_l > 255) {
-		fprintf(stederr, "! Overflow assignment 1034\n");
+		fprintf(stderr, "! Overflow assignment 1034\n");
 		exit(1);
 	}
 	///////////////
@@ -17344,7 +17344,7 @@ main_loop_move_plus2:
 	
 		// Overflow check
 		if (cur_chr > 255) {
-			fprintf(stederr, "! Overflow char_warning1 1036\n");
+			fprintf(stderr, "! Overflow char_warning1 1036\n");
 			exit(1);
 		}
 		//////////////
@@ -17356,7 +17356,7 @@ main_loop_move_plus2:
 	
 		// Overflow check
 		if (cur_chr > 255) {
-			fprintf(stederr, "! Overflow char_warning2 1036\n");
+			fprintf(stderr, "! Overflow char_warning2 1036\n");
 			exit(1);
 		}
 		////////////////
@@ -17387,7 +17387,7 @@ main_loop_lookahead_plus1:
 
 	// overflow check
 	if (cur_r > 255) {
-		fprintf(stederr, "! Overflow assignment 1038\n");
+		fprintf(stderr, "! Overflow assignment 1038\n");
 		exit(1);
 	}
 	////////////////
@@ -18164,7 +18164,7 @@ void make_accent()
 		if (cur_cmd == letter || cur_cmd == other_char || cur_cmd == char_given) {
 			// overflow check
 			if (cur_chr > 255) {
-				fprintf(stederr, "! Overflow assignment make_accent\n");
+				fprintf(stderr, "! Overflow assignment make_accent\n");
 				exit(1);
 			}
 			//////////////
@@ -18188,7 +18188,7 @@ void make_accent()
 			// Check for overflow
 			float ftemp = round((w - a) / 2.0f + h * t - x * s);
 			if(ftemp > 2147483583 || ftemp < -2147483583) {
-				fprintf(stederr, "! Overflow in 1125.\n");
+				fprintf(stderr, "! Overflow in 1125.\n");
 				exit(1);
 			}
 			/////////////////////////
@@ -19190,7 +19190,7 @@ mycontinue:
 
 									// overflow check
 									if (qi(hu[j + 1]) > 255) {
-										fprintf(stederr, "! Overflow assignment2 911\n");
+										fprintf(stderr, "! Overflow assignment2 911\n");
 										exit(1);
 									}
 									/////////////
@@ -19216,7 +19216,7 @@ mycontinue:
 							else {
 								// overflow check
 								if (cur_r > 255) {
-									fprintf(stederr, "! Overflow assignment4 911\n");
+									fprintf(stderr, "! Overflow assignment4 911\n");
 									exit(1);
 								}
 								/////////////

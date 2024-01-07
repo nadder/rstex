@@ -11189,7 +11189,7 @@ void open_log_file()
 	slow_print(base_ident);
 	print(TEX_STRING("  "));
 	print_int(sys_day); print_char(" ");
-	strcpy(months.get_c_string(), "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
+	strcpy(months.get_c_string(), "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC");
 	for (k = 3 * sys_month - 2; k <= 3 * sys_month; k++) wlog_c(months[k]);
 	print_char(TEX_STRING(" ")); print_int(sys_year); print_char(" ");
 	print_dd(sys_time / 60); print_char(TEX_STRING(":")); print_dd(sys_time % 60);
