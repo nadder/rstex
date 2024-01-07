@@ -6679,9 +6679,10 @@ mycontinue:
 					if (base_ptr > 0)
 						if (input_stack[base_ptr].name_field >= 256)
 						{
-							ed_name_start = str_start[edit_file.name_field];
-							ed_name_length = str_start[edit_file.name_field+1] - str_start[edit_file.name_field];
-							edit_line = line;
+							print_nl(TEX_STRING("You want to edit file "));
+							slow_print(input_stack[base_ptr].name_field);
+							print(TEX_STRING(" at line ")); print_int(line);
+							interaction = scroll_mode;
 							jump_out();
 						}
 					break;
