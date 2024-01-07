@@ -30,7 +30,7 @@ struct Array
 };
 
 // 2
-#define banner "This is rse-TeX, Version 1.0.0 for Win (e-TeX 3.141592653-2.6)" // printed when rsTeX starts
+#define banner "This is rse-TeX, Version 1.1 for Win (e-TeX 3.141592653-2.6)" // printed when rsTeX starts
 
 int expand_depth_count;
 
@@ -72,8 +72,8 @@ const int max_strings = 30000; // Maximum number of strings; must not exceed max
 const int string_vacancies = 20000; // The minimum number of characters that should be available for the user's
                                    // control sequences and font names, after rsTeX's own error messages are stored
 const int pool_size = 300000; // Maximum number of characters in strings, including all error messages and help texts,
-                             // and the names of all fonts and control sequences; must exceed string_vacancies by the
-							 // total length of rsTeX's own strings, which is currently about 23000
+                              // and the names of all fonts and control sequences; must exceed string_vacancies by the
+                              // total length of rsTeX's own strings, which is currently about 23000
 const int save_size = 1200; // Space for saving values outside of current group; must be at most max_halfword
 const int trie_size = 8000; // Space for hyphenation patterns; should be larger for INITEX than it is in production
                             // versions of rsTeX
@@ -816,7 +816,7 @@ enum equiv_region5_code : halfword
 	output_penalty_code = 39, // penalty found at current page
 	max_dead_cycles_code = 40, // bound on consecutive dead cycles of output
 	hang_after_code = 41, // hanging indentation changes after this many lines
-	floating_penalty_code = 42, // penalty for insertions heldover after a split
+	floating_penalty_code = 42, // penalty for insertions held over after a split
 	global_defs_code = 43, // override \global specifications
 	cur_fam_code = 44, // current family
 	escape_char_code = 45, // escape character for token output
@@ -1494,6 +1494,8 @@ short shown_mode; // -mmode..mmode, most recent mode shown by \tracingcommands
 
 // 246
 int old_setting; // 0..max_selector
+
+int sys_time, sys_day, sys_month, sys_year; // {date and time supplied by external system}
 
 // 256
 #define next(n) (hash[n].lh) // link for coalesced lists
@@ -2407,7 +2409,7 @@ int cur_s; // current depth of output box nesting, initially -1
 				cur_glue = cur_glue+stretch(g);\
 				vet_glue(_float(glue_set(this_box))*cur_glue);\
 				cur_g = round(glue_temp);\
-		    }\
+			}\
 		}\
 		else if (shrink_order(g) == g_order)\
 		{\
@@ -2732,7 +2734,7 @@ int line_diff; // the difference between the current line number and the optimum
 
 // 892
 Array<int, 0, 65> hc; // word to be hyphenated
-small_number hn; // the number of positions occupied in hc
+int hn; // 0..64 the number of positions occupied in hc
 pointer ha;
 pointer hb; // nodes ha..hb should be replaced by the hyphenated result
 internal_font_number hf; // font number of the letters in hc
@@ -2963,7 +2965,7 @@ four_quarters main_j; // ligature/kern command
 font_index main_k; // index into font_info
 pointer main_p; // temporary register for list manipulation
 int main_s; // space factor value
-halfword bchar; // right boundary character of current font, or non_char
+halfword bchar; // boundary character of current font, or |non_char|
 halfword false_bchar; // nonexistent character matching bchar, or non_char
 bool cancel_boundary; // should the left boundary character be ignored?
 bool ins_disc; // should we insert a discretionary node?
@@ -3042,7 +3044,7 @@ const int mskip_code = 5; // identifies \mskip
 			else if (type(q) == math_node && subtype(q) == begin_M_code)\
 				fm = true;\
 		q = link(p);\
-    } while (!(q == tx));\
+	} while (!(q == tx));\
 	q = link(tx); link(p) = q; link(tx) = null;\
 	if (q == null)\
 		if (fm) confusion(TEX_STRING("tail1"));\
@@ -3288,9 +3290,9 @@ const int destroy_marks=3; //{action code for |final_cleanup|}
 #define set_sa_box(s) do {\
 	find_sa_element(box_val,cur_val,false);\
 	if (cur_ptr != null)\
-    {\
+	{\
 		sa_ptr(cur_ptr) = s; add_sa_ref(cur_ptr); delete_sa_ref(cur_ptr);\
-    }\
+	}\
 } while (0)
 
 const int show_groups = 4; // { \.{\\showgroups} }

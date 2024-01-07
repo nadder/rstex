@@ -24,7 +24,7 @@ int myabs(int x)
 {
 	// overflow check
 	if (x == INT_MIN && -(INT_MIN + 1) == INT_MAX) {
-		printf("Overflow myabs.\n");
+		fprintf(stderr, "! Overflow in myabs.\n");
 		exit(1);
 	}
 	///////////////////////
@@ -1560,7 +1560,7 @@ void print_cmd_chr(quarterword cmd, halfword chr_code)
 		switch (chr_code) {
 		case show_box_code: print_esc(TEX_STRING("showbox")); break;
 		case show_the_code: print_esc(TEX_STRING("showthe")); break;
-		case show_lists: print_esc(TEX_STRING("showlists")); break;
+		case show_lists_code: print_esc(TEX_STRING("showlists")); break;
 		default: print_esc(TEX_STRING("show")); break;
 		}
 		break;
@@ -2215,7 +2215,7 @@ void pause_for_instructions()
 			incr(selector);
 		print_err(TEX_STRING("Interruption"));
 		help3(TEX_STRING("You rang?"),
-			TEX_STRING("Try to insert some instructions for me (e.g.,`I\showlists'),"),
+			TEX_STRING("Try to insert an instruction for me (e.g., `I\showlists'),"),
 			TEX_STRING("unless you just want to quit by typing `X'."));
 		deletions_allowed = false;
 		error();
@@ -2654,7 +2654,7 @@ void show_node_list(int p)
 							// Check for overflow
 							float ftemp = round(unity*g);
 							if(ftemp > 2147483583 || ftemp < -2147483583) {
-								printf("Overflow in 186.\n");
+								fprintf(stderr, "! Overflow in 186.\n");
 								exit(1);
 							}
 							/////////////////////////
@@ -4396,7 +4396,7 @@ void fetch(pointer a)
 			cur_i = char_info(cur_f, cur_c);
 		else cur_i = null_character;
 		if (!char_exists(cur_i)) {
-			char_warning(cur_f, qo(cur_c)); math_type(a) = empty;
+			char_warning(cur_f, qo(cur_c)); math_type(a) = empty; cur_i = null_character;
 		}
 	}
 }
@@ -4648,7 +4648,6 @@ void mlist_to_hlist()
 			s = accent_noad_size;
 			break;
 		case fraction_noad:
-			t = inner_noad;
 			s = fraction_noad_size;
 			break;
 		case left_noad:
@@ -5384,7 +5383,7 @@ void fin_align()
 								// Check for overflow
 								float ftemp = round(_float(glue_set(p)) * stretch(v));
 								if(ftemp > 2147483583 || ftemp < -2147483583) {
-									printf("Overflow in 809.\n");
+									fprintf(stderr, "! Overflow in 809.\n");
 									exit(1);
 								}
 								/////////////////////////
@@ -5398,7 +5397,7 @@ void fin_align()
 								// Check for overflow
 								float ftemp = round(_float(glue_set(p)) * shrink(v));
 								if(ftemp > 2147483583 || ftemp < -2147483583) {
-									printf("Overflow in 809.\n");
+									fprintf(stderr, "! Overflow in 809.\n");
 									exit(1);
 								}
 								/////////////////////////
@@ -5580,7 +5579,7 @@ pointer id_lookup(int j, int l)
 			if (no_new_control_sequence)
 				p = undefined_control_sequence;
 			else 
-				#pragma region   <Insert a new control sequence after p, then make p point to it 260>
+				#pragma region <Insert a new control sequence after p, then make p point to it 260>
 			{
 				if (text(p) > 0) {
 					do {
@@ -6225,14 +6224,14 @@ void open_log_file()
 
 	#pragma region <Print the banner line, including the date and time 536>
 	wlog_s(banner); slow_print(format_ident); print(TEX_STRING("  "));
-	print_int(day); print_char(TEX_STRING(" "));
+	print_int(sys_day); print_char(TEX_STRING(" "));
 	strcpy(months, "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC");
 	months[36] = 0;
-	for (k = 3 * month - 2; k <= 3 * month; k++) wlog_c(months[k-1]);
+	for (k = 3 * sys_month - 2; k <= 3 * sys_month; k++) wlog_c(months[k-1]);
 	print_char(TEX_STRING(" "));
-	print_int(year); print_char(TEX_STRING(" "));
-	print_two(_time / 60); print_char(TEX_STRING(":"));
-	print_two(_time % 60);
+	print_int(sys_year); print_char(TEX_STRING(" "));
+	print_two(sys_time / 60); print_char(TEX_STRING(":"));
+	print_two(sys_time % 60);
 	#pragma endregion
 
 	input_stack[input_ptr] = cur_input;
@@ -6521,8 +6520,7 @@ void initialize()
 	for (k = TEX_STRING("A");
 		k <= TEX_STRING("Z"); k++) {
 		cat_code(k) = letter; 
-		cat_code(k + TEX_STRING("a") -
-			                            TEX_STRING("A")) = letter;
+		cat_code(k + TEX_STRING("a") - TEX_STRING("A")) = letter;
 		math_code(k) = hi(k + var_code + 0x100);
 		math_code(k + TEX_STRING("a") -
 			TEX_STRING("A")) = 
@@ -6622,6 +6620,7 @@ void error()
 		#pragma region <get users advise and return 83>
 		while (1) {
 mycontinue:
+			if (interaction != error_stop_mode)return;
 			clear_for_error_prompt();
 			prompt_input(TEX_STRING("? "));
 			if (last == first)
@@ -6674,12 +6673,14 @@ mycontinue:
 					//gubed
 
 				case TEX_STRING("E"):
-					if (base_ptr > 0) {
-						ed_name_start = str_start[edit_file.name_field];
-						ed_name_length = str_start[edit_file.name_field+1] - str_start[edit_file.name_field];
-						edit_line = line;
-						jump_out();
-					}
+					if (base_ptr > 0)
+						if (input_stack[base_ptr].name_field >= 256)
+						{
+							ed_name_start = str_start[edit_file.name_field];
+							ed_name_length = str_start[edit_file.name_field+1] - str_start[edit_file.name_field];
+							edit_line = line;
+							jump_out();
+						}
 					break;
 					
 				case TEX_STRING("H"):
@@ -6756,7 +6757,8 @@ mycontinue:
 				print_nl(TEX_STRING("R to run without stopping, Q to run quietly,"));
 				print_nl(TEX_STRING("I to insert something, "));
 				if (base_ptr > 0)
-					print(TEX_STRING("E to edit your file,"));
+					if (input_stack[base_ptr].name_field >= 256)
+						print(TEX_STRING("E to edit your file,"));
 				if (deletions_allowed)
 					print_nl(TEX_STRING("1 or ... or 9 to ignore the next 1 to 9 tokens of input,"));
 				print_nl(TEX_STRING("H for help, X to quit."));
@@ -7148,7 +7150,7 @@ void scan_dimen(bool mu, bool inf, bool shortcut)
 					
 					// overflow check
 					if (info(p) > 255) {
-						printf("overflow in 452\n");
+						fprintf(stderr, "! Overflow in 452\n");
 						exit(1);
 					}
 					//////////////////
@@ -8048,7 +8050,7 @@ void macro_call()
 			if (s != null) 
 				#pragma region <Tidy up the parameter just scanned and tuck it away 400>
 			{
-				if (m == 1 && info(p) < right_brace_limit && p != temp_head) {
+				if (m == 1 && info(p) < right_brace_limit) {
 					link(rbrace_ptr) = null; free_avail(p); p = link(temp_head);
 					pstack[n] = link(p); free_avail(p);
 				}
@@ -8550,14 +8552,16 @@ pointer scan_toks(bool macro_def, bool xpand)
 			{
 				s = match_token + cur_chr;
 				get_token();
-				if (cur_cmd == left_brace) {
+				if (cur_tok < left_brace_limit) {
 					hash_brace = cur_tok; store_new_token(cur_tok); store_new_token(end_match_token);
 					goto done;
 				}
 				if (t == zero_token + 9) {
 					print_err(TEX_STRING("You already have nine parameters"));
-					help1(TEX_STRING("I'm going to ignore the # sign you just used."));
+					help2(TEX_STRING("I'm going to ignore the # sign you just used,"),
+						TEX_STRING("as well as the token that followed it."));
 					error();
+					continue;
 				}
 				else {
 					incr(t);
@@ -8702,7 +8706,7 @@ void read_toks(int n, pointer r)
 		}
 			#pragma endregion
 		else
-			#pragma region <Input the next line from read_file[m] 486>
+			#pragma region <Input the next line of read_file[m] 486>
 		{
 			if (!input_ln(read_file[m], true)) {
 				a_close(read_file[m]); read_open[m] = closed;
@@ -8712,6 +8716,7 @@ void read_toks(int n, pointer r)
 					print_esc(TEX_STRING("read"));
 					help1(TEX_STRING("This \read has unbalanced braces."));
 					align_state = 1000000;
+					limit = 0;
 					error();
 				}
 			}
@@ -8985,7 +8990,7 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
 
 	// overflow check
 	if (bc < 0 || bc > 255 || ec < 0 || ec > 255) {
-		printf("overflow in 576\n");
+		fprintf(stderr, "! Overflow in 576\n");
 		exit(1);
 	}
 	/////////////////
@@ -10323,7 +10328,7 @@ void box_end(int box_context)
 				get_x_token();
 			} while (!(cur_cmd != spacer && cur_cmd != relax));
 			#pragma endregion
-			if ((cur_cmd == hskip && myabs(mode) != vmode) || (cur_cmd == vskip && myabs(mode) == vmode)) {
+			if ((cur_cmd == hskip && myabs(mode) != vmode)) {
 				append_glue(); subtype(tail) = box_context - (leader_flag - a_leaders);
 				leader_ptr(tail) = cur_box;
 			}
@@ -10440,7 +10445,8 @@ void close_files_and_terminate()
 			a_close(write_file[k]);
 	}
 	#pragma endregion
-
+	new_line_char = -1;
+#ifndef NO_STAT
 	if (tracing_stats > 0)
 		#pragma region <Output statistics about this job 1334>
 		if (log_opened) {
@@ -10507,7 +10513,7 @@ void close_files_and_terminate()
 			}
 		}
 		#pragma endregion
-
+#endif
 	wake_up_terminal();
 	
 	#pragma region <Finish the DVI file 642>
@@ -11210,7 +11216,7 @@ void new_interaction()
 	
 	// Overflow check
 	if (cur_chr > 255) {
-		printf("overflow in 1265\n");
+		fprintf(stderr, "! Overflow in 1265\n");
 		exit(1);
 	}
 	///////////////////
@@ -11262,10 +11268,10 @@ void fix_date_and_time()
 	time(&unixtime);
 	struct tm *tm_struct = localtime(&unixtime);
 	
-	_time = tm_struct->tm_hour*60+tm_struct->tm_min;
-	day = tm_struct->tm_mday;
-	month = tm_struct->tm_mon + 1;
-	year = 1900 + tm_struct->tm_year;
+	_time = sys_time = tm_struct->tm_hour*60 + tm_struct->tm_min;
+	day = sys_day = tm_struct->tm_mday;
+	month = sys_month = tm_struct->tm_mon + 1;
+	year = sys_year = 1900 + tm_struct->tm_year;
 }
 
 // 1257
@@ -11354,6 +11360,8 @@ common_ending:
 void debug_help()
 {
 	int k, l, m, n;
+	
+	clear_terminal();
 	while (true)
 	{
 		wake_up_terminal(); print_nl(TEX_STRING("debug # (-1 to exit):")); update_terminal(); fscanf(term_in, "%d", &m); //read(term_in, m);
@@ -11361,7 +11369,7 @@ void debug_help()
 		else if (m == 0)
 		{
 			/* NOTE: Do not know how this was used in Pascal Tex
-			goto breakpoint; @\ {go to every label at least once}
+			goto breakpoint; @\ {go to every declared label at least once}
 			breakpoint: m = 0; @{'BREAKPOINT'@}@\
 			*/
 			// Instead print something and continue
@@ -11386,7 +11394,7 @@ void debug_help()
 				case 10: slow_print(n); break;
 				case 11: check_mem(n > 0);  break; // {check wellformedness; print new busy locations if n > 0}
 				case 12: search_mem(n);  break; // {look for pointers to n}
-				case 13: fscanf(term_in, "%d", &l);   /*read(term_in, l);*/ print_cmd_chr(n, l);  break;
+				case 13: fscanf(term_in, "%d", &l); /*read(term_in, l);*/ print_cmd_chr(n, l);  break;
 				case 14: for (k = 0; k <= n; k++) print(buffer[k]);  break;
 				case 15: font_in_short_display = null_font; short_display(n);  break;
 				case 16: panicking = !panicking;  break;
@@ -11409,7 +11417,7 @@ void give_err_help()
 void final_cleanup()
 {
 	small_number c;
-	c = cur_chr;
+	c = cur_chr; if (c != 1) new_line_char = -1;
 	if (job_name == 0)
 		open_log_file();
 	while (input_ptr > 0) {
@@ -11636,7 +11644,7 @@ void scan_char_num()
 ///////////////////////////////////////////////////////////////////////////
 // System specific addition for paths on windows
 
-void copypath(char *s1, char *s2, int n)
+bool copypath(char *s1, char *s2, int n)
 {
 	while ((*s1++ = *s2++) != 0) {
 		if (--n == 0) {
@@ -12621,7 +12629,7 @@ void append_kern()
 	
 	// overflow check
 	if (cur_chr > 255) {
-		printf("Overflow assignment append_kern\n");
+		fprintf(stderr, "! Overflow assignment append_kern\n");
 		exit(1);
 	}
 	//--------
@@ -12949,7 +12957,7 @@ void open_or_close_in()
 	
 	// overflow check
 	if (cur_chr > 255) {
-		printf("Overflow assignment open_or_close_in\n");
+		fprintf(stderr, "! Overflow assignment open_or_close_in\n");
 		exit(1);
 	}
 	// ----
@@ -12977,7 +12985,7 @@ void issue_message()
 
 	// overflow check
 	if (cur_chr > 255) {
-		printf("Overflow assignment issue_message\n");
+		fprintf(stderr, "! Overflow assignment issue_message\n");
 		exit(1);
 	}
 	//////////////////
@@ -13190,7 +13198,7 @@ void math_limit_switch()
 {
 	// overflow check
 	if (cur_chr > 255) {
-		printf("Overflow assignment math_limit_switch\n");
+		fprintf(stderr, "! Overflow assignment math_limit_switch\n");
 		exit(1);
 	}
 	////////////////
@@ -13390,7 +13398,7 @@ void show_whatever()
 {
 	//pointer p; // This variable is not used
 	switch (cur_chr) {
-	case show_lists:
+	case show_lists_code:
 		begin_diagnostic();
 		show_activities();
 		break;
@@ -14056,6 +14064,7 @@ bool fin_col()
 			#pragma endregion
 
 			cur_loop = link(cur_loop); link(p) = new_glue(glue_ptr(cur_loop));
+			subtype(link(p)) = tab_skip_code+1;
 		}
 			#pragma endregion
 		else {
@@ -14102,7 +14111,7 @@ bool fin_col()
 
 			//overflow check
 			if (n > 255) {
-				printf("overflow assignment fin_col 796\n");
+				fprintf(stderr, "! Overflow assignment fin_col 796\n");
 				exit(1);
 			}
 			//--------------------------
@@ -14515,7 +14524,7 @@ reswitch:
 	case mmode+math_comp:
 		// overflow check
 		if (cur_chr > 255) {
-			printf("Overflow assignment 1158\n");
+			fprintf(stderr, "! Overflow assignment 1158\n");
 			exit(1);
 		}
 		//////////////////
@@ -14676,7 +14685,7 @@ main_loop:
 	
 	// overflow check
 	if (cur_l > 255) {
-		printf("Overflow assignment 1034\n");
+		fprintf(stderr, "! Overflow assignment 1034\n");
 		exit(1);
 	}
 	///////////////
@@ -14710,7 +14719,7 @@ main_loop_move_plus2:
 	
 		// Overflow check
 		if (cur_chr > 255) {
-			printf("overflow char_warning1 1036\n");
+			fprintf(stderr, "! Overflow char_warning1 1036\n");
 			exit(1);
 		}
 		//////////////
@@ -14722,7 +14731,7 @@ main_loop_move_plus2:
 	
 		// Overflow check
 		if (cur_chr > 255) {
-			printf("overflow char_warning2 1036\n");
+			fprintf(stderr, "! Overflow char_warning2 1036\n");
 			exit(1);
 		}
 		////////////////
@@ -14753,7 +14762,7 @@ main_loop_lookahead_plus1:
 
 	// overflow check
 	if (cur_r > 255) {
-		printf("Overflow assignment 1038\n");
+		fprintf(stderr, "! Overflow assignment 1038\n");
 		exit(1);
 	}
 	////////////////
@@ -15309,7 +15318,7 @@ void make_accent()
 		if (cur_cmd == letter || cur_cmd == other_char || cur_cmd == char_given) {
 			// overflow check
 			if (cur_chr > 255) {
-				printf("Overflow assignment make_accent\n");
+				fprintf(stderr, "! Overflow assignment make_accent\n");
 				exit(1);
 			}
 			//////////////
@@ -15333,7 +15342,7 @@ void make_accent()
 			// Check for overflow
 			float ftemp = round((w - a) / 2.0f + h * t - x * s);
 			if(ftemp > 2147483583 || ftemp < -2147483583) {
-				printf("Overflow in 1125.\n");
+				fprintf(stderr, "! Overflow in 1125.\n");
 				exit(1);
 			}
 			/////////////////////////
@@ -16180,7 +16189,7 @@ mycontinue:
 
 									// overflow check
 									if (qi(hu[j + 1]) > 255) {
-										printf("overflow assignment2 911\n");
+										fprintf(stderr, "! Overflow assignment2 911\n");
 										exit(1);
 									}
 									/////////////
@@ -16206,7 +16215,7 @@ mycontinue:
 							else {
 								// overflow check
 								if (cur_r > 255) {
-									printf("Overflow assignment4 911\n");
+									fprintf(stderr, "! Overflow assignment4 911\n");
 									exit(1);
 								}
 								/////////////
@@ -17103,7 +17112,7 @@ void init_prim()
 	primitive(TEX_STRING("show"), xray, show_code);
 	primitive(TEX_STRING("showbox"), xray, show_box_code);
 	primitive(TEX_STRING("showthe"), xray, show_the_code);
-	primitive(TEX_STRING("showlists"), xray, show_lists);
+	primitive(TEX_STRING("showlists"), xray, show_lists_code);
 
 	// 1344
 	primitive(TEX_STRING("openout"), extension, open_node);
@@ -17497,7 +17506,7 @@ int main(int argc, char **argv)
 			w_close(fmt_file);
 		}
 		if (!fmt_loaded) {
-			printf("! Error loading format file %s\n", formatname);
+			fprintf(stderr, "! Error loading format file %s\n", formatname);
 			goto final_end;
 		}
 	}

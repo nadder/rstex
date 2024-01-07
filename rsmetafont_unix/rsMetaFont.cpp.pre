@@ -20,7 +20,7 @@ int myabs(int x)
 {
 	// overflow check
 	if (x == INT_MIN && -(INT_MIN + 1) == INT_MAX) {
-		printf("Overflow myabs.\n");
+		fprintf(stderr, "! Overflow in myabs.\n");
 		exit(1);
 	}
 	///////////////////////
@@ -185,7 +185,7 @@ void call_edit(packed_ASCII_code *filename, int fnlength, int linenumber)
 				default:
 					*temp++ = '%';
 					*temp++ = c;
-					break;					
+					break;
 			}
 		}
 		else
@@ -1075,12 +1075,13 @@ void error() //{completes the job of error reporting}
 #endif
 				case TEX_STRING("E"):
 					if (file_ptr > 0)
-					{
-						ed_name_start = str_start[edit_file.full_name_field];
-						ed_name_length = str_start[edit_file.full_name_field+1] - str_start[edit_file.full_name_field];
-						edit_line = line;
-						jump_out();
-					}
+						if (input_stack[file_ptr].name_field >= 256
+						{
+							ed_name_start = str_start[edit_file.full_name_field];
+							ed_name_length = str_start[edit_file.full_name_field+1] - str_start[edit_file.full_name_field];
+							edit_line = line;
+							jump_out();
+						}
 					break;
 				case TEX_STRING("H"):
 					#pragma region <Print the help information and |goto continue|>
@@ -1156,7 +1157,9 @@ void error() //{completes the job of error reporting}
 			print(TEX_STRING("Type <return> to proceed, S to scroll future error messages,"));
 			print_nl(TEX_STRING("R to run without stopping, Q to run quietly,"));
 			print_nl(TEX_STRING("I to insert something, "));
-			if (file_ptr > 0) print(TEX_STRING("E to edit your file,"));
+			if (file_ptr > 0)
+				if (input_stack[file_ptr].name_field >= 256)
+					print(TEX_STRING("E to edit your file,"));
 			if (deletions_allowed)
 				print_nl(TEX_STRING("1 or ... or 9 to ignore the next 1 to 9 tokens of input,"));
 			print_nl(TEX_STRING("H for help, X to quit."));
@@ -1259,15 +1262,15 @@ void fix_date_and_time()
 	time(&unixtime);
 	struct tm *tm_struct = localtime(&unixtime);
 	
-	internal[_time] = tm_struct->tm_hour*60+tm_struct->tm_min;
-	internal[day] = tm_struct->tm_mday;
-	internal[month] = tm_struct->tm_mon + 1;
-	internal[year] = 1900 + tm_struct->tm_year;
+	sys_time = tm_struct->tm_hour*60+tm_struct->tm_min;
+	sys_day = tm_struct->tm_mday;
+	sys_month = tm_struct->tm_mon + 1;
+	sys_year = 1900 + tm_struct->tm_year;
 
-	internal[_time] = internal[_time] * unity; // minutes since midnight
-	internal[day] = internal[day] * unity; // fourth day of the month
-	internal[month] = internal[month] * unity; // seventh month of the year
-	internal[year] = internal[year] * unity; // Anno Domini
+	internal[_time] = sys_time * unity; // minutes since midnight
+	internal[day] = sys_day * unity; // day of the month
+	internal[month] = sys_month * unity; // month of the year
+	internal[year] = sys_year * unity; // Anno Domini
 }
 
 // 90
@@ -1295,7 +1298,7 @@ void pause_for_instructions()
 			selector++;
 		print_err(TEX_STRING("Interruption"));
 		help3(TEX_STRING("You rang?"),
-			TEX_STRING("Try to insert some instructions for me (e.g.,`I show x'),"),
+			TEX_STRING("Try to insert an instruction for me (e.g., `I show x;'),"),
 				TEX_STRING("unless you just want to quit by typing `X'."));
 		deletions_allowed = false;
 		error();
@@ -2324,7 +2327,8 @@ done1:
 		if (p >= lo_mem_max || p < mem_min) clobbered = true;
 		else if (rlink(p) >= lo_mem_max || rlink(p) < mem_min) clobbered = true;
 		else if (!is_empty(p) || node_size(p) < 2 || (p + node_size(p)) > lo_mem_max ||
-		          (llink(rlink(p)) != p)) clobbered = true;
+			(llink(rlink(p)) != p))
+			clobbered = true;
 		if (clobbered) {
 			print_nl(TEX_STRING("Double-AVAIL list clobbered at ")); print_int(q); goto done2;
 		}
@@ -6876,7 +6880,7 @@ void split_for_offset(pointer p, fraction t)
 quarterword halfword_to_quarterword(halfword n)
 {
 	if (n > max_quarterword || n < min_quarterword) {
-		fprintf(stderr, "Overflow half_word_to_quarterword\n");
+		fprintf(stderr, "! Overflow half_word_to_quarterword\n");
 		exit(1);
 	}
 	return (quarterword)n;
@@ -6886,7 +6890,7 @@ eight_bits halfword_to_eight_bits(halfword n)
 {
 	if (n > 255 || n < 0)
 	{
-		fprintf(stderr, "Overflow halfword_to_eight_bits\n");
+		fprintf(stderr, "! Overflow halfword_to_eight_bits\n");
 		exit(1);
 	}
 	return (eight_bits)n;
@@ -7016,7 +7020,7 @@ void fill_envelope(pointer spec_head)
 			k = 0; w = link(h); ww = knil(w);
 			mm0 = floor_unscaled(x_coord(p) + x_coord(w) - xy_corr[octant]);
 			mm1 = floor_unscaled(x_coord(q) + x_coord(ww) - xy_corr[octant]);
-			for (n = 0; n <= n1 - n0; n++) env_move[n] = mm0;
+			for (n = 0; n <= n1 - n0 - 1; n++) env_move[n] = mm0;
 			env_move[n1 - n0] = mm1; move_ptr = 0; m = mm0;
 			#pragma endregion
 			
@@ -8186,9 +8190,9 @@ void val_too_big(scaled x)
 	if (internal[warning_check] > 0) {
 		print_err(TEX_STRING("Value is too large (")); print_scaled(x); print_char(TEX_STRING(")"));
 		help4(TEX_STRING("The equation I just processed has given some variable"),
-		      TEX_STRING("a value of 4096 or more. Continue and I'll try to cope"),
-			  TEX_STRING("with that big value; but it might be dangerous."),
-			  TEX_STRING("(Set warningcheck:=0 to suppress this message.)")); error();
+			TEX_STRING("a value of 4096 or more. Continue and I'll try to cope"),
+			TEX_STRING("with that big value; but it might be dangerous."),
+			TEX_STRING("(Set warningcheck:=0 to suppress this message.)")); error();
 	}
 }
 
@@ -9631,7 +9635,7 @@ void expand()
 				else if (cur_cmd != semicolon)
 				{
 					missing_err(TEX_STRING(";"));
-					help2(TEX_STRING("After `exitif <boolean exp>' I expect to see a semicolon."),
+					help2(TEX_STRING("After `exitif <boolean expr>' I expect to see a semicolon."),
 					TEX_STRING("I shall pretend that one was there.")); back_error();
 				}
 			}	
@@ -9712,7 +9716,7 @@ void get_x_next()
 // 720
 void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
 {
-	//{invokes a user-defined control sequence}
+	//{invokes a user-defined sequence of commands}
 	pointer r; //{current node in the macro's token list}
 	pointer p,q; //{for list manipulation}
 	int n; //{the number of arguments}
@@ -10067,7 +10071,8 @@ void check_colon()
 	if (cur_cmd != colon) {
 		missing_err(TEX_STRING(":"));
 		help2(TEX_STRING("There should've been a colon after the condition."),
-		      TEX_STRING("I shall pretend that one was there.")); back_error();
+			TEX_STRING("I shall pretend that one was there."));
+		back_error();
 	}
 }
 
@@ -10547,13 +10552,14 @@ void open_log_file()
 
 
 	#pragma region <Print the banner line, including the date and time 790>
-	wlog_s(banner); slow_print(base_ident); print(TEX_STRING("  ")); print_int(round_unscaled(internal[day]));
-	print_char(TEX_STRING(" ")); strcpy(months.get_c_str(), "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC");
-
-	m = round_unscaled(internal[month]);
-	for (k = 3 * m - 2; k <= 3 * m; k++) wlog_c(months[k]);
-	print_char(TEX_STRING(" "));print_int(round_unscaled(internal[year])); print_char(TEX_STRING(" "));
-	m = round_unscaled(internal[_time]);print_dd(m / 60); print_char(TEX_STRING(":")); print_dd(m % 60);
+	wlog_s(banner);
+	slow_print(base_ident);
+	print(TEX_STRING("  "));
+	print_int(sys_day); print_char(" ");
+	strcpy(months.get_c_string(), "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
+	for (k = 3 * sys_month - 2; k <= 3 * sys_month; k++) wlog(months[k]);
+	print_char(TEX_STRING(" ")); print_int(sys_year); print_char(" ");
+	print_dd(sys_time / 60); print_char(TEX_STRING(":")); print_dd(sys_time % 60);
 	#pragma endregion
 
 	input_stack[input_ptr] = cur_input; // make sure bottom level is in memory
@@ -10575,8 +10581,8 @@ void start_input() // METAFONT will input something
 	if (token_state) {
 		print_err(TEX_STRING("File names can't appear within macros"));
 		help3(TEX_STRING("Sorry...I've converted what follows to tokens,"),
-		      TEX_STRING("possibly garbaging the name you gave."),
-			  TEX_STRING("Please delete the tokens and insert the name again."));
+			TEX_STRING("possibly garbaging the name you gave."),
+			TEX_STRING("Please delete the tokens and insert the name again."));
 		error();
 	}
 	if (file_state) scan_file_name();
@@ -10608,7 +10614,10 @@ done:
 	if (term_offset + length(name) > max_print_line - 2) print_ln();
 	else if (term_offset > 0 || file_offset > 0) print_char(TEX_STRING(" "));
 	print_char(TEX_STRING("(")); open_parens++; slow_print(name); update_terminal();
-	
+	if (name == str_ptr - 1)// {conserve string pool space (but see note above)}
+	{
+		flush_string(name); name = cur_name;
+	}
 	#pragma region <Read the first line of the new file 794>
 	line = 1;
 	input_ln(cur_file, false);
@@ -14114,7 +14123,8 @@ void main_control()
 		if (cur_cmd == end_group) {
 			print_err(TEX_STRING("Extra `endgroup'"));
 			help2(TEX_STRING("I'm not currently working on a `begingroup',"),
-			      TEX_STRING("so I had better not try to end anything.")); flush_error(0);
+				TEX_STRING("so I had better not try to end anything."));
+			flush_error(0);
 		}
 	} while (!(cur_cmd == stop));
 }
@@ -15194,7 +15204,7 @@ void do_tfm_command()
 				if (cur_cmd != colon)
 				{
 					missing_err(TEX_STRING(":"));
-					help1(TEX_STRING("A colon should follow a headerbyte or fontinfo location."));
+					help1(TEX_STRING("A colon should follow a headerbyte or fontdimen location."));
 					back_error();
 				}
 				if (c == header_byte_code)
@@ -16530,8 +16540,8 @@ void final_cleanup()
 #ifndef NO_DEBUG
 void debug_help() //{routine to display various things}
 {
-
 	int k, l, m, n;
+	clear_terminal();
 	while (true)
 	{
 		wake_up_terminal(); print_nl(TEX_STRING("debug # (-1 to exit):")); update_terminal(); std::cin >> m; //read(term_in, m);
@@ -16539,7 +16549,7 @@ void debug_help() //{routine to display various things}
 		else if (m == 0)
 		{
 			/* NOTE: This was used to break into Knuth's Pascal debugger
-			goto breakpoint; @\ {go to every label at least once}
+			goto breakpoint; @\ {go to every declared label at least once}
 			breakpoint: m = 0; @{'BREAKPOINT'@}@\
 			*/
 			// Instead print something and continue
@@ -16562,7 +16572,7 @@ void debug_help() //{routine to display various things}
 				case 10: slow_print(n); break;
 				case 11: check_mem(n > 0);  break; // {check wellformedness; print new busy locations if n > 0}
 				case 12: search_mem(n);  break; // {look for pointers to n}
-				case 13: std::cin >> l;   /*read(term_in, l);*/ print_cmd_mod(n, l);  break;
+				case 13: std::cin >> l; /*read(term_in, l);*/ print_cmd_mod(n, l);  break;
 				case 14: for (k = 0; k <= n; k++) print(buffer[k]);  break;
 				case 15: panicking = !panicking;  break;
 				#pragma endregion
@@ -16678,7 +16688,7 @@ int main(int argc, char**argv)
 			w_close(base_file);
 		}
 		if (!base_loaded) {
-			printf("! Error loading base file %s\n", basename);
+			fprintf(stderr, "! Error loading base file %s\n", basename);
 			goto final_end;
 		}
 	}
@@ -16727,7 +16737,7 @@ int main(int argc, char**argv)
 		while (loc < limit && buffer[loc] == TEX_STRING(" ")) loc++;
 	}
 	buffer[limit] = TEX_STRING("%");
-	fix_date_and_time(); init_randoms((internal[_time] / unity) + internal[day]);
+	fix_date_and_time(); init_randoms(sys_time + sys_day*unity);
 
 	#pragma region <Initialize the print selector based on interaction 70>
 	if (interaction == batch_mode) selector = no_print; else selector = term_only;

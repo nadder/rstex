@@ -46,7 +46,7 @@ struct Array
 
 
 // 2
-#define banner "This is rsMETAFONT, Version 1.2 Unix" // printed when METAFONT starts
+#define banner "This is rsMETAFONT, Version 1.3 Unix (METAFONT 2.71828182)" // printed when METAFONT starts
 
 // 11
 const int mem_max = 500000;
@@ -869,7 +869,7 @@ enum internal_params
 	fillin=38, //{extra darkness of diagonal lines}
 	turning_check=39, //{controls reorientation of clockwise paths}
 	warning_check=40, //{controls error message when variable value is large}
-	boundary_char=41, //{the right boundary character for ligatures}
+	boundary_char=41, //{the boundary character for ligatures}
 	max_given_internal=41,
 };
 
@@ -882,6 +882,10 @@ int int_ptr; // max_given_internal..max_internal, the maximum internal quantity 
 
 // 196
 int old_setting; // 0..max_selector
+
+
+int sys_time, sys_day, sys_month, sys_year; //{date and time supplied by external system}
+
 
 // 198
 enum enum_char_class {
@@ -1429,7 +1433,7 @@ int serial_no; // the most recent serial number, times s_scale
 #define dep_list(n) link(value_loc(n)) // half of the value in a dependent variable
 #define prev_dep(n) info(value_loc(n)) // the other half; makes a doubly linked list
 const int dep_node_size = 2; // the number of words per dependency node
-			   
+
 // 592
 const int coef_bound = 04525252525; // fraction approximation to 7/3
 const int independent_needing_fix = 0;
@@ -1756,7 +1760,7 @@ Array<scaled, 0, max_kerns> kern; // distinct kerning amounts
 int nk; // 0..max_kerns, the number fo distinct kerns so far
 Array<four_quarters, 0, 255> exten; // extensible character recipes
 int ne; // 0..256, the number fo extensible characters so far
-Array<scaled, 1, max_font_dimen> param; // fontinfo parameters
+Array<scaled, 1, max_font_dimen> param; // fontdimen parameters
 int np; // 0.. max_font_dimen, the largest fontinfo parameter specified so far
 int nw, nh, nd, ni; // 0..256, sizes of TFM subtables
 Array<int, 0, 255> skip_table; // 0..lig_table_size, local label status
