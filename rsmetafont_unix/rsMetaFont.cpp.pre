@@ -1075,7 +1075,7 @@ void error() //{completes the job of error reporting}
 #endif
 				case TEX_STRING("E"):
 					if (file_ptr > 0)
-						if (input_stack[file_ptr].name_field >= 256
+						if (input_stack[file_ptr].name_field >= 256)
 						{
 							ed_name_start = str_start[edit_file.full_name_field];
 							ed_name_length = str_start[edit_file.full_name_field+1] - str_start[edit_file.full_name_field];
