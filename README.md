@@ -6,7 +6,7 @@ The e-TeX extension is required to run LaTeX so this is a very welcome addition 
 family of TeX programs. See the `Readme.txt` for instructions on how to setup LaTeX.
 
 ## rsTeX
-This is a manual translation of [tex.web](https://ctan.org/pkg/tex) version 3.14159265 into standard C++.
+This is a manual translation of [tex.web](https://ctan.org/pkg/tex) version 3.141592653 into standard C++.
 Mostly it's a direct translation of the original pascal source with very minimal changes.
 The amount of C++ (that is not also C) used is very minimal. Notably I added an array
 class to keep the same indexing as in the original and to also get boundschecking.
