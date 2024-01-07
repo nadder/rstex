@@ -15944,7 +15944,6 @@ done:
 
 }
 
-blahaasdf
 // 826
 pointer finite_shrink(pointer p)
 {
