@@ -15953,6 +15953,9 @@ pointer finite_shrink(pointer p)
 	pointer q;
 	if (no_shrink_error_yet) {
 		no_shrink_error_yet = false;
+#ifndef NO_STAT
+		if (tracing_paragraphs > 0) end_diagnostic(true);
+#endif		
 		print_err(TEX_STRING("Infinite glue shrinkage found in a paragraph"));
 		help5(TEX_STRING("The paragraph just ended includes some glue that has"),
 			TEX_STRING("infinite shrinkability, e.g., `\hskip 0pt minus 1fil'."),
@@ -15960,6 +15963,9 @@ pointer finite_shrink(pointer p)
 			TEX_STRING("of any length to fit on one line. But it's safe to proceed,"),
 			TEX_STRING("since the offensive shrinkability has been made finite."));
 		error();
+#ifndef NO_STAT
+		if (tracing_paragraphs > 0) begin_diagnostic();
+#endif
 	}
 	q = new_spec(p); shrink_order(q) = normal; delete_glue_ref(p);
 	return q;
