@@ -43,6 +43,8 @@ matrix:
         - ./build.sh
         - "cd ../rsmetafont_unix"
         - ./build.sh
+        - "cd ../rsdvitype_unix"
+        - ./build.sh
         - "cd .."
     - 
       os: windows
@@ -60,5 +62,7 @@ matrix:
         - "cd ../rsdvitype_win"
         - ./build.bat
         - "cd ../rsetex_win"
+        - ./build.bat
+        - "cd ../rsdvitype_win"
         - ./build.bat
         - "cd .."

@@ -9,6 +9,7 @@ No Unix version yet, should be easy to add though.
 
 #include <cstring>
 #include <cstdlib>
+#include <cctype>
 #include <io.h>
 #include "rsDviType.h"
 
@@ -87,7 +88,7 @@ int myabs(int x)
 {
 	// overflow check
 	if (x == INT_MIN && -(INT_MIN + 1) == INT_MAX) {
-		fprintf(stederr, "! Overflow myabs.\n");
+		fprintf(stderr, "! Overflow in myabs.\n");
 		exit(1);
 	}
 	///////////////////////

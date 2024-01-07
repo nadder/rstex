@@ -9,6 +9,7 @@ This is the Unix specific version of rsdvitype.
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+#include <cctype>
 #include <unistd.h>
 #include <climits>
 #include <cmath>
@@ -89,7 +90,7 @@ int myabs(int x)
 {
 	// overflow check
 	if (x == INT_MIN && -(INT_MIN + 1) == INT_MAX) {
-		printf("Overflow myabs.\n");
+		fprintf(stderr, "! Overflow in myabs.\n");
 		exit(1);
 	}
 	///////////////////////
