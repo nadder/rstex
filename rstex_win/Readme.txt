@@ -7,9 +7,18 @@ The following extra features are added
 * When e is pressed in response to an error message, brings up editor using default or
   environment variable TEXEDIT, e.g. TEXEDIT="emacs +%d %s"
 
-To create a plain format file make sure you have plain.tex nearby and run:
+To create a plain format file you must:
+1. Download the files needed by plain.tex.
+2. Set the environment paths correctly. On a TeXLive install it may look like this e.g.:
+  TEXINPUTS=.;E:\texlive\2018\texmf-dist\tex\plain\base;E:\texlive\2018\texmf-dist\tex\generic\hyphen
+  TEXFONTS=E:\texlive\2018\texmf-dist\fonts\tfm\public\cm;E:\texlive\2018\texmf-dist\fonts\tfm\public\knuth-lib
+
+Now you can create a plain format by running:
+
 "rstex plain \dump"
 
-Now you can run a texjob with
+From now on, you can run a texjob with:
+
 "rstex -format=plain mytexfile.tex"
-to start with plain preloaded.
+
+to start rsTeX with plain preloaded.
