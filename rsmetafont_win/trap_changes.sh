@@ -1,8 +1,8 @@
 #!/bin/bash
-# after running cpf on the .pre files you can run this script to make changes suitable for metafont trap test
-# see https://ctan.org/tex-archive/systems/knuth/dist/mf for instruction on how to run the test
-# The capsule numbers will show up wrong in the test but that also happens with texlive and MikTeX
-# which is curious.
+# After running cpf on the .pre files you can run this script to make changes suitable for metafont trap test.
+# See https://ctan.org/tex-archive/systems/knuth/dist/mf for instructions on how to run the test.
+# The capsule numbers will show up wrong in the test but this also happens with texlive and MikTeX
+# which is curious. Update: Someone hinted that Knuth's trap test may not have been updated in a long time.
 sed -i 's/mem_max = [0-9]\+;/mem_max = 3000;/' rsMetaFont.h
 sed -i 's/mem_top = [0-9]\+;/mem_top = 3000;/' rsMetaFont.h
 sed -i 's/error_line = [0-9]\+;/error_line = 64;/' rsMetaFont.h
