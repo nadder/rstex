@@ -10330,7 +10330,8 @@ void box_end(int box_context)
 				get_x_token();
 			} while (!(cur_cmd != spacer && cur_cmd != relax));
 			#pragma endregion
-			if ((cur_cmd == hskip && myabs(mode) != vmode)) {
+			if ((cur_cmd == hskip && myabs(mode) != vmode) ||
+			    (cur_cmd == vskip && myabs(mode) == vmode)) {
 				append_glue(); subtype(tail) = box_context - (leader_flag - a_leaders);
 				leader_ptr(tail) = cur_box;
 			}
