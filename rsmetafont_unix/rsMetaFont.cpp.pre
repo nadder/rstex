@@ -8810,6 +8810,7 @@ void scan_def()
 	int m; // start_def .. var_def, {the type of definition}
 	int n; // 0 .. 3,  {the number of special suffix parameters}
 	int k; // 0 .. param size, {the total number of parameters}
+	int c; // general_macro .. text_macro, {the kind of macro we're defining}
 	pointer r; // {parameter-substitution list}
 	pointer q; // {tail of the macro token list}
 	pointer p; // {temporary storage}
@@ -12249,6 +12250,9 @@ void path_trans(pointer p, quarterword c)
 	}
 	q = cur_exp;
 	do { 
+		if (left_type(q) != endpoint) trans(q + 3,q + 4); //{that's left x and left y }
+		trans(q + 1,q + 2); //{that's x coord and y coord }
+		if (right_type(q) != endpoint) trans(q + 5,q + 6); //{that's right x and right y }
 		q = link(q);
 	} while (!( q == cur_exp));
 }
@@ -15430,6 +15434,11 @@ void debug_help() //{routine to display various things}
 	clear_terminal();
 	while (true)
 	{
+    // Note: Added check for EOF here so we don't get suck in a loop
+    if (std::cin.eof()) {
+      std::cout << "Cannot read from stdin, EOF\n";
+      return;
+    }
 		wake_up_terminal(); print_nl(TEX_STRING("debug # (-1 to exit):")); update_terminal(); std::cin >> m; //read(term_in, m);
 		if (m < 0) return;
 		else if (m == 0)
