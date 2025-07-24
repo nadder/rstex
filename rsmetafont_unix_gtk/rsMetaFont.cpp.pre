@@ -273,7 +273,6 @@ bool test_access(int filepath)
 
 ///////////////////////////////////////////////////////////////////////////
 
-
 //////////////////////////////////////////////////////////////////////////////
 // Unix specific routine to open editor
 //
@@ -290,7 +289,7 @@ void call_edit(packed_ASCII_code *filename, int fnlength, int linenumber)
   char *mfeditvalue = dvalue;
   sdone = ddone = 0;
 
-  if(NULL != (temp = getenv("MFEDIT")))
+  if (NULL != (temp = getenv("MFEDIT")))
     mfeditvalue = temp;
 
   if (NULL == (command = (char*)malloc(strlen(mfeditvalue) + fnlength + 25))) {
@@ -302,7 +301,7 @@ void call_edit(packed_ASCII_code *filename, int fnlength, int linenumber)
     if (c == '%') {
       switch (c = *mfeditvalue++) {
         case 'd':
-          if(ddone) {
+          if (ddone) {
             fprintf(stderr, "! Line number cannot appear twice in editor command\n");
             exit(1);
           }
@@ -447,11 +446,9 @@ void initialize()
   xchr[0175] = '}';
   xchr[0176] = '~';
 
-
   // 22
   for (i = 0; i <= 037; i++) xchr[i] = i;
   for (i = 0177; i <= 0377; i++) xchr[i] = i;
-
 
   // 23
   for (i = first_text_char; i <= last_text_char; i++) xord[i] = 0177;
@@ -632,8 +629,6 @@ void initialize()
   // 1184
   base_ident = 0;
 }
-
-
 
 // 26
 bool a_open_in(FILE **f, int path_specifier)
@@ -1244,7 +1239,6 @@ void error() //{completes the job of error reporting}
         print_nl(TEX_STRING("1 or ... or 9 to ignore the next 1 to 9 tokens of input,"));
       print_nl(TEX_STRING("H for help, X to quit."));
 
-
     }
   error_count++;
   if (error_count == 100)
@@ -1579,7 +1573,6 @@ int take_scaled(int q, scaled f)
   else return n + p;
 }
 
-
 // 114
 scaled make_scaled(int p, int q)
 {
@@ -1783,7 +1776,7 @@ int pyth_add(int a, int b)
   a = myabs(a); b = myabs(b);
   if (a < b)
   {
-  r = b; b = a; a = r;
+    r = b; b = a; a = r;
   } //{now |0<=b<=a|}
   if (b > 0)
   {
@@ -1792,11 +1785,11 @@ int pyth_add(int a, int b)
       a = a / 4; b = b / 4; big = true;
     } //{we reduced the precision to avoid arithmetic overflow}
     while (true) {
-    r = make_fraction(b,a);
-    r = take_fraction(r,r); //{now $r\approx b^2/a^2$}
-    if (r == 0) goto done;
-    r = make_fraction(r,fraction_four + r);
-    a = a + take_fraction(a + a,r); b = take_fraction(b,r);
+      r = make_fraction(b, a);
+      r = take_fraction(r, r); //{now $r\approx b^2/a^2$}
+      if (r == 0) goto done;
+      r = make_fraction(r, fraction_four + r);
+      a = a + take_fraction(a + a, r); b = take_fraction(b, r);
     }
   done:
     if (big) {
@@ -3788,7 +3781,7 @@ void set_controls(pointer p, pointer q, int k)
   rr = velocity(st,ct,sf,cf,rt);
   ss = velocity(sf,cf,st,ct,lt);
   if (right_tension(p) < 0 || left_tension(q) < 0)
-    if((st >= 0 && sf >= 0) || (st <= 0 && sf <= 0))
+    if ((st >= 0 && sf >= 0) || (st <= 0 && sf <= 0))
     {
       sine = take_fraction(myabs(st),cf) + take_fraction(myabs(sf),ct);
       if (sine > 0)
@@ -4058,7 +4051,7 @@ void print_edges(str_number s, bool nuline, int x_off, int y_off)
   while (p != cur_edges)
   {
     q = unsorted(p); r = sorted(p);
-    if(q > _void || r != sentinel)
+    if (q > _void || r != sentinel)
     {
       print_nl(TEX_STRING("row ")); print_int(n+y_off); print_char(TEX_STRING(":"));
       while (q > _void)
@@ -4452,7 +4445,7 @@ void xy_swap_edges() //{interchange |x| and |y| in |cur_edges|}
     r = sorted(p); free_node(p,row_node_size); p = r;
     pd = ho(info(p)); pm = pd / 8;
     r = sorted(q); rd = ho(info(r)); rm = rd / 8; w = 0;
-    while(true) {
+    while (true) {
       if (pm < rm) mm = pm; else mm = rm;
       if (w != 0)
         if (m != mm)
@@ -4491,7 +4484,7 @@ void xy_swap_edges() //{interchange |x| and |y| in |cur_edges|}
     }
   done:
     p = q; n_magic = n_magic - 8;
-  } while(knil(p) != cur_edges);
+  } while (knil(p) != cur_edges);
   free_node(p,row_node_size); //{now all original rows have been recycled}
   move[m_spread] = 0; j = 0;
   while (move[j] == sentinel) j++;
@@ -4507,7 +4500,7 @@ void xy_swap_edges() //{interchange |x| and |y| in |cur_edges|}
     do {
       p = get_node(row_node_size); link(q) = p; knil(p) = q;
       sorted(p) = move[j]; unsorted(p) = null; j++; q = p;
-    } while(j <= jj);
+    } while (j <= jj);
     link(q) = cur_edges; knil(cur_edges) = q;
     n_pos(cur_edges) = n_max(cur_edges) + 1; n_rover(cur_edges) = cur_edges;
     last_window_time(cur_edges) = 0;
@@ -4693,7 +4686,7 @@ void line_edges(scaled x0, scaled y0, scaled x1, scaled y1)
         else
           do {
             n--; p = knil(p);
-          } while(n != n0);
+          } while (n != n0);
       }
       y0 = unity - y0;
       while (true) {
@@ -4804,7 +4797,7 @@ fast_case_up:
     else
       do {
         n--; p = knil(p);
-      } while(n != n0);
+      } while (n != n0);
   }
   if (delta > 0)
   {
@@ -4829,7 +4822,7 @@ fast_case_down:
     else
       do {
         n--; p = knil(p);
-      } while(n != n0);
+      } while (n != n0);
   }
   if (delta > 0)
   {
@@ -4856,7 +4849,7 @@ slow_case_up:
     else
       do {
         n--; p = knil(p);
-      } while(n != n0);
+      } while (n != n0);
   }
   do {
     j = move[k];
@@ -4882,7 +4875,7 @@ slow_case_down:
       do {
         n--;
         p = knil(p);
-      } while(n != n0);
+      } while (n != n0);
   }
   do {
     j = move[k];
@@ -5690,7 +5683,6 @@ void make_safe()
   scaled next_a; //{after[k] before it might have changed}
   scaled delta_a, delta_b; //{after[k + 1] - after[k] and before[k + 1] - before[k]}
 
-
   before[cur_rounding_ptr] = before[0]; // {wrap around}
   node_to_round[cur_rounding_ptr] = node_to_round[0];
   do {
@@ -5773,7 +5765,7 @@ void xy_round()
       before_and_after(b,a,q);
     }
     p = q;
-  } while(p != cur_spec);
+  } while (p != cur_spec);
   if (cur_rounding_ptr > 0)
   {
     make_safe();
@@ -5950,7 +5942,6 @@ void diag_round()
             else c = d - half(a - b + 1);
           else c = d - half(a - b);
 
-
           if (aa < a || cc < c || aa - a > 2 * (bb - b) || cc - c > 2 * (dd - d))
           {
             all_safe = false; after[k] = before[k];
@@ -5959,8 +5950,7 @@ void diag_round()
           }
         }
       }
-    } while(!all_safe);
-
+    } while (!all_safe);
 
     for (k = 0; k <= cur_rounding_ptr - 1; k++)
     {
@@ -6473,7 +6463,6 @@ void split_for_offset(pointer p, fraction t)
   else if (x_coord(r) > x_coord(q)) x_coord(r) = x_coord(q);
 }
 
-
 quarterword halfword_to_quarterword(halfword n)
 {
   if (n > max_quarterword || n < min_quarterword) {
@@ -6564,7 +6553,6 @@ void fill_envelope(pointer spec_head)
     octant = left_octant(p); h = cur_pen + octant;
     q = p;
     while (right_type(q) != endpoint) q = link(q);
-
 
     w = link(h); if (left_transition(p) == diagonal) w = knil(w);
 #ifndef NO_STAT
@@ -6795,7 +6783,7 @@ void dual_moves(pointer h, pointer p, pointer q)
       if (m < env_move[n]) env_move[n] = m;
       m = m+move[n]-1;
       n++;
-    } while(n <= move_ptr);
+    } while (n <= move_ptr);
     r = s;
   }
 done:
@@ -6823,7 +6811,6 @@ pointer make_ellipse(scaled major_axis, scaled minor_axis, angle theta)
   int c, d; //{class numbers}
   int u, v; //{directions}
   bool symmetric; //{should the result be symmetric about the axes?}
-
 
   if (major_axis == minor_axis || theta % ninety_deg == 0)
   {
@@ -7905,7 +7892,7 @@ pointer new_ring_entry(pointer p)
   pointer q; // the new capsule node
 
   q = get_node(value_node_size); name_type(q) = capsule; type(q) = type(p);
-  if(value(p) == null) value(q) = p; else value(q) = value(p);
+  if (value(p) == null) value(q) = p; else value(q) = value(p);
   value(p) = q; return q;
 }
 
@@ -7949,7 +7936,7 @@ void nonlinear_eq(int v, pointer p, bool flush_p)
         break;
     }
     q = r;
-  } while(q != p);
+  } while (q != p);
 }
 
 // 622
@@ -8096,7 +8083,6 @@ void print_cmd_mod(int c, int m)
 
   // 1028
   case protection_command: if (m == 0) print(TEX_STRING("inner")); else print(TEX_STRING("outer")); break;
-
 
   // 1038
   case show_command:
@@ -8867,7 +8853,6 @@ void scan_def()
       check_delimiter(l_delim,r_delim); get_next();
     } while (cur_cmd == left_delimiter);
 
-
   }
   if (cur_cmd == param_type)
   {
@@ -9217,7 +9202,7 @@ void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
         scan_suffix();
         if (l_delim != null)
         {
-          if(cur_cmd != right_delimiter || cur_mod != l_delim)
+          if (cur_cmd != right_delimiter || cur_mod != l_delim)
           {
             missing_err(text(r_delim));
             help2(TEX_STRING("I've gotten to the end of the macro parameter list."),
@@ -9512,7 +9497,6 @@ found:
       TEX_STRING("everything from here to `endfor' will be iterated."));
     back_error();
   }
-
 
   q = get_avail(); info(q) = frozen_repeat_loop;
   scanner_status = loop_defining; warning_info = n;
@@ -10929,7 +10913,7 @@ void scan_secondary()
   halfword c, d; //{operation codes or modifiers}
   pointer mac_name = max_halfword; //{token defined with \&{primarydef}}
   restart:
-  if(cur_cmd < min_primary_command || cur_cmd > max_primary_command)
+  if (cur_cmd < min_primary_command || cur_cmd > max_primary_command)
     bad_exp(TEX_STRING("A secondary"));
   scan_primary();
 mycontinue:
@@ -10979,7 +10963,7 @@ void scan_tertiary()
   pointer mac_name=max_halfword; //{token defined with \&{secondarydef}}
 
   restart:
-  if(cur_cmd < min_primary_command || cur_cmd > max_primary_command)
+  if (cur_cmd < min_primary_command || cur_cmd > max_primary_command)
     bad_exp(TEX_STRING("A tertiary"));
   scan_secondary();
   if (cur_type == future_pen) materialize_pen();
@@ -11053,8 +11037,6 @@ void materialize_pen()
       }
   }
 
-
-
   cur_exp = make_pen(q);
 common_ending:
   toss_knot_list(q);
@@ -11074,7 +11056,7 @@ void scan_expression()
 
   my_var_flag = var_flag;
 restart:
-  if(cur_cmd < min_primary_command || cur_cmd > max_primary_command)
+  if (cur_cmd < min_primary_command || cur_cmd > max_primary_command)
     bad_exp(TEX_STRING("An"));
   scan_tertiary();
 mycontinue:
@@ -12225,7 +12207,6 @@ void do_binary(pointer p, quarterword c)
       else bad_binary(p,direction_time_of);
       break;
 
-
     case intersect:
       if (type(p) == pair_type)
       {
@@ -12293,7 +12274,7 @@ pointer tarnished(pointer p)
     if (type(r) == independent) {
       return _void;
     }
-  } while(r != q);
+  } while (r != q);
   return null;
 }
 
@@ -13042,7 +13023,6 @@ void chop_path(pointer p)
   else cur_exp = pp;
 }
 
-
 // 982
 void pair_value(scaled x, scaled y)
 {
@@ -13301,7 +13281,7 @@ void do_statement() //{governs \MF's activities}
     do {
       get_next();
       if (cur_cmd == string_token) delete_str_ref(cur_mod);
-    } while (!(end_of_statement)); //{|cur_cmd=semicolon|, |end_group|, or |stop|}
+    } while (!end_of_statement); //{|cur_cmd=semicolon|, |end_group|, or |stop|}
     scanner_status = normal;
   }
   error_count = 0;
@@ -13711,7 +13691,7 @@ void do_type_declaration()
       } while (cur_cmd < comma); //{either |end_of_statement| or |cur_cmd=comma|}
       scanner_status = normal;
     }
-  } while (!(end_of_statement));
+  } while (!end_of_statement);
 }
 
 // 1017
@@ -13781,7 +13761,6 @@ void check_delimiter(pointer l_delim, pointer r_delim)
   }
 }
 
-
 // 1029
 void do_protection()
 {
@@ -13797,7 +13776,7 @@ void do_protection()
     }
     else if (t < outer_tag) eq_type(cur_sym) = t + outer_tag;
     get_x_next();
-  } while(cur_cmd == comma);
+  } while (cur_cmd == comma);
 }
 
 // 1031
@@ -13833,7 +13812,6 @@ void do_interim()
   }
   do_statement();
 }
-
 
 // 1035
 void do_let()
@@ -13936,7 +13914,7 @@ void do_show_token()
     get_next();
     disp_token();
     get_x_next();
-  } while(cur_cmd == comma);
+  } while (cur_cmd == comma);
 }
 
 // 1045
@@ -14047,7 +14025,6 @@ void do_show_dependencies()
   get_x_next();
 }
 
-
 // 1051
 void do_show_whatever()
 {
@@ -14116,7 +14093,6 @@ bool scan_with()
   }
   return result;
 }
-
 
 // 1057
 void find_edges_var(pointer t)
@@ -14476,7 +14452,6 @@ void do_ship_out()
   flush_cur_exp(0);
 }
 
-
 // 1071
 void do_display()
 {
@@ -14538,8 +14513,6 @@ bool get_pair(command_code c)
   }
 }
 
-
-
 // 1073
 void do_open_window()
 {
@@ -14566,7 +14539,6 @@ not_found:
   TEX_STRING("where all quantities are known and k is between 0 and 15."));
   put_get_error();
 }
-
 
 // 1074
 void do_cull()
@@ -14617,7 +14589,6 @@ void do_cull()
   flush_token_list(e);
   }
 }
-
 
 // 1082
 void do_message()
@@ -14691,7 +14662,6 @@ eight_bits get_code() //{scans a character code value}
 found:
   return c;
 }
-
 
 // 1098
 scaled tfm_check(small_number m)
@@ -14773,7 +14743,7 @@ void do_tfm_command()
       lk_started = false;
     mycontinue:
       get_x_next();
-      if(cur_cmd == skip_to && lk_started)
+      if (cur_cmd == skip_to && lk_started)
       {
         c = get_code();
         if (nl - skip_table[c] > 128)
@@ -14795,7 +14765,7 @@ void do_tfm_command()
         back_input();
         c = get_code();
       }
-      if(cur_cmd == colon || cur_cmd == double_colon)
+      if (cur_cmd == colon || cur_cmd == double_colon)
       {
         if (cur_cmd == colon)
           if (c == 256) bch_label = nl;
@@ -15016,7 +14986,7 @@ int skimp(int m)
       do {
         r = link(r);
         value(r) = v;
-      } while(r != p);
+      } while (r != p);
       link(q) = p; // remove duplicate values from the current list
     }
     q = p;
@@ -15095,7 +15065,6 @@ void fix_check_sum()
             }
           PASCAL_FOR_END(k, ec)
 
-
           header_byte[1] = b1; header_byte[2] = b2; header_byte[3] = b3; header_byte[4] = b4;
           return;
         }
@@ -15143,7 +15112,6 @@ void write_gf(gf_index a, gf_index b)
 
   for (k = a; k <= b; k++) fputc(gf_buf[k], gf_file);
 }
-
 
 // 1155
 void gf_swap() // outputs half of the buffer
@@ -15201,8 +15169,6 @@ void gf_paint(int d) //{here |0<=d<65536|}
   }
 }
 
-
-
 // 1160
 void gf_string(str_number s, str_number t)
 {
@@ -15246,9 +15212,6 @@ void gf_boc(int min_m, int max_m, int min_n, int max_n)
   gf_four(min_m); gf_four(max_m); gf_four(min_n); gf_four(max_n);
 }
 
-
-
-
 // 1163
 void init_gf()
 {
@@ -15285,8 +15248,6 @@ void init_gf()
   gf_prev_ptr = gf_offset + gf_ptr;
 }
 
-
-
 // 1177
 void do_special()
 {
@@ -15312,7 +15273,6 @@ void do_special()
   }
   flush_cur_exp(0);
 }
-
 
 // 1186
 #ifndef NO_INIT
@@ -15392,7 +15352,6 @@ void store_base_file()
   print_char(TEX_STRING("&"));
   print_int(dyn_used);
 
-
   dump_int(hash_used); st_count = frozen_inaccessible - 1 - hash_used;
   for (p = 1; p <= hash_used; p++)
     if (text(p) != 0) {
@@ -15404,7 +15363,6 @@ void store_base_file()
   dump_int(st_count);
   print_ln(); print_int(st_count); print(TEX_STRING(" symbolic tokens"));
 
-
   dump_int(int_ptr);
   for (k = 1; k <= int_ptr; k++) {
     dump_int(internal[k]); dump_int(int_name[k]);
@@ -15412,17 +15370,10 @@ void store_base_file()
   dump_int(start_sym); dump_int(interaction); dump_int(base_ident); dump_int(bg_loc);
   dump_int(eg_loc); dump_int(serial_no); dump_int(69069); internal[tracing_stats] = 0;
 
-
   w_close(base_file);
-
-
-
-
 
 }
 #endif
-
-
 
 // 1187
 bool load_base_file()
@@ -15445,7 +15396,6 @@ bool load_base_file()
   undump_int(&x);
   if (x != max_in_open) goto off_base;
 
-
   undump_size(0, pool_size, "string pool size", pool_ptr);
   undump_size(0, max_strings, "max strings", str_ptr);
   for (k = 0; k <= str_ptr; k++) {
@@ -15457,7 +15407,6 @@ bool load_base_file()
   }
   k = pool_ptr - 4; undump_four_ASCII; init_str_ptr = str_ptr; init_pool_ptr = pool_ptr;
   max_str_ptr = str_ptr; max_pool_ptr = pool_ptr;
-
 
   undump(lo_mem_stat_max + 1000, hi_mem_stat_min - 1, lo_mem_max);
   undump(lo_mem_stat_max + 1, lo_mem_max, rover); p = mem_min; q = rover;
@@ -15473,7 +15422,6 @@ bool load_base_file()
   for (k = hi_mem_min; k <= mem_end; k++) undump_wd(&mem[k]);
   undump_int(&var_used); undump_int(&dyn_used);
 
-
   undump(1, frozen_inaccessible, hash_used); p = 0;
   do {
     undump(p + 1, hash_used, p); undump_hh(&hash[p]); undump_hh(&eqtb[p]);
@@ -15483,7 +15431,6 @@ bool load_base_file()
   }
   undump_int(&st_count);
 
-
   undump(max_given_internal, max_internal, int_ptr);
   for (k = 1; k <= int_ptr; k++) {
     undump_int(&internal[k]); undump(0, str_ptr, int_name[k]);
@@ -15492,7 +15439,6 @@ bool load_base_file()
   undump(0, str_ptr, base_ident); undump(1, hash_end, bg_loc); undump(1, hash_end, eg_loc);
   undump_int(&serial_no);
   undump_int(&x); if (x != 69069 || feof(base_file)) goto off_base;
-
 
   return true;
 off_base:
@@ -15541,7 +15487,6 @@ void undump_qqqq(four_quarters *qqqq)
 {
   fread(qqqq, sizeof *qqqq, 1, base_file);
 }
-
 
 // 1210
 #ifndef NO_INIT
@@ -15806,7 +15751,6 @@ void init_prim()
   primitive(TEX_STRING("special"), special_command, string_type);
   primitive(TEX_STRING("numspecial"), special_command, known);
 
-
 }
 
 void init_tab()
@@ -15863,7 +15807,6 @@ void init_tab()
   int_name[warning_check] = TEX_STRING("warningcheck");
   int_name[boundary_char] = TEX_STRING("boundarychar");
 
-
   // 203
   hash_used = frozen_inaccessible; // nothing is used
   st_count = 0;
@@ -15912,13 +15855,8 @@ void init_tab()
   // 1185
   base_ident = TEX_STRING(" (INIMF)");
 
-
-
-
-
 }
 #endif
-
 
 // 1205
 void close_files_and_terminate()
@@ -15949,7 +15887,6 @@ void close_files_and_terminate()
 #endif
 
   wake_up_terminal();
-
 
   if (gf_prev_ptr > 0 || internal[fontmaking] > 0) {
 
@@ -15996,7 +15933,6 @@ void close_files_and_terminate()
       ni = skimp(63) + 1; dimen_head[4] = link(temp_head);
       if (perturbation >= 010000) tfm_warning(char_ic);
 
-
       internal[fontmaking] = 0; // avoid loop in case of fatal error
 
       if (job_name == 0) open_log_file();
@@ -16031,7 +15967,7 @@ void close_files_and_terminate()
         } while (lk_offset + label_loc[k] >= 256); // N.B.: lk_offset = 256 satisfies this when k = 0
       }
       if (lk_offset > 0)
-        while(k > 0) {
+        while (k > 0) {
           char_remainder[label_char[k]] = char_remainder[label_char[k]] + lk_offset; k--;
         }
 
@@ -16050,9 +15986,6 @@ void close_files_and_terminate()
         tfm_out(header_byte[k]);
       }
 
-
-
-
       PASCAL_FOR_BEGIN(k, bc, ec)
         if (!char_exists[k]) tfm_four(0);
         else {
@@ -16064,11 +15997,10 @@ void close_files_and_terminate()
       tfm_changed = 0;
       for (k = 1; k <= 4; k++) {
         tfm_four(0); p = dimen_head[k];
-        while(p != inf_val) {
+        while (p != inf_val) {
           tfm_four(dimen_out(value(p))); p = link(p);
         }
       }
-
 
       PASCAL_FOR_BEGIN(k, 0, 255)
         if (skip_table[k] < undefined_label) {
@@ -16095,7 +16027,6 @@ void close_files_and_terminate()
       for (k = 0; k <= nl - 1; k++) tfm_qqqq(lig_kern[k]);
       for (k = 0; k <= nk - 1; k++) tfm_four(dimen_out(kern[k]));
 
-
       for (k = 0; k <= ne -1; k++) tfm_qqqq(exten[k]);
       for (k = 1; k <= np; k++)
         if (k == 1)
@@ -16118,7 +16049,7 @@ void close_files_and_terminate()
       if (internal[tracing_stats] > 0)
       {
         wlog_ln_s(" ");
-        if(bch_label < undefined_label) nl--;
+        if (bch_label < undefined_label) nl--;
         fprintf(log_file, "(You used %dw,%dh,%dd,%di,%dl,%dk,%de,%dp metric file positions\n",
                   nw, nh, nd, ni, nl, nk, ne, np);
         fprintf(log_file, "  out of 256w,16h,16d,64i,%dl,%dk,256e,%dp)\n",
@@ -16167,7 +16098,6 @@ void close_files_and_terminate()
       print(TEX_STRING(", ")); print_int(gf_offset + gf_ptr); print(TEX_STRING(" bytes).")); b_close(gf_file);
 
     }
-
 
   }
 
@@ -16310,7 +16240,6 @@ int main(int argc, char**argv)
   // 310
   if (15 * move_increment > bistack_size) bad = 31;
 
-
   // 553
   if (int_packets + 17 * int_increment > bistack_size) bad = 32;
 
@@ -16382,8 +16311,6 @@ int main(int argc, char**argv)
   // 792
   output_file_name = 0;
 
-
-
   input_ptr = 0; max_in_stack = 0; in_open = 0; open_parens = 0; max_buf_stack = 0;
   param_ptr = 0; max_param_stack = 0; first = 1; start = 1; index = 0; line = 0; name = 0;
   force_eof = false;
@@ -16393,7 +16320,6 @@ int main(int argc, char**argv)
 
   // 660
   scanner_status = normal;
-
 
   if (base_ident == 0 || buffer[loc] == TEX_STRING("&")) {
     if (base_ident != 0) initialize(); // erase preloaded base

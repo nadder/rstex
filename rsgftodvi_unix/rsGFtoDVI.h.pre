@@ -14,30 +14,23 @@ This is the Unix specific version of rsGFtoDVI.
 template<typename T, int minindex, int maxindex>
 struct Array
 {
-	T& operator[](int x) {
-		assert(x >= minindex && x <= maxindex);
-		return _array[x - minindex];
-	}
+  T& operator[](int x) {
+    assert(x >= minindex && x <= maxindex);
+    return _array[x - minindex];
+  }
 
-	T* get_c_str() {
-		assert(array_size > 0);
-		_array[array_size - 1] = T(0);
-		return &_array[0];
-	}
-	static const int _minindex = minindex;
-	static const int _maxindex = maxindex;
-	std::array<T, array_size> _array;
+  T* get_c_str() {
+    assert(array_size > 0);
+    _array[array_size - 1] = T(0);
+    return &_array[0];
+  }
+  static const int _minindex = minindex;
+  static const int _maxindex = maxindex;
+  std::array<T, array_size> _array;
 };
 
 // 1
-#define banner "This is rsGFtoDVI, Version 1.2 for Unix"
-
-// 3
-//#define print(s) write(s)
-//#define print_ln(s) write_ln(s)
-//#define print_nl(s) do {\
-//	write_ln(); write(s);\
-//while (false)
+#define banner "This is rsGFtoDVI, Version 1.3 for Unix"
 
 // 5
 const int max_labels = 2000; //{maximum number of labels and dots and rules per character}
@@ -58,13 +51,13 @@ const int lig_lookahead = 20; //{size of stack used when inserting ligature char
 
 // 8
 #define abort(s) do {\
-	fprintf(stdout, " %s\n", s); jump_out();\
+  fprintf(stdout, " %s\n", s); jump_out();\
 } while (false)
 
 #define bad_gf(n) do {\
-	char temp[300];\
-	sprintf(temp, "Bad GF file: %s%s%d%s", n, "! (at byte ", cur_loc - 1, ")");\
-	abort(temp);\
+  char temp[300];\
+  sprintf(temp, "Bad GF file: %s%s%d%s", n, "! (at byte ", cur_loc - 1, ")");\
+  abort(temp);\
 } while (false)
 
 // 9
@@ -104,42 +97,42 @@ const int gf_id_byte = 131; //{identifies the kind of \.{GF} files described her
 // 30
 enum dvi_op
 {
-	// 22
-	set1 = 128, //{typeset a character and move right}
-	put_rule = 137, //{typeset a rule}
-	bop = 139, //{beginning of page}
-	eop = 140, //{ending of page}
-	push = 141, //{save the current positions}
-	pop = 142, //{restore previous positions}
-	right4 = 146, //{move right}
-	down4 = 160, //{move down}
-	z0 = 166, //{move down |z|}
-	z4 = 170, //{move down and set |z|}
-	fnt_num_0 = 171, //{set current font to 0}
-	fnt_def1 = 243, //{define the meaning of a font number}
-	pre = 247, //{preamble}
-	post = 248, //{postamble beginning}
-	post_post = 249, //{postamble ending}
+  // 22
+  set1 = 128, //{typeset a character and move right}
+  put_rule = 137, //{typeset a rule}
+  bop = 139, //{beginning of page}
+  eop = 140, //{ending of page}
+  push = 141, //{save the current positions}
+  pop = 142, //{restore previous positions}
+  right4 = 146, //{move right}
+  down4 = 160, //{move down}
+  z0 = 166, //{move down |z|}
+  z4 = 170, //{move down and set |z|}
+  fnt_num_0 = 171, //{set current font to 0}
+  fnt_def1 = 243, //{define the meaning of a font number}
+  pre = 247, //{preamble}
+  post = 248, //{postamble beginning}
+  post_post = 249, //{postamble ending}
 
-	// 30
-	paint_0 = 0, //{beginning of the \\{paint} commands}
-	paint1 = 64, //{move right a given number of columns, then black${}\swap{}$white}
-	paint2 = 65, //{ditto, with potentially larger number of columns}
-	paint3 = 66, //{ditto, with potentially excessive number of columns}
-	boc = 67, //{beginning of a character}
-	boc1 = 68, //{abbreviated |boc|}
-	eoc = 69, //{end of a character}
-	skip0 = 70, //{skip no blank rows}
-	skip1 = 71, //{skip over blank rows}
-	skip2 = 72, //{skip over lots of blank rows}
-	skip3 = 73, //{skip over a huge number of blank rows}
-	new_row_0 = 74, //{move down one row and then right}
-	xxx1 = 239, //{for \&{special} strings}
-	xxx2 = 240, //{for somewhat long \&{special} strings}
-	xxx3 = 241, //{for extremely long \&{special} strings}
-	xxx4 = 242, //{for incredibly long \&{special} strings}
-	yyy = 243, //{for \&{numspecial} numbers}
-	no_op = 244, //{no operation}
+  // 30
+  paint_0 = 0, //{beginning of the \\{paint} commands}
+  paint1 = 64, //{move right a given number of columns, then black${}\swap{}$white}
+  paint2 = 65, //{ditto, with potentially larger number of columns}
+  paint3 = 66, //{ditto, with potentially excessive number of columns}
+  boc = 67, //{beginning of a character}
+  boc1 = 68, //{abbreviated |boc|}
+  eoc = 69, //{end of a character}
+  skip0 = 70, //{skip no blank rows}
+  skip1 = 71, //{skip over blank rows}
+  skip2 = 72, //{skip over lots of blank rows}
+  skip3 = 73, //{skip over a huge number of blank rows}
+  new_row_0 = 74, //{move down one row and then right}
+  xxx1 = 239, //{for \&{special} strings}
+  xxx2 = 240, //{for somewhat long \&{special} strings}
+  xxx3 = 241, //{for extremely long \&{special} strings}
+  xxx4 = 242, //{for incredibly long \&{special} strings}
+  yyy = 243, //{for \&{numspecial} numbers}
+  no_op = 244, //{no operation}
 };
 
 // 37
@@ -158,7 +151,6 @@ const int kern_flag = 128; //{op code for a kern step}
 // 45
 typedef unsigned char eight_bits; // {unsigned one-byte quantity}
 typedef FILE* byte_file; // {files that contain binary data}
-
 
 // 46
 byte_file gf_file; //{the character data we are reading}
@@ -190,18 +182,18 @@ typedef int font_index; // 0..font_mem_size
 typedef unsigned char quarterword; // min_quarterword..max_quarterword
 
 typedef struct {
-	quarterword b0;
-	quarterword b1;
-	quarterword b2;
-	quarterword b3;
+  quarterword b0;
+  quarterword b1;
+  quarterword b2;
+  quarterword b3;
 } four_quarters;
 
 typedef struct
 {
-	union {
-		scaled sc;
-		four_quarters qqqq;
-	};
+  union {
+    scaled sc;
+    four_quarters qqqq;
+  };
 } memory_word;
 
 typedef int internal_font_number; // title_font..logo_font
@@ -253,7 +245,6 @@ Array<int, title_font, logo_font> font_bchar;//{right boundary character, |non_c
 #define x_height(s) param(5, s) //{one ex}
 #define default_rule_thickness(s) param(8, s) //{thickness of rules}
 
-
 // 58
 const int bad_tfm = 11; // {label for |read_font_info|}
 
@@ -264,21 +255,21 @@ const int bad_tfm = 11; // {label for |read_font_info|}
 
 // 62
 #define store_four_quarters(s) do {\
-	read_tfm_word();\
-	qw.b0 = qi(b0); qw.b1 = qi(b1); qw.b2 = qi(b2); qw.b3 = qi(b3);\
-	s=qw;\
+  read_tfm_word();\
+  qw.b0 = qi(b0); qw.b1 = qi(b1); qw.b2 = qi(b2); qw.b3 = qi(b3);\
+  s=qw;\
 } while (false);
 
 // 64
 #define store_scaled(s) do {\
-	read_tfm_word();\
-	sw=(((((b3 * z) / 0400) + (b2 * z)) / 0400) + (b1 * z)) / beta;\
-	if (b0 == 0) s = sw; else if (b0 == 255) s = sw - alpha; else abend;\
+  read_tfm_word();\
+  sw=(((((b3 * z) / 0400) + (b2 * z)) / 0400) + (b1 * z)) / beta;\
+  if (b0 == 0) s = sw; else if (b0 == 255) s = sw - alpha; else abend;\
 } while (false)
 
 // 66
 #define check_byte_range(s) do {\
-	if (s < bc || s > ec) abend;\
+  if (s < bc || s > ec) abend;\
 } while (false)
 
 // 69
@@ -317,13 +308,13 @@ const int longest_keyword = 13;
 // 73
 //{put |ASCII_code| \# at the end of |str_pool|}
 #define append_char(s) do {\
-	str_pool[pool_ptr] = s; incr(pool_ptr);\
+  str_pool[pool_ptr] = s; incr(pool_ptr);\
 } while (false)
 
 //{make sure that the pool hasn't overflowed}
 #define str_room(s) do {\
-	if (pool_ptr + s > pool_size)\
-		abort("Too many strings!");\
+  if (pool_ptr + s > pool_size)\
+    abort("Too many strings!");\
 } while (false)
 
 // 76
@@ -406,8 +397,8 @@ pool_pointer ext_delimiter; //{the relevant `\..', if any}
 
 // 92
 #define append_to_name(s) do {\
-	c = s; incr(k);\
-	if (k <= file_name_size) name_of_file[k] = xchr[c];\
+  c = s; incr(k);\
+  if (k <= file_name_size) name_of_file[k] = xchr[c];\
 } while (false)
 
 // 93
@@ -440,8 +431,8 @@ int dvi_offset; //{|dvi_buf_size| times the number of times the output buffer ha
 
 // 108
 #define dvi_out(s) do {\
-	dvi_buf[dvi_ptr] = s; incr(dvi_ptr);\
-	if (dvi_ptr == dvi_limit) dvi_swap();\
+  dvi_buf[dvi_ptr] = s; incr(dvi_ptr);\
+  if (dvi_ptr == dvi_limit) dvi_swap();\
 } while (false)
 
 // 111
@@ -461,9 +452,9 @@ bool suppress_lig; //{should we bypass checking for ligatures next time?}
 
 // 122
 #define pop_stack do {\
-	decr(stack_ptr);\
-	if (stack_ptr>0) cur_r=lig_stack[stack_ptr];\
-	else set_cur_r;\
+  decr(stack_ptr);\
+  if (stack_ptr>0) cur_r=lig_stack[stack_ptr];\
+  else set_cur_r;\
 } while (false)
 
 // 127
@@ -499,10 +490,10 @@ bool twin; //{is there a nearer dot than the ``nearest'' dot?}
 
 // 154
 #define font_change(s) do {\
-	if (fonts_not_loaded) {\
-		s;\
-	}\
-	else fprintf(stdout, "\n(Tardy font change will be ignored (byte %d)!", cur_loc);\
+  if (fonts_not_loaded) {\
+    s;\
+  }\
+  else fprintf(stdout, "\n(Tardy font change will be ignored (byte %d)!", cur_loc);\
 } while (false)
 
 // 155
@@ -591,7 +582,7 @@ int blank_rows;
 #define do_skip z=0; paint_black=false
 
 #define end_with(s) do {\
-	s; cur_gf = get_byte(); goto done1;\
+  s; cur_gf = get_byte(); goto done1;\
 } while (false)
 
 #define five_cases(s) s: case s + 1: case s + 2: case s + 3: case s + 4
@@ -603,7 +594,6 @@ int blank_rows;
 int k, m, p, q, r, s, t, dx, dy; //{general purpose registers}
 str_number time_stamp; //{the date and time when the input file was made}
 bool use_logo; //{should \MF's logo be put on the title line?}
-
 
 void dvi_four(int x);
 void dvi_swap();

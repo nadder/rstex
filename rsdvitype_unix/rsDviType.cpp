@@ -15,7 +15,6 @@ This is the Unix specific version of rsdvitype.
 #include <cmath>
 #include "rsDviType.h"
 
-
 ///////////////////////////////////////////////////////////////////////////
 // System specific addition for paths on unix
 void set_paths()
@@ -85,7 +84,6 @@ bool test_access(int filepath)
 
 ///////////////////////////////////////////////////////////////////////////
 
-
 int myabs(int x)
 {
 	// overflow check
@@ -97,8 +95,6 @@ int myabs(int x)
 
 	return x >= 0 ? x : -x;
 }
-
-
 
 void input_ln() //{inputs a line from the terminal}
 {
@@ -115,7 +111,6 @@ void input_ln() //{inputs a line from the terminal}
 	buffer[k] = 32;
 }
 
-
 void jump_out()
 {
 	// goto final_end
@@ -128,7 +123,6 @@ void initialize() //{this procedure gets things started properly}
 
 	set_paths(); //{read environment, to find TEXFONTS, if there}
 	print_ln(banner);
-
 
 	//@<Set initial values@>
 	for (i = 0; i <= 31; i++) xchr[i] = '?';
@@ -234,7 +228,6 @@ void print_selected_options()
 	//@<Print all the selected options@>;
 }
 
-
 void dialog()
 {
 	char temp_buf[300];
@@ -247,7 +240,6 @@ void dialog()
 	if (fgets(cur_name.get_c_str(), name_length, stdin));
 	size_t len = strlen(cur_name.get_c_str());
 	if (cur_name[len] == '\n') cur_name[len] = 0;
-
 
 	//@<Determine the desired |out_mode|@>;
 label1:
@@ -287,7 +279,7 @@ label2:
 				printf("first page with \\count0=1, \\count2=-5.\n");
 				goto label2;
 			}
-		} while (!(start_vals == k));
+		} while (start_vals != k);
 		//@<Determine the desired |start_count| values@>;
 
 		//@<Determine the desired |max_pages|@>;
@@ -341,7 +333,6 @@ label2:
 
 		print_selected_options();
 
-
 }
 
 void open_dvi_file() //{prepares to write packed bytes in |dvi_file|}
@@ -392,7 +383,6 @@ int signed_byte() //{returns the next byte, signed}
 	if (b < 128) return b; else return b - 256;
 }
 
-
 int get_two_bytes() //{returns the next two bytes, unsigned}
 {
 	eight_bits a, b;
@@ -409,8 +399,6 @@ int signed_pair() //{returns the next two bytes, signed}
 	if (a < 128) return a * 256 + b;
 	else return (a - 256) * 256 + b;
 }
-
-
 
 int get_three_bytes() //{returns the next three bytes, unsigned}
 {
@@ -429,7 +417,6 @@ int signed_trio() //{returns the next three bytes, signed}
 	else return ((a - 256) * 256 + b) * 256 + c;
 }
 
-
 int signed_quad() //{returns the next four bytes, signed}
 {
 	eight_bits a, b, c, d;
@@ -439,7 +426,6 @@ int signed_quad() //{returns the next four bytes, signed}
 	else return (((a - 256) * 256 + b) * 256 + c) * 256 + d;
 }
 
-
 void read_tfm_word()
 {
 	b0 = fgetc(tfm_file);
@@ -447,9 +433,6 @@ void read_tfm_word()
 	b2 = fgetc(tfm_file);
 	b3 = fgetc(tfm_file);
 }
-
-
-
 
 int dvi_length()
 {
@@ -557,7 +540,7 @@ label9997:
 
 label9998:
 	return false;
-	//label9999: 
+	//label9999:
 }
 
 void print_font(int f) //{|f| is an internal font number}
@@ -623,12 +606,12 @@ void define_font(int e) //{|e| is an external font number}
 		//@<Move font name into the |cur_name| string@>;
 		//for (k=1; k<=name_length; k++) cur_name[k]=' ';
 		//if (p==0)
-		//{ 
+		//{
 			//for (k=1 to default_directory_name_length do
 			//cur_name[k]:=default_directory[k];
 			//r:=default_directory_name_length;
 		//}
-		//else 
+		//else
 		r = 0;
 		for (k = font_name[nf]; k <= font_name[nf + 1] - 1; k++)
 		{
@@ -769,7 +752,6 @@ int first_par(eight_bits o)
 	return ret_val;
 }
 
-
 void read_postamble()
 {
 	char temp_buf[300];
@@ -817,7 +799,6 @@ void read_postamble()
 	}
 	//@<Compare the \\{lust} parameters with the accumulated facts@>;
 
-
 //@<Process the font definitions of the postamble@>;
 	do {
 		k = get_byte();
@@ -825,7 +806,7 @@ void read_postamble()
 		{
 			p = first_par(k); define_font(p); print_ln(" "); k = nop;
 		}
-	} while (!(k != nop));
+	} while (k == nop);
 	if (k != post_post)
 	{
 		sprintf(temp_buf, "byte %d is not postpost!", cur_loc - 1);
@@ -858,7 +839,6 @@ void read_postamble()
 		sprintf(temp_buf, "not enough signature bytes at end of file (%d)", cur_loc - k);
 		print_ln(temp_buf);
 	}
-
 
 	//@<Make sure that the end of the file is well-formed@>;
 
@@ -923,7 +903,7 @@ void skip_pages(bool bop_seen)
 			break;
 			default: do_nothing break;
 			}
-		} while (!(k == eop));
+		} while (k != eop);
 		//@<Skip until finding |eop|@>;
 		bop_seen = false;
 	}
@@ -945,7 +925,6 @@ void flush_text()
 		text_ptr = 0;
 	}
 }
-
 
 void out_text(ASCII_code c)
 {
@@ -1099,7 +1078,6 @@ done:
 	return pure;
 }
 
-
 bool do_page()
 {
 	char temp_buf[300];
@@ -1188,7 +1166,6 @@ bool do_page()
 			}
 			ss = s; goto show_state;
 			break;
-
 
 			//@<Cases for commands |nop|, |bop|, \dots, |pop|@>@;
 
@@ -1313,13 +1290,12 @@ bool do_page()
 label9998:
 	print_ln("!");
 	return false;
-	//label9999: 
+	//label9999:
 	;
 }
 
 void scan_bop()
 {
-
 	char temp_buf[300];
 	int k; //:0..255; //{command code}
 	do {
@@ -1329,7 +1305,7 @@ void scan_bop()
 		{
 			define_font(first_par(k)); k = nop;
 		}
-	} while (!(k != nop));
+	} while (k == nop);
 	if (k == post) in_postamble = true;
 	else {
 		if (k != bop) { sprintf(temp_buf, "byte %d is not bop", cur_loc - 1); bad_dvi(temp_buf); }
@@ -1340,11 +1316,8 @@ void scan_bop()
 			sprintf(temp_buf, "backpointer in byte %d should be %d!", cur_loc - 4, old_backpointer);
 			print_ln(temp_buf);
 		}
-
 		old_backpointer = new_backpointer;
 	}
-
-
 }
 
 void get_command_line_options(int argc, char* argv[])
@@ -1390,8 +1363,7 @@ void get_command_line_options(int argc, char* argv[])
 						printf("first page with \\count0=1, \\count2=-5.\n");
 						jump_out();
 					}
-				} while (!(start_vals == k));
-
+				} while (start_vals != k);
 		}
 		else if (strncmp(argv[argc], "-max-pages=", strlen("-max-pages=")) == 0) {
 			char* pbuf = &argv[argc][strlen("-max-pages=")];
@@ -1442,8 +1414,6 @@ void get_command_line_options(int argc, char* argv[])
 				}
 			}
 
-
-
 		}
 		else if (strncmp(argv[argc], "-mag=", strlen("-mag=")) == 0) {
 
@@ -1471,7 +1441,6 @@ void get_command_line_options(int argc, char* argv[])
 		}
 	}
 }
-
 
 int main(int argc, char* argv[])
 {
@@ -1539,7 +1508,7 @@ int main(int argc, char* argv[])
 		do {
 			if (m == 0) { bad_dvi("all 223s"); }
 			move_to_byte(m); k = get_byte(); decr(m);
-		} while (!(k != 223));
+		} while (k == 223);
 		if (k != id_byte) { sprintf(temp_buf, "ID byte is %d", k); bad_dvi(temp_buf); }
 		move_to_byte(m - 3); q = signed_quad();
 		if (q<0 || q>m - 33) { sprintf(temp_buf, "post pointer %d at byte %d", q, m - 3); bad_dvi(temp_buf); }
@@ -1568,7 +1537,7 @@ int main(int argc, char* argv[])
 				{
 					start_loc = q; old_backpointer = p;
 				}
-			} while (!(p < 0));
+			} while (p >= 0);
 			if (start_loc < 0) abort("starting page number could not be found!");
 			if (old_backpointer < 0) start_loc = after_pre; //{we want to check everything}
 			move_to_byte(start_loc);

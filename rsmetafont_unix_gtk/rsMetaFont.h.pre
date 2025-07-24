@@ -16,34 +16,33 @@ This is the Unix specific version of rsMetaFont.
 template<typename T, int minindex, int maxindex>
 struct Array
 {
-	T& operator[](int x) {
-		assert(x >= minindex && x <= maxindex);
-		return _array[x - minindex];
-	}
+  T& operator[](int x) {
+    assert(x >= minindex && x <= maxindex);
+    return _array[x - minindex];
+  }
 
-	T* get_c_str() {
-		assert(array_size > 0);
-		_array[array_size - 1] = T(0);
-		return &_array[0];
-	}
-	static const int _minindex = minindex;
-	static const int _maxindex = maxindex;
-	std::array<T, array_size> _array;
+  T* get_c_str() {
+    assert(array_size > 0);
+    _array[array_size - 1] = T(0);
+    return &_array[0];
+  }
+  static const int _minindex = minindex;
+  static const int _maxindex = maxindex;
+  std::array<T, array_size> _array;
 };
 
 // Pascal for loops do not always translate directly into C for loops, beware!
 #define PASCAL_FOR_BEGIN(k, bc, ec) \
 {\
-	k = bc;\
-	if (k <= ec)\
-		do {
+  k = bc;\
+  if (k <= ec)\
+    do {
 
 #define PASCAL_FOR_END(k, ec) \
-			if (k == ec) break;\
-			k++;\
-		} while (true);\
+      if (k == ec) break;\
+      k++;\
+    } while (true);\
 }
-
 
 // 2
 #define banner "This is rsMETAFONT, Version 1.4 Unix GTK4 (METAFONT 2.71828182)" // printed when METAFONT starts
@@ -81,29 +80,20 @@ const int hash_prime = 16249;
 const int max_in_open = 60;
 const int param_size = 1500;
 
-
 // 37
 typedef int pool_pointer; // 0 .. pool_size, for variables that point into str_pool
 typedef int str_number; // 0 .. max_strings, for variables that point into str_start
 typedef unsigned char packed_ASCII_code; // 0 .. 255, elements of str_pool array
 
-
-
 // 13
 int bad; // is some constant wrong
-
-
 
 //////////////////////////////////////////////
 // System dependent addition for paths
 Array<char, 1, file_name_size + 1> real_name_of_file;
 
-
-
 const int tab = 011; // ASCII horizontal tab
 const int form_feed = 014; // ASCII form-feed
-
-
 
 // 16
 #define _double(n) n = n + n
@@ -121,7 +111,6 @@ const int last_text_char = 255; // Ordinal number of the largest element of text
 // 20
 Array<ASCII_code, 0, 255> xord; // Specifies conversion of input characters
 Array<text_char, 0, 255> xchr; // Specifies conversion of output characters
-
 
 // 24
 typedef unsigned char eight_bits; // Unsigned one-byte quantity
@@ -150,7 +139,6 @@ alpha_file term_out = stdout; // the terminal as an output file
 #define si(n) n //{convert from |ASCII_code| to |packed_ASCII_code|}
 #define so(n) n //{convert from |packed_ASCII_code| to |ASCII_code|}
 
-
 ///////////////////////////////////////////////////////////////////////////
 // System specific addition on unix
 
@@ -178,8 +166,6 @@ const int base_file_path = 4;
 const int pool_file_path = 5;
 ///////////////////////////////////////////////////////////////////////////////
 
-
-
 // 38
 Array<packed_ASCII_code, 0, pool_size> str_pool; // the characters
 Array<pool_pointer, 0, max_strings> str_start; // the starting pointers
@@ -190,7 +176,6 @@ str_number init_str_ptr; // the starting value of str_ptr
 pool_pointer max_pool_ptr; // the maximum so far of pool_ptr
 str_number max_str_ptr; // the maximum so far of str_ptr
 
-
 // 39
 #define length(num) (str_start[num + 1] - str_start[num]) // the number of characters in string number num
 
@@ -200,61 +185,59 @@ str_number max_str_ptr; // the maximum so far of str_ptr
 // 42
 // put ASCII_code thechar at the end of str_pool
 #define append_char(thechar) do{\
-	str_pool[pool_ptr] = thechar;\
-	pool_ptr++;\
-} while(0)
+  str_pool[pool_ptr] = thechar;\
+  pool_ptr++;\
+} while (0)
 
 // make sure that pool hasn't overflowed
 #define str_room(num) do{\
-	if (pool_ptr + num > max_pool_ptr){\
-		if (pool_ptr + num > pool_size)\
-			overflow(TEX_STRING("pool size"), pool_size - init_pool_ptr);\
-		max_pool_ptr = pool_ptr + num;\
-	}\
-} while(0)
+  if (pool_ptr + num > max_pool_ptr){\
+    if (pool_ptr + num > pool_size)\
+      overflow(TEX_STRING("pool size"), pool_size - init_pool_ptr);\
+    max_pool_ptr = pool_ptr + num;\
+  }\
+} while (0)
 
 const int max_str_ref = 127; // "infinite" number of references
 
 #define add_str_ref(num) do{\
-	if (str_ref[num] < max_str_ref)\
-		str_ref[num]++;\
-} while(0)
+  if (str_ref[num] < max_str_ref)\
+    str_ref[num]++;\
+} while (0)
 
 Array<int, 0, max_strings> str_ref; // 0..max_str_ref
 
-
 // 43
 #define delete_str_ref(num) do {\
-	if (str_ref[num] < max_str_ref) {\
-		if(str_ref[num] > 1) str_ref[num]--;\
-		else flush_string(num);\
-	}\
-} while(0)
+  if (str_ref[num] < max_str_ref) {\
+    if (str_ref[num] > 1) str_ref[num]--;\
+    else flush_string(num);\
+  }\
+} while (0)
 
 // 48
 
 #define app_lc_hex(num) do {\
-	l = num;\
-	if(l < 10)\
-		append_char(l + TEX_STRING("0"));\
-	else\
-		append_char(l - 10 + TEX_STRING("a"));\
-} while(0)
+  l = num;\
+  if (l < 10)\
+    append_char(l + TEX_STRING("0"));\
+  else\
+    append_char(l - 10 + TEX_STRING("a"));\
+} while (0)
 
 // 50
 #ifndef NO_INIT
 alpha_file pool_file; // the string-pool file output by TANGLE
 #endif
 
-
 // 51
 // NOTE: Add extra parameter if we should close the file
 #define bad_pool(str, do_close) do {\
-	puts(str);\
-	if(do_close)\
-		a_close(pool_file);\
-	return false;\
-} while(0)
+  puts(str);\
+  if (do_close)\
+    a_close(pool_file);\
+  return false;\
+} while (0)
 
 // 54
 const int no_print = 0; // selector setting that makes data disappear
@@ -264,7 +247,6 @@ const int term_and_log = 3; // normal selector setting
 const int pseudo = 4; // special selector setting for show_context
 const int new_string = 5; // printing is deflected to the string pool
 const int max_selector = 5; // highest selector setting
-
 
 alpha_file log_file; // transcript of METAFONT session
 int selector; // 0..max_selector, where to print a message
@@ -277,38 +259,34 @@ Array<ASCII_code, 0, error_line> trick_buf; // circular buffer for pseudoprintin
 int trick_count; // threshold for pseudoprinting
 int first_count; // another variable for pseudoprinting
 
-
 // 56
 
 #define wterm_s(s) fputs(s, term_out)
 #define wterm_c(s) fputc(s, term_out)
-#define wterm_ln_s(s) do {fputs(s, term_out);fputc('\n',term_out);} while(0)
+#define wterm_ln_s(s) do {fputs(s, term_out);fputc('\n',term_out);} while (0)
 #define wterm_cr fputc('\n', term_out)
 
 #define wlog_s(s) do{\
-	fputs(s, log_file);\
-} while(0)
+  fputs(s, log_file);\
+} while (0)
 
 #define wlog_c(s) do{\
-	fputc(s, log_file);\
-} while(0)
+  fputc(s, log_file);\
+} while (0)
 
 #define wlog_ln_s(s) do{\
-	fputs(s, log_file);\
-	fputc('\n', log_file);\
+  fputs(s, log_file);\
+  fputc('\n', log_file);\
 } while (0)
 
 #define wlog_cr do{\
-	fputc('\n',log_file);\
-} while(0)
-
+  fputc('\n',log_file);\
+} while (0)
 
 // 66
 #define prompt_input(s) do{\
-	wake_up_terminal(); print(s); term_input();\
-} while(false) // prints a string and gets a line of input
-
-
+  wake_up_terminal(); print(s); term_input();\
+} while (false) // prints a string and gets a line of input
 
 // 68
 const int batch_mode = 0;
@@ -317,9 +295,9 @@ const int scroll_mode = 2;
 const int error_stop_mode = 3;
 
 #define print_err(s) do{\
-	if (interaction == error_stop_mode) wake_up_terminal();\
-	print_nl(TEX_STRING("! ")); print(s);\
-} while(0)
+  if (interaction == error_stop_mode) wake_up_terminal();\
+  print_nl(TEX_STRING("! ")); print(s);\
+} while (0)
 
 unsigned char interaction; // batch_mode..error_stop_mode, current level of interaction
 
@@ -333,72 +311,70 @@ bool deletions_allowed; // is it safe for error to call get_next
 int history; // spotless..fatal_error_stop, has the source input been clean so far?
 int error_count; // -1..100, the number of scrolled errors since the last statement ended
 
-
 // 74
 // sometimes there might be no help
 #define help0 do{\
-	help_ptr = 0;\
-} while(0)
+  help_ptr = 0;\
+} while (0)
 
 // use this with one help line
 #define help1(s) do{\
-	help_ptr = 1;\
-	help_line[0] = s;\
-} while(0)
+  help_ptr = 1;\
+  help_line[0] = s;\
+} while (0)
 
 // use this with two help lines
 #define help2(s1,s2) do{\
-	help_ptr = 2;\
-	help_line[1] = s1;\
-	help_line[0] = s2;\
-} while(0)
+  help_ptr = 2;\
+  help_line[1] = s1;\
+  help_line[0] = s2;\
+} while (0)
 
 // use this with three help lines
 #define help3(s1,s2,s3) do{\
-	help_ptr = 3;\
-	help_line[2] = s1;\
-	help_line[1] = s2;\
-	help_line[0] = s3;\
-} while(0)
+  help_ptr = 3;\
+  help_line[2] = s1;\
+  help_line[1] = s2;\
+  help_line[0] = s3;\
+} while (0)
 
 // use this with four help lines
 #define help4(s1,s2,s3,s4) do{\
-	help_ptr = 4;\
-	help_line[3] = s1;\
-	help_line[2] = s2;\
-	help_line[1] = s3;\
-	help_line[0] = s4;\
-} while(0)
+  help_ptr = 4;\
+  help_line[3] = s1;\
+  help_line[2] = s2;\
+  help_line[1] = s3;\
+  help_line[0] = s4;\
+} while (0)
 
 // use this with five help lines
 #define help5(s1,s2,s3,s4,s5) do{\
-	help_ptr = 5;\
-	help_line[4] = s1;\
-	help_line[3] = s2;\
-	help_line[2] = s3;\
-	help_line[1] = s4;\
-	help_line[0] = s5;\
-} while(0)
+  help_ptr = 5;\
+  help_line[4] = s1;\
+  help_line[3] = s2;\
+  help_line[2] = s3;\
+  help_line[1] = s4;\
+  help_line[0] = s5;\
+} while (0)
 
 // use this with six help lines
 #define help6(s1,s2,s3,s4,s5,s6) do{\
-	help_ptr = 6;\
-	help_line[5] = s1;\
-	help_line[4] = s2;\
-	help_line[3] = s3;\
-	help_line[2] = s4;\
-	help_line[1] = s5;\
-	help_line[0] = s6;\
-} while(0)
+  help_ptr = 6;\
+  help_line[5] = s1;\
+  help_line[4] = s2;\
+  help_line[3] = s3;\
+  help_line[2] = s4;\
+  help_line[1] = s5;\
+  help_line[0] = s6;\
+} while (0)
 
 Array<str_number, 0, 5> help_line; // helps for the next error
 char help_ptr; // 0..6, the number of help lines present
 bool use_err_help; // should err_help list be shown?
 str_number err_help; // a string set up by errhelp
 
-
 // 91
-#define check_interrupt if(interrupt != 0) pause_for_instructions()
+#define check_interrupt if (interrupt != 0) pause_for_instructions()
 
 int interrupt; // should METAFONT pause for instructions?
 bool OK_to_interrupt; // should interrupts be observed?
@@ -409,12 +385,11 @@ const int el_gordo = 017777777777; // 2^31 - 1, the largest value that METAFONT 
 // 96
 #define half(n) (n) / 2
 
-
 // 97
 bool arith_error; // has arithmetic overflow occurred recently?
 
 // 99
-#define check_arith if(arith_error) clear_arith()
+#define check_arith if (arith_error) clear_arith()
 
 // 101
 const int quarter_unit = 040000; // 2^14, represents 0.250000
@@ -443,7 +418,6 @@ const int three_sixty_deg = 02640000000; // 360*2^20, represetns 360 deg
 
 typedef int angle; // this type is used for scaled angles
 
-
 // 117
 #define return_sign(n) return n
 
@@ -466,7 +440,6 @@ const int fifth_octant = first_octant + negate_x + negate_y;
 const int sixth_octant = first_octant + switch_x_and_y + negate_x + negate_y;
 const int seventh_octant = first_octant + switch_x_and_y + negate_y;
 const int eighth_octant = first_octant + negate_y;
-
 
 // 144
 fraction n_sin; // results computed by n_sin_cos
@@ -498,30 +471,30 @@ typedef int halfword; // min_halfword..max_halfword, 1/2 of a word, NOTE: This p
 
 typedef struct two_halves
 {
-	halfword rh;
-	union {
-		halfword lh;
-		struct {
-			quarterword b0;
-			quarterword b1;
-		};
-	};
+  halfword rh;
+  union {
+    halfword lh;
+    struct {
+      quarterword b0;
+      quarterword b1;
+    };
+  };
 } two_halves;
 
 typedef struct {
-	quarterword b0;
-	quarterword b1;
-	quarterword b2;
-	quarterword b3;
+  quarterword b0;
+  quarterword b1;
+  quarterword b2;
+  quarterword b3;
 } four_quarters;
 
 typedef struct
 {
-	union {
-		int an_int;
-		two_halves hh;
-		four_quarters qqqq;
-	};
+  union {
+    int an_int;
+    two_halves hh;
+    four_quarters qqqq;
+  };
 } memory_word;
 
 typedef FILE* word_file;
@@ -529,7 +502,6 @@ typedef FILE* word_file;
 // 158
 #define pointer halfword // a flag or a location in mem or eqtb
 #define null mem_min // the null pointer
-
 
 // 159
 Array<memory_word, mem_min, mem_max> mem; // the big dynamic storage area
@@ -551,7 +523,6 @@ pointer mem_end; // the last one-word node used in mem
 
 // fast_get_avail, NOTE: use get_avail instead
 #define fast_get_avail(n) n = get_avail()
-
 
 // 166
 #define empty_flag max_halfword // the link of an empty variable-size node
@@ -577,7 +548,6 @@ const int temp_head = mem_top - 1; // head of a temporary list of some kind
 const int hold_head = mem_top - 2; // head of a temporary list of another kind
 const int hi_mem_stat_min = mem_top - 2; // smallest statically allocated word in the one-word mem
 
-
 // 178
 //debug
 #ifndef NO_DEBUG
@@ -590,143 +560,141 @@ bool panicking; // do we want to check memory constantly?
 #endif
 //gubed
 
-
 // 186
 enum command_codes
 {
-	if_test=1, //{conditional text (\&{if})}
-	fi_or_else=2, //{delimiters for conditionals (\&{elseif}, \&{else}, \&{fi})}
-	input=3, //{input a source file (\&{input}, \&{endinput})}
-	iteration=4, //{iterate (\&{for}, \&{forsuffixes}, \&{forever}, \&{endfor})}
-	repeat_loop=5, //{special command substituted for \&{endfor}}
-	exit_test=6, //{premature exit from a loop (\&{exitif})}
-	relax=7, //{do nothing (\.{\char`\\})}
-	scan_tokens=8, //{put a string into the input buffer}
-	expand_after=9, //{look ahead one token}
-	defined_macro=10, //{a macro defined by the user}
-	min_command=defined_macro+1,
-	display_command=11, //{online graphic output (\&{display})}
-	save_command=12, //{save a list of tokens (\&{save})}
-	interim_command=13, //{save an internal quantity (\&{interim})}
-	let_command=14, //{redefine a symbolic token (\&{let})}
-	new_internal=15, //{define a new internal quantity (\&{newinternal})}
-	macro_def=16, //{define a macro (\&{def}, \&{vardef}, etc.)}
-	ship_out_command=17, //{output a character (\&{shipout})}
-	add_to_command=18, //{add to edges (\&{addto})}
-	cull_command=19, //{cull and normalize edges (\&{cull})}
-	tfm_command=20, //{command for font metric info (\&{ligtable}, etc.)}
-	protection_command=21, //{set protection flag (\&{outer}, \&{inner})}
-	show_command=22, //{diagnostic output (\&{show}, \&{showvariable}, etc.)}
-	mode_command=23, //{set interaction level (\&{batchmode}, etc.)}
-	random_seed=24, //{initialize random number generator (\&{randomseed})}
-	message_command=25, //{communicate to user (\&{message}, \&{errmessage})}
-	every_job_command=26, //{designate a starting token (\&{everyjob})}
-	delimiters=27, //{define a pair of delimiters (\&{delimiters})}
-	open_window=28, //{define a window on the screen (\&{openwindow})}
-	special_command=29, //{output special info (\&{special}, \&{numspecial})}
-	type_name=30, //{declare a type (\&{numeric}, \&{pair}, etc.)}
-	max_statement_command=type_name,
-	min_primary_command=type_name,
-	left_delimiter=31, //{the left delimiter of a matching pair}
-	begin_group=32, //{beginning of a group (\&{begingroup})}
-	nullary=33, //{an operator without arguments (e.g., \&{normaldeviate})}
-	unary=34, //{an operator with one argument (e.g., \&{sqrt})}
-	str_op=35, //{convert a suffix to a string (\&{str})}
-	cycle=36, //{close a cyclic path (\&{cycle})}
-	primary_binary=37, //{binary operation taking `\&{of}' (e.g., \&{point})}
-	capsule_token=38, //{a value that has been put into a token list}
-	string_token=39, //{a string constant (e.g., |"hello"|)}
-	internal_quantity=40, //{internal numeric parameter (e.g., \&{pausing})}
-	min_suffix_token=internal_quantity,
-	tag_token=41, //{a symbolic token without a primitive meaning}
-	numeric_token=42, //{a numeric constant (e.g., \.{3.14159})}
-	max_suffix_token=numeric_token,
-	plus_or_minus=43, //{either `\.+' or `\.-'}
-	max_primary_command=plus_or_minus, //{should also be |numeric_token+1|}
-	min_tertiary_command=plus_or_minus,
-	tertiary_secondary_macro=44, //{a macro defined by \&{secondarydef}}
-	tertiary_binary=45, //{an operator at the tertiary level (e.g., `\.{++}')}
-	max_tertiary_command=tertiary_binary,
-	left_brace=46, //{the operator `\.{\char`\{}'}
-	min_expression_command=left_brace,
-	path_join=47, //{the operator `\.{..}'}
-	ampersand=48, //{the operator `\.\&'}
-	expression_tertiary_macro=49, //{a macro defined by \&{tertiarydef}}
-	expression_binary=50, //{an operator at the expression level (e.g., `\.<')}
-	equals=51, //{the operator `\.='}
-	max_expression_command=equals,
-	and_command=52, //{the operator `\&{and}'}
-	min_secondary_command=and_command,
-	secondary_primary_macro=53, //{a macro defined by \&{primarydef}}
-	slash=54, //{the operator `\./'}
-	secondary_binary=55, //{an operator at the binary level (e.g., \&{shifted})}
-	max_secondary_command=secondary_binary,
-	param_type=56, //{type of parameter (\&{primary}, \&{expr}, \&{suffix}, etc.)}
-	controls=57, //{specify control points explicitly (\&{controls})}
-	tension=58, //{specify tension between knots (\&{tension})}
-	at_least=59, //{bounded tension value (\&{atleast})}
-	curl_command=60, //{specify curl at an end knot (\&{curl})}
-	macro_special=61, //{special macro operators (\&{quote}, \.{\#\AT!}, etc.)}
-	right_delimiter=62, //{the right delimiter of a matching pair}
-	left_bracket=63, //{the operator `\.['}
-	right_bracket=64, //{the operator `\.]'}
-	right_brace=65, //{the operator `\.{\char`\}}'}
-	with_option=66, //{option for filling (\&{withpen}, \&{withweight})}
-	cull_op=67, //{the operator `\&{keeping}' or `\&{dropping}'}
-	thing_to_add=68, //{variant of \&{addto} (\&{contour}, \&{doublepath}, \&{also})}
-	of_token=69, //{the operator `\&{of}'}
-	from_token=70, //{the operator `\&{from}'}
-	to_token=71, //{the operator `\&{to}'}
-	at_token=72, //{the operator `\&{at}'}
-	in_window=73, //{the operator `\&{inwindow}'}
-	step_token=74, //{the operator `\&{step}'}
-	until_token=75, //{the operator `\&{until}'}
-	lig_kern_token=76, //{the operators `\&{kern}' and `\.{=:}' and `\.{=:\char'174}', etc.}
-	assignment=77, //{the operator `\.{:=}'}
-	skip_to=78, //{the operation `\&{skipto}'}
-	bchar_label=79, //{the operator `\.{\char'174\char'174:}'}
-	double_colon=80, //{the operator `\.{::}'}
-	colon=81, //{the operator `\.:'}
-	comma=82, //{the operator `\.,', must be |colon+1|}
-	#define end_of_statement cur_cmd > comma
-	semicolon=83, //{the operator `\.;', must be |comma+1|}
-	end_group=84, //{end a group (\&{endgroup}), must be |semicolon+1|}
-	stop=85, //{end a job (\&{end}, \&{dump}), must be |end_group+1|}
-	max_command_code=stop,
-	outer_tag=max_command_code+1, //{protection code added to command code}
+  if_test=1, //{conditional text (\&{if})}
+  fi_or_else=2, //{delimiters for conditionals (\&{elseif}, \&{else}, \&{fi})}
+  input=3, //{input a source file (\&{input}, \&{endinput})}
+  iteration=4, //{iterate (\&{for}, \&{forsuffixes}, \&{forever}, \&{endfor})}
+  repeat_loop=5, //{special command substituted for \&{endfor}}
+  exit_test=6, //{premature exit from a loop (\&{exitif})}
+  relax=7, //{do nothing (\.{\char`\\})}
+  scan_tokens=8, //{put a string into the input buffer}
+  expand_after=9, //{look ahead one token}
+  defined_macro=10, //{a macro defined by the user}
+  min_command=defined_macro+1,
+  display_command=11, //{online graphic output (\&{display})}
+  save_command=12, //{save a list of tokens (\&{save})}
+  interim_command=13, //{save an internal quantity (\&{interim})}
+  let_command=14, //{redefine a symbolic token (\&{let})}
+  new_internal=15, //{define a new internal quantity (\&{newinternal})}
+  macro_def=16, //{define a macro (\&{def}, \&{vardef}, etc.)}
+  ship_out_command=17, //{output a character (\&{shipout})}
+  add_to_command=18, //{add to edges (\&{addto})}
+  cull_command=19, //{cull and normalize edges (\&{cull})}
+  tfm_command=20, //{command for font metric info (\&{ligtable}, etc.)}
+  protection_command=21, //{set protection flag (\&{outer}, \&{inner})}
+  show_command=22, //{diagnostic output (\&{show}, \&{showvariable}, etc.)}
+  mode_command=23, //{set interaction level (\&{batchmode}, etc.)}
+  random_seed=24, //{initialize random number generator (\&{randomseed})}
+  message_command=25, //{communicate to user (\&{message}, \&{errmessage})}
+  every_job_command=26, //{designate a starting token (\&{everyjob})}
+  delimiters=27, //{define a pair of delimiters (\&{delimiters})}
+  open_window=28, //{define a window on the screen (\&{openwindow})}
+  special_command=29, //{output special info (\&{special}, \&{numspecial})}
+  type_name=30, //{declare a type (\&{numeric}, \&{pair}, etc.)}
+  max_statement_command=type_name,
+  min_primary_command=type_name,
+  left_delimiter=31, //{the left delimiter of a matching pair}
+  begin_group=32, //{beginning of a group (\&{begingroup})}
+  nullary=33, //{an operator without arguments (e.g., \&{normaldeviate})}
+  unary=34, //{an operator with one argument (e.g., \&{sqrt})}
+  str_op=35, //{convert a suffix to a string (\&{str})}
+  cycle=36, //{close a cyclic path (\&{cycle})}
+  primary_binary=37, //{binary operation taking `\&{of}' (e.g., \&{point})}
+  capsule_token=38, //{a value that has been put into a token list}
+  string_token=39, //{a string constant (e.g., |"hello"|)}
+  internal_quantity=40, //{internal numeric parameter (e.g., \&{pausing})}
+  min_suffix_token=internal_quantity,
+  tag_token=41, //{a symbolic token without a primitive meaning}
+  numeric_token=42, //{a numeric constant (e.g., \.{3.14159})}
+  max_suffix_token=numeric_token,
+  plus_or_minus=43, //{either `\.+' or `\.-'}
+  max_primary_command=plus_or_minus, //{should also be |numeric_token+1|}
+  min_tertiary_command=plus_or_minus,
+  tertiary_secondary_macro=44, //{a macro defined by \&{secondarydef}}
+  tertiary_binary=45, //{an operator at the tertiary level (e.g., `\.{++}')}
+  max_tertiary_command=tertiary_binary,
+  left_brace=46, //{the operator `\.{\char`\{}'}
+  min_expression_command=left_brace,
+  path_join=47, //{the operator `\.{..}'}
+  ampersand=48, //{the operator `\.\&'}
+  expression_tertiary_macro=49, //{a macro defined by \&{tertiarydef}}
+  expression_binary=50, //{an operator at the expression level (e.g., `\.<')}
+  equals=51, //{the operator `\.='}
+  max_expression_command=equals,
+  and_command=52, //{the operator `\&{and}'}
+  min_secondary_command=and_command,
+  secondary_primary_macro=53, //{a macro defined by \&{primarydef}}
+  slash=54, //{the operator `\./'}
+  secondary_binary=55, //{an operator at the binary level (e.g., \&{shifted})}
+  max_secondary_command=secondary_binary,
+  param_type=56, //{type of parameter (\&{primary}, \&{expr}, \&{suffix}, etc.)}
+  controls=57, //{specify control points explicitly (\&{controls})}
+  tension=58, //{specify tension between knots (\&{tension})}
+  at_least=59, //{bounded tension value (\&{atleast})}
+  curl_command=60, //{specify curl at an end knot (\&{curl})}
+  macro_special=61, //{special macro operators (\&{quote}, \.{\#\AT!}, etc.)}
+  right_delimiter=62, //{the right delimiter of a matching pair}
+  left_bracket=63, //{the operator `\.['}
+  right_bracket=64, //{the operator `\.]'}
+  right_brace=65, //{the operator `\.{\char`\}}'}
+  with_option=66, //{option for filling (\&{withpen}, \&{withweight})}
+  cull_op=67, //{the operator `\&{keeping}' or `\&{dropping}'}
+  thing_to_add=68, //{variant of \&{addto} (\&{contour}, \&{doublepath}, \&{also})}
+  of_token=69, //{the operator `\&{of}'}
+  from_token=70, //{the operator `\&{from}'}
+  to_token=71, //{the operator `\&{to}'}
+  at_token=72, //{the operator `\&{at}'}
+  in_window=73, //{the operator `\&{inwindow}'}
+  step_token=74, //{the operator `\&{step}'}
+  until_token=75, //{the operator `\&{until}'}
+  lig_kern_token=76, //{the operators `\&{kern}' and `\.{=:}' and `\.{=:\char'174}', etc.}
+  assignment=77, //{the operator `\.{:=}'}
+  skip_to=78, //{the operation `\&{skipto}'}
+  bchar_label=79, //{the operator `\.{\char'174\char'174:}'}
+  double_colon=80, //{the operator `\.{::}'}
+  colon=81, //{the operator `\.:'}
+  comma=82, //{the operator `\.,', must be |colon+1|}
+  #define end_of_statement (cur_cmd > comma)
+  semicolon=83, //{the operator `\.;', must be |comma+1|}
+  end_group=84, //{end a group (\&{endgroup}), must be |semicolon+1|}
+  stop=85, //{end a job (\&{end}, \&{dump}), must be |end_group+1|}
+  max_command_code=stop,
+  outer_tag=max_command_code+1, //{protection code added to command code}
 };
 
 typedef int command_code; // 1..max_command_code
 
-
 // 187
 enum meta_types
 {
-	undefined=0, //{no type has been declared}
-	unknown_tag=1, //{this constant is added to certain type codes below}
-	vacuous=1, //{no expression was present}
-	boolean_type=2, //{\&{boolean} with a known value}
-	unknown_boolean=boolean_type+unknown_tag,
-	string_type=4, //{\&{string} with a known value}
-	unknown_string=string_type+unknown_tag,
-	pen_type=6, //{\&{pen} with a known value}
-	unknown_pen=pen_type+unknown_tag,
-	future_pen=8, //{subexpression that will become a \&{pen} at a higher level}
-	path_type=9, //{\&{path} with a known value}
-	unknown_path=path_type+unknown_tag,
-	picture_type=11, //{\&{picture} with a known value}
-	unknown_picture=picture_type+unknown_tag,
-	transform_type=13, //{\&{transform} variable or capsule}
-	pair_type=14, //{\&{pair} variable or capsule}
-	numeric_type=15, //{variable that has been declared \&{numeric} but not used}
-	known=16, //{\&{numeric} with a known value}
-	dependent=17, //{a linear combination with |fraction| coefficients}
-	proto_dependent=18, //{a linear combination with |scaled| coefficients}
-	independent=19, //{\&{numeric} with unknown value}
-	token_list=20, //{variable name or suffix argument or text argument}
-	structured=21, //{variable with subscripts and attributes}
-	unsuffixed_macro=22, //{variable defined with \&{vardef} but no \.{\AT!\#}}
-	suffixed_macro=23, //{variable defined with \&{vardef} and \.{\AT!\#}}
+  undefined=0, //{no type has been declared}
+  unknown_tag=1, //{this constant is added to certain type codes below}
+  vacuous=1, //{no expression was present}
+  boolean_type=2, //{\&{boolean} with a known value}
+  unknown_boolean=boolean_type+unknown_tag,
+  string_type=4, //{\&{string} with a known value}
+  unknown_string=string_type+unknown_tag,
+  pen_type=6, //{\&{pen} with a known value}
+  unknown_pen=pen_type+unknown_tag,
+  future_pen=8, //{subexpression that will become a \&{pen} at a higher level}
+  path_type=9, //{\&{path} with a known value}
+  unknown_path=path_type+unknown_tag,
+  picture_type=11, //{\&{picture} with a known value}
+  unknown_picture=picture_type+unknown_tag,
+  transform_type=13, //{\&{transform} variable or capsule}
+  pair_type=14, //{\&{pair} variable or capsule}
+  numeric_type=15, //{variable that has been declared \&{numeric} but not used}
+  known=16, //{\&{numeric} with a known value}
+  dependent=17, //{a linear combination with |fraction| coefficients}
+  proto_dependent=18, //{a linear combination with |scaled| coefficients}
+  independent=19, //{\&{numeric} with unknown value}
+  token_list=20, //{variable name or suffix argument or text argument}
+  structured=21, //{variable with subscripts and attributes}
+  unsuffixed_macro=22, //{variable defined with \&{vardef} but no \.{\AT!\#}}
+  suffixed_macro=23, //{variable defined with \&{vardef} and \.{\AT!\#}}
 };
 
 #define unknown_types unknown_boolean: case unknown_string: case unknown_pen: case unknown_picture: case unknown_path
@@ -734,182 +702,172 @@ enum meta_types
 // 188
 enum enum_name_type
 {
-	root=0, //{|name_type| at the top level of a variable}
-	saved_root=1, //{same, when the variable has been saved}
-	structured_root=2, //{|name_type| where a |structured| branch occurs}
-	subscr=3, //{|name_type| in a subscript node}
-	attr=4, //{|name_type| in an attribute node}
-	x_part_sector=5, //{|name_type| in the \&{xpart} of a node}
-	y_part_sector=6, //{|name_type| in the \&{ypart} of a node}
-	xx_part_sector=7, //{|name_type| in the \&{xxpart} of a node}
-	xy_part_sector=8, //{|name_type| in the \&{xypart} of a node}
-	yx_part_sector=9, //{|name_type| in the \&{yxpart} of a node}
-	yy_part_sector=10, //{|name_type| in the \&{yypart} of a node}
-	capsule=11, //{|name_type| in stashed-away subexpressions}
-	token=12, //{|name_type| in a numeric token or string token}
+  root=0, //{|name_type| at the top level of a variable}
+  saved_root=1, //{same, when the variable has been saved}
+  structured_root=2, //{|name_type| where a |structured| branch occurs}
+  subscr=3, //{|name_type| in a subscript node}
+  attr=4, //{|name_type| in an attribute node}
+  x_part_sector=5, //{|name_type| in the \&{xpart} of a node}
+  y_part_sector=6, //{|name_type| in the \&{ypart} of a node}
+  xx_part_sector=7, //{|name_type| in the \&{xxpart} of a node}
+  xy_part_sector=8, //{|name_type| in the \&{xypart} of a node}
+  yx_part_sector=9, //{|name_type| in the \&{yxpart} of a node}
+  yy_part_sector=10, //{|name_type| in the \&{yypart} of a node}
+  capsule=11, //{|name_type| in stashed-away subexpressions}
+  token=12, //{|name_type| in a numeric token or string token}
 };
 
 // 189
 enum enum_operation_code
 {
-	true_code=30, //{operation code for \.{true}}
-	false_code=31, //{operation code for \.{false}}
-	null_picture_code=32, //{operation code for \.{nullpicture}}
-	null_pen_code=33, //{operation code for \.{nullpen}}
-	job_name_op=34, //{operation code for \.{jobname}}
-	read_string_op=35, //{operation code for \.{readstring}}
-	pen_circle=36, //{operation code for \.{pencircle}}
-	normal_deviate=37, //{operation code for \.{normaldeviate}}
-	odd_op=38, //{operation code for \.{odd}}
-	known_op=39, //{operation code for \.{known}}
-	unknown_op=40, //{operation code for \.{unknown}}
-	not_op=41, //{operation code for \.{not}}
-	decimal=42, //{operation code for \.{decimal}}
-	reverse=43, //{operation code for \.{reverse}}
-	make_path_op=44, //{operation code for \.{makepath}}
-	make_pen_op=45, //{operation code for \.{makepen}}
-	total_weight_op=46, //{operation code for \.{totalweight}}
-	oct_op=47, //{operation code for \.{oct}}
-	hex_op=48, //{operation code for \.{hex}}
-	ASCII_op=49, //{operation code for \.{ASCII}}
-	char_op=50, //{operation code for \.{char}}
-	length_op=51, //{operation code for \.{length}}
-	turning_op=52, //{operation code for \.{turningnumber}}
-	x_part=53, //{operation code for \.{xpart}}
-	y_part=54, //{operation code for \.{ypart}}
-	xx_part=55, //{operation code for \.{xxpart}}
-	xy_part=56, //{operation code for \.{xypart}}
-	yx_part=57, //{operation code for \.{yxpart}}
-	yy_part=58, //{operation code for \.{yypart}}
-	sqrt_op=59, //{operation code for \.{sqrt}}
-	m_exp_op=60, //{operation code for \.{mexp}}
-	m_log_op=61, //{operation code for \.{mlog}}
-	sin_d_op=62, //{operation code for \.{sind}}
-	cos_d_op=63, //{operation code for \.{cosd}}
-	floor_op=64, //{operation code for \.{floor}}
-	uniform_deviate=65, //{operation code for \.{uniformdeviate}}
-	char_exists_op=66, //{operation code for \.{charexists}}
-	angle_op=67, //{operation code for \.{angle}}
-	cycle_op=68, //{operation code for \.{cycle}}
-	plus=69, //{operation code for \.+}
-	minus=70, //{operation code for \.-}
-	times=71, //{operation code for \.*}
-	over=72, //{operation code for \./}
-	pythag_add=73, //{operation code for \.{++}}
-	pythag_sub=74, //{operation code for \.{+-+}}
-	or_op=75, //{operation code for \.{or}}
-	and_op=76, //{operation code for \.{and}}
-	less_than=77, //{operation code for \.<}
-	less_or_equal=78, //{operation code for \.{<=}}
-	greater_than=79, //{operation code for \.>}
-	greater_or_equal=80, //{operation code for \.{>=}}
-	equal_to=81, //{operation code for \.=}
-	unequal_to=82, //{operation code for \.{<>}}
-	concatenate=83, //{operation code for \.\&}
-	rotated_by=84, //{operation code for \.{rotated}}
-	slanted_by=85, //{operation code for \.{slanted}}
-	scaled_by=86, //{operation code for \.{scaled}}
-	shifted_by=87, //{operation code for \.{shifted}}
-	transformed_by=88, //{operation code for \.{transformed}}
-	x_scaled=89, //{operation code for \.{xscaled}}
-	y_scaled=90, //{operation code for \.{yscaled}}
-	z_scaled=91, //{operation code for \.{zscaled}}
-	intersect=92, //{operation code for \.{intersectiontimes}}
-	double_dot=93, //{operation code for improper \.{..}}
-	substring_of=94, //{operation code for \.{substring}}
-	min_of=substring_of,
-	subpath_of=95, //{operation code for \.{subpath}}
-	direction_time_of=96, //{operation code for \.{directiontime}}
-	point_of=97, //{operation code for \.{point}}
-	precontrol_of=98, //{operation code for \.{precontrol}}
-	postcontrol_of=99, //{operation code for \.{postcontrol}}
-	pen_offset_of=100, //{operation code for \.{penoffset}}
+  true_code=30, //{operation code for \.{true}}
+  false_code=31, //{operation code for \.{false}}
+  null_picture_code=32, //{operation code for \.{nullpicture}}
+  null_pen_code=33, //{operation code for \.{nullpen}}
+  job_name_op=34, //{operation code for \.{jobname}}
+  read_string_op=35, //{operation code for \.{readstring}}
+  pen_circle=36, //{operation code for \.{pencircle}}
+  normal_deviate=37, //{operation code for \.{normaldeviate}}
+  odd_op=38, //{operation code for \.{odd}}
+  known_op=39, //{operation code for \.{known}}
+  unknown_op=40, //{operation code for \.{unknown}}
+  not_op=41, //{operation code for \.{not}}
+  decimal=42, //{operation code for \.{decimal}}
+  reverse=43, //{operation code for \.{reverse}}
+  make_path_op=44, //{operation code for \.{makepath}}
+  make_pen_op=45, //{operation code for \.{makepen}}
+  total_weight_op=46, //{operation code for \.{totalweight}}
+  oct_op=47, //{operation code for \.{oct}}
+  hex_op=48, //{operation code for \.{hex}}
+  ASCII_op=49, //{operation code for \.{ASCII}}
+  char_op=50, //{operation code for \.{char}}
+  length_op=51, //{operation code for \.{length}}
+  turning_op=52, //{operation code for \.{turningnumber}}
+  x_part=53, //{operation code for \.{xpart}}
+  y_part=54, //{operation code for \.{ypart}}
+  xx_part=55, //{operation code for \.{xxpart}}
+  xy_part=56, //{operation code for \.{xypart}}
+  yx_part=57, //{operation code for \.{yxpart}}
+  yy_part=58, //{operation code for \.{yypart}}
+  sqrt_op=59, //{operation code for \.{sqrt}}
+  m_exp_op=60, //{operation code for \.{mexp}}
+  m_log_op=61, //{operation code for \.{mlog}}
+  sin_d_op=62, //{operation code for \.{sind}}
+  cos_d_op=63, //{operation code for \.{cosd}}
+  floor_op=64, //{operation code for \.{floor}}
+  uniform_deviate=65, //{operation code for \.{uniformdeviate}}
+  char_exists_op=66, //{operation code for \.{charexists}}
+  angle_op=67, //{operation code for \.{angle}}
+  cycle_op=68, //{operation code for \.{cycle}}
+  plus=69, //{operation code for \.+}
+  minus=70, //{operation code for \.-}
+  times=71, //{operation code for \.*}
+  over=72, //{operation code for \./}
+  pythag_add=73, //{operation code for \.{++}}
+  pythag_sub=74, //{operation code for \.{+-+}}
+  or_op=75, //{operation code for \.{or}}
+  and_op=76, //{operation code for \.{and}}
+  less_than=77, //{operation code for \.<}
+  less_or_equal=78, //{operation code for \.{<=}}
+  greater_than=79, //{operation code for \.>}
+  greater_or_equal=80, //{operation code for \.{>=}}
+  equal_to=81, //{operation code for \.=}
+  unequal_to=82, //{operation code for \.{<>}}
+  concatenate=83, //{operation code for \.\&}
+  rotated_by=84, //{operation code for \.{rotated}}
+  slanted_by=85, //{operation code for \.{slanted}}
+  scaled_by=86, //{operation code for \.{scaled}}
+  shifted_by=87, //{operation code for \.{shifted}}
+  transformed_by=88, //{operation code for \.{transformed}}
+  x_scaled=89, //{operation code for \.{xscaled}}
+  y_scaled=90, //{operation code for \.{yscaled}}
+  z_scaled=91, //{operation code for \.{zscaled}}
+  intersect=92, //{operation code for \.{intersectiontimes}}
+  double_dot=93, //{operation code for improper \.{..}}
+  substring_of=94, //{operation code for \.{substring}}
+  min_of=substring_of,
+  subpath_of=95, //{operation code for \.{subpath}}
+  direction_time_of=96, //{operation code for \.{directiontime}}
+  point_of=97, //{operation code for \.{point}}
+  precontrol_of=98, //{operation code for \.{precontrol}}
+  postcontrol_of=99, //{operation code for \.{postcontrol}}
+  pen_offset_of=100, //{operation code for \.{penoffset}}
 };
-
 
 // 190
 enum internal_params
 {
-	tracing_titles=1, //{show titles online when they appear}
-	tracing_equations=2, //{show each variable when it becomes known}
-	tracing_capsules=3, //{show capsules too}
-	tracing_choices=4, //{show the control points chosen for paths}
-	tracing_specs=5, //{show subdivision of paths into octants before digitizing}
-	tracing_pens=6, //{show details of pens that are made}
-	tracing_commands=7, //{show commands and operations before they are performed}
-	tracing_restores=8, //{show when a variable or internal is restored}
-	tracing_macros=9, //{show macros before they are expanded}
-	tracing_edges=10, //{show digitized edges as they are computed}
-	tracing_output=11, //{show digitized edges as they are output}
-	tracing_stats=12, //{show memory usage at end of job}
-	tracing_online=13, //{show long diagnostics on terminal and in the log file}
-	year=14, //{the current year (e.g., 1984)}
-	month=15, //{the current month (e.g, 3 $\equiv$ March)}
-	day=16, //{the current day of the month}
-	_time=17, //{the number of minutes past midnight when this job started}
-	char_code=18, //{the number of the next character to be output}
-	char_ext=19, //{the extension code of the next character to be output}
-	char_wd=20, //{the width of the next character to be output}
-	char_ht=21, //{the height of the next character to be output}
-	char_dp=22, //{the depth of the next character to be output}
-	char_ic=23, //{the italic correction of the next character to be output}
-	char_dx=24, //{the device's $x$ movement for the next character, in pixels}
-	char_dy=25, //{the device's $y$ movement for the next character, in pixels}
-	design_size=26, //{the unit of measure used for |char_wd..char_ic|, in points}
-	hppp=27, //{the number of horizontal pixels per point}
-	vppp=28, //{the number of vertical pixels per point}
-	x_offset=29, //{horizontal displacement of shipped-out characters}
-	y_offset=30, //{vertical displacement of shipped-out characters}
-	pausing=31, //{positive to display lines on the terminal before they are read}
-	showstopping=32, //{positive to stop after each \&{show} command}
-	fontmaking=33, //{positive if font metric output is to be produced}
-	proofing=34, //{positive for proof mode, negative to suppress output}
-	smoothing=35, //{positive if moves are to be ``smoothed''}
-	autorounding=36, //{controls path modification to ``good'' points}
-	granularity=37, //{autorounding uses this pixel size}
-	fillin=38, //{extra darkness of diagonal lines}
-	turning_check=39, //{controls reorientation of clockwise paths}
-	warning_check=40, //{controls error message when variable value is large}
-	boundary_char=41, //{the boundary character for ligatures}
-	max_given_internal=41,
+  tracing_titles=1, //{show titles online when they appear}
+  tracing_equations=2, //{show each variable when it becomes known}
+  tracing_capsules=3, //{show capsules too}
+  tracing_choices=4, //{show the control points chosen for paths}
+  tracing_specs=5, //{show subdivision of paths into octants before digitizing}
+  tracing_pens=6, //{show details of pens that are made}
+  tracing_commands=7, //{show commands and operations before they are performed}
+  tracing_restores=8, //{show when a variable or internal is restored}
+  tracing_macros=9, //{show macros before they are expanded}
+  tracing_edges=10, //{show digitized edges as they are computed}
+  tracing_output=11, //{show digitized edges as they are output}
+  tracing_stats=12, //{show memory usage at end of job}
+  tracing_online=13, //{show long diagnostics on terminal and in the log file}
+  year=14, //{the current year (e.g., 1984)}
+  month=15, //{the current month (e.g, 3 $\equiv$ March)}
+  day=16, //{the current day of the month}
+  _time=17, //{the number of minutes past midnight when this job started}
+  char_code=18, //{the number of the next character to be output}
+  char_ext=19, //{the extension code of the next character to be output}
+  char_wd=20, //{the width of the next character to be output}
+  char_ht=21, //{the height of the next character to be output}
+  char_dp=22, //{the depth of the next character to be output}
+  char_ic=23, //{the italic correction of the next character to be output}
+  char_dx=24, //{the device's $x$ movement for the next character, in pixels}
+  char_dy=25, //{the device's $y$ movement for the next character, in pixels}
+  design_size=26, //{the unit of measure used for |char_wd..char_ic|, in points}
+  hppp=27, //{the number of horizontal pixels per point}
+  vppp=28, //{the number of vertical pixels per point}
+  x_offset=29, //{horizontal displacement of shipped-out characters}
+  y_offset=30, //{vertical displacement of shipped-out characters}
+  pausing=31, //{positive to display lines on the terminal before they are read}
+  showstopping=32, //{positive to stop after each \&{show} command}
+  fontmaking=33, //{positive if font metric output is to be produced}
+  proofing=34, //{positive for proof mode, negative to suppress output}
+  smoothing=35, //{positive if moves are to be ``smoothed''}
+  autorounding=36, //{controls path modification to ``good'' points}
+  granularity=37, //{autorounding uses this pixel size}
+  fillin=38, //{extra darkness of diagonal lines}
+  turning_check=39, //{controls reorientation of clockwise paths}
+  warning_check=40, //{controls error message when variable value is large}
+  boundary_char=41, //{the boundary character for ligatures}
+  max_given_internal=41,
 };
-
-
 
 Array<scaled, 1, max_internal> internal; // the values of internal quantities
 Array<str_number, 1, max_internal> int_name; // their names
 int int_ptr; // max_given_internal..max_internal, the maximum internal quantity defined so far
 
-
 // 196
 int old_setting; // 0..max_selector
 
-
 int sys_time, sys_day, sys_month, sys_year; //{date and time supplied by external system}
-
 
 // 198
 enum enum_char_class {
-	digit_class = 0, // the class numbers 0123456789
-	period_class = 1, // the class number '.'
-	space_class = 2, // the class number of spaces and nonstandard characters
-	percent_class = 3, // the class number of '%'
-	string_class = 4, // the class number of '"'
-	right_paren_class = 8, // the class number of ')'	
-	letter_class = 9, // letters and the underline character
-	left_bracket_class = 17, // '['
-	right_bracket_class = 18, // ']'
-	invalid_class = 20, // bad character in the input
-	max_class = 20, // the largest class number
+  digit_class = 0, // the class numbers 0123456789
+  period_class = 1, // the class number '.'
+  space_class = 2, // the class number of spaces and nonstandard characters
+  percent_class = 3, // the class number of '%'
+  string_class = 4, // the class number of '"'
+  right_paren_class = 8, // the class number of ')'  
+  letter_class = 9, // letters and the underline character
+  left_bracket_class = 17, // '['
+  right_bracket_class = 18, // ']'
+  invalid_class = 20, // bad character in the input
+  max_class = 20, // the largest class number
 };
 
 #define isolated_classes 5:case 6:case 7:case 8 // characters that make length-one tokens only
 
-
-
-
 Array<unsigned char, 0, 255> char_class; // 0..max_class, the class numbers
-
 
 // 200
 #define next(n) (hash[n].lh) // link for coalesced lists
@@ -921,7 +879,6 @@ const int hash_base = 257; // hashing actually starts here
 
 pointer hash_used; // allocation pointer for hash
 int st_count; // total number of known identifiers
-
 
 // 201
 const int hash_top = hash_base + hash_size; // the first location of the frozen area
@@ -940,7 +897,6 @@ const int frozen_bad_vardef = hash_top + 11; // hash location of 'a bad variable
 const int frozen_undefined = hash_top + 12; // hash location that never gets defined
 const int hash_end = hash_top + 12; // the actual size of the hash and eqtb arrays
 
-
 Array<two_halves, 1, hash_end> hash; // the hash table
 Array<two_halves, 1, hash_end> eqtb; // the equivalents
 
@@ -953,7 +909,6 @@ const int token_node_size = 2; // the number of words in a large token node
 #define expr_base (hash_end + 1) // code for the zeroth expr parameter
 #define suffix_base (expr_base + param_size) // code for the zeroth suffix parameter
 #define text_base (suffix_base + param_size) // code for the zeroth text parameter
-
 
 // 225
 pointer g_pointer; // (global) parameter to the foreword procedures
@@ -969,7 +924,6 @@ const int expr_macro = 4; // preface to a macro with an undelimted expr paramete
 const int of_macro = 5; // preface to a macro with undelimited 'expr x of y' parameters
 const int suffix_macro = 6; // preface to a macro with an undelimited suffix parameter
 const int text_macro = 7; // preface to a macro with an undelimited text parameter
-
 
 // 228
 #define subscr_head_loc(n) (n+1) // where value, subscr_head, and attr_head are
@@ -987,8 +941,6 @@ const int attr_node_size = 3; // the number of words in an attribute node
 const int subscr_node_size = 3; // the number of words in a subscript node
 const int collective_subscript = 0; // code for the attribute '[]'
 
-
-
 // 230
 #define x_part_loc(n) n // where the xpart is found in a pair or transform node
 #define y_part_loc(n) n+2
@@ -1003,18 +955,15 @@ Array<small_number, transform_type, pair_type> big_node_size;
 
 // 242
 #define abort_find do {\
-	return null;\
-} while(false)
-
-
+  return null;\
+} while (false)
 
 // 250
 const int save_node_size = 2;
 #define saved_equiv(n) mem[n+1].hh
 #define save_boundary_item(n) do {\
-	n = get_avail(); info(n) = 0; link(n) = save_ptr; save_ptr = n;\
+  n = get_avail(); info(n) = 0; link(n) = save_ptr; save_ptr = n;\
 } while (false)
-
 
 pointer save_ptr; // the most recently saved item
 
@@ -1030,7 +979,6 @@ const int endpoint = 0; // left_type at path beginning and right_type at path en
 #define right_y(n) mem[n + 6].sc // the y coordinate of next control point
 const int knot_node_size = 7; // number of words in a knot node
 
-
 // 256
 #define left_curl left_x //{curl information when entering this knot}
 #define left_given left_x //{given direction when entering this knot}
@@ -1043,15 +991,11 @@ const int given=2; //{|left_type| or |right_type| when a direction is given}
 const int curl=3; //{|left_type| or |right_type| when a curl is desired}
 const int _open_=4; //{|left_type| or |right_type| when \MF\ should choose the direction}
 
-
-
-
 // 267
 pointer path_tail; // the node that links to the beginning of a path
 
 // 272
 const int end_cycle = _open_ + 1;
-
 
 // 279
 Array<scaled, 0, path_size> delta_x; // knot differences
@@ -1071,7 +1015,7 @@ Array<fraction, 0, path_size> ww; // values of w_k
     if (n > 0) n = n - three_sixty_deg;\
     else n = n + three_sixty_deg;\
   }\
-} while(false)
+} while (false)
 
 // 298
 fraction st; // sines and cosines
@@ -1079,10 +1023,8 @@ fraction ct;
 fraction sf;
 fraction cf;
 
-
 Array<int, 0, move_size> move; // the recorded moves
 int move_ptr; // 0..move_size, the number of items in the move list
-
 
 // 309
 #define stack_x1 bisect_stack[bisect_ptr] //{stacked value of $X_1$}
@@ -1100,7 +1042,6 @@ const int move_increment=11; //{number of items pushed by |make_moves|}
 Array<int, 0, bistack_size> bisect_stack;
 int bisect_ptr; // 0..bistack_size
 
-
 // 324
 const int zero_w = 4;
 const int _void = null + 1;
@@ -1111,7 +1052,6 @@ const int _void = null + 1;
 #define sorted(n) link(sorted_loc(n)) // beginning of the list of sorted edge weights
 #define unsorted(n) info(n + 1) // beginning of the list of unsorted edge weights
 const int row_node_size = 2; // number of words in a row header node
-
 
 // 326
 const int zero_field = 4096; // amount added to coordiantes to make them positive
@@ -1128,8 +1068,6 @@ const int edge_header_size = 6; // number of words in an edge-structure header
 #define valid_range(n) (myabs(n - 4096) < 4096) // is n strictly between 0 and 8192?
 #define empty_edges(n) link(n) == n // are there no rows in this edge header?
 
-
-
 // 327
 pointer cur_edges; // the edge structure of current interest
 int cur_wt; // the edge weight of current interest
@@ -1139,15 +1077,13 @@ int trace_x; // x coordinate most recently shown in a trace
 int trace_y; // y coordinate most recently shown in a trace
 int trace_yy; // y coordinate most recently encountered
 
-
 // 379
 int octant; // first_octant..sixth_octant, the current octant of interest
 
 // 387
 #define set_two(x, y) do {\
-	cur_x = x; cur_y = y;\
-} while(false)
-
+  cur_x = x; cur_y = y;\
+} while (false)
 
 // 389
 scaled cur_x; // outputs of skew, unskew, and a few others
@@ -1157,8 +1093,6 @@ scaled cur_y;
 #define no_crossing return fraction_one + 1
 #define one_crossing return fraction_one
 #define zero_crossing return 0
-
-
 
 // 393
 #define right_octant right_x // the octant code before a transition
@@ -1170,9 +1104,8 @@ const int diagonal = 1; // a transition where y' = +-x'
 
 // 394
 #define print_two_true(a,b) do {\
-	unskew(a, b, octant); print_two(cur_x, cur_y);\
-} while(false)
-
+  unskew(a, b, octant); print_two(cur_x, cur_y);\
+} while (false)
 
 // 395
 Array<str_number, first_octant, sixth_octant> octant_dir;
@@ -1188,7 +1121,6 @@ pointer cur_pen; // an implicit input of make_spec, used in autorounding
 int cur_path_type; // double_path_code..contour_code, likewise
 scaled max_allowed; // coordinates must be at most this big
 
-
 // 404
 #define procrustes(n) do {\
   if (myabs(n) >= dmax) {\
@@ -1198,12 +1130,10 @@ scaled max_allowed; // coordinates must be at most this big
     }\
     else if (chopped == 0) chopped = -1;\
   }\
-} while(false)
+} while (false)
 
 // 410
 #define t_of_the_way(a, b) ((a) - take_fraction((a) - (b), t))
-
-
 
 // 427
 Array<scaled, 0, max_wiggle> before; // data for make_safe
@@ -1221,7 +1151,6 @@ scaled cur_gran; // the current granularity (which normally is unity)
 #define east_edge(n) y_coord(link(n + second_octant))
 #define west_edge(n) y_coord(link(n + seventh_octant))
 
-
 // 442
 #define diag_offset(n) x_coord(knil(link(cur_pen + n)))
 
@@ -1229,17 +1158,14 @@ scaled cur_gran; // the current granularity (which normally is unity)
 Array<int, first_octant, sixth_octant> octant_number; // 1..8
 Array<int, 1, 8> octant_code; // first_octant..sixth_octant
 
-
 // 455
 bool rev_turns; // should we make U-turns in the English manner?
-
 
 // 461
 Array<int, first_octant, sixth_octant> y_corr; // 0..1
 Array<int, first_octant, sixth_octant> xy_corr; // 0..1
 Array<int, first_octant, sixth_octant> z_corr; // 0..1
 Array<int, first_octant, sixth_octant> x_corr; // -1..1
-
 
 // 464
 int m0, n0, m1, n1; // lattice point coordinates
@@ -1250,13 +1176,11 @@ const int pen_node_size = 10;
 const int coord_node_size = 3;
 #define max_offset(n) mem[n+9].sc
 
-
-
 // 487
 #define add_pen_ref(n) ref_count(n)++
 #define delete_pen_ref(n) do {\
-	if(ref_count(n) == null) toss_pen(n); else ref_count(n)--;\
-} while(false)
+  if (ref_count(n) == null) toss_pen(n); else ref_count(n)--;\
+} while (false)
 
 // 507
 Array<int, 0, move_size> env_move;
@@ -1267,11 +1191,10 @@ Array<int, 0, move_size> env_move;
 #define right_class right_y // equivalence class number of a pen edge
 #define left_length left_y // length of a pen edge
 
-
 // 547
 #define we_found_it do {\
-	tt = (t + 04000) /  010000; goto found;\
-} while(false)
+  tt = (t + 04000) /  010000; goto found;\
+} while (false)
 
 // 552
 int tol_step; // 0..6, either 0 or 3, usually
@@ -1333,35 +1256,35 @@ const int int_increment=int_packets+int_packets+5; //{number of stack words per 
 
 // 554
 #define set_min_max(n) do {\
-	if (stack_1(n) < 0) {\
-		if (stack_3(n) >= 0)\
-		{\
-			if (stack_2(n) < 0) stack_min(n) = stack_1(n) + stack_2(n);\
-			else stack_min(n) = stack_1(n);\
-			stack_max(n) = stack_1(n) + stack_2(n) + stack_3(n);\
-			if (stack_max(n) < 0) stack_max(n) = 0;\
-		}\
-		else {\
-			stack_min(n) = stack_1(n) + stack_2(n) + stack_3(n);\
-			if (stack_min(n) > stack_1(n)) stack_min(n) = stack_1(n);\
-			stack_max(n) = stack_1(n) + stack_2(n);\
-			if (stack_max(n) < 0) stack_max(n) = 0;\
-		}\
-	}\
-	else if (stack_3(n) <= 0)\
-	{\
-		if (stack_2(n) > 0) stack_max(n) = stack_1(n) + stack_2(n);\
-		else stack_max(n) = stack_1(n);\
-		stack_min(n) = stack_1(n) + stack_2(n) + stack_3(n);\
-		if (stack_min(n) > 0) stack_min(n) = 0;\
-	}\
-	else {\
-		stack_max(n) = stack_1(n) + stack_2(n) + stack_3(n);\
-		if (stack_max(n) < stack_1(n)) stack_max(n) = stack_1(n);\
-		stack_min(n) = stack_1(n) + stack_2(n);\
-		if (stack_min(n) > 0) stack_min(n) = 0;\
-	}\
-} while(false);
+  if (stack_1(n) < 0) {\
+    if (stack_3(n) >= 0)\
+    {\
+      if (stack_2(n) < 0) stack_min(n) = stack_1(n) + stack_2(n);\
+      else stack_min(n) = stack_1(n);\
+      stack_max(n) = stack_1(n) + stack_2(n) + stack_3(n);\
+      if (stack_max(n) < 0) stack_max(n) = 0;\
+    }\
+    else {\
+      stack_min(n) = stack_1(n) + stack_2(n) + stack_3(n);\
+      if (stack_min(n) > stack_1(n)) stack_min(n) = stack_1(n);\
+      stack_max(n) = stack_1(n) + stack_2(n);\
+      if (stack_max(n) < 0) stack_max(n) = 0;\
+    }\
+  }\
+  else if (stack_3(n) <= 0)\
+  {\
+    if (stack_2(n) > 0) stack_max(n) = stack_1(n) + stack_2(n);\
+    else stack_max(n) = stack_1(n);\
+    stack_min(n) = stack_1(n) + stack_2(n) + stack_3(n);\
+    if (stack_min(n) > 0) stack_min(n) = 0;\
+  }\
+  else {\
+    stack_max(n) = stack_1(n) + stack_2(n) + stack_3(n);\
+    if (stack_max(n) < stack_1(n)) stack_max(n) = stack_1(n);\
+    stack_min(n) = stack_1(n) + stack_2(n);\
+    if (stack_min(n) > 0) stack_min(n) = 0;\
+  }\
+} while (false);
 
 // 555
 const int max_patience = 5000;
@@ -1386,10 +1309,8 @@ typedef int screen_col; // 0..screen_width, a column number on the screen
 typedef Array<screen_col, 0, screen_width> trans_spec; // a transition spec, see below
 typedef int pixel_color; // white..black, specifies one of the two pixel values
 
-
 // 566
 Array<Array<pixel_color, 0, screen_width>, 0, screen_depth> screen_pixel;
-
 
 // 569
 bool screen_started; // have the screen primitives been initialized?
@@ -1397,9 +1318,9 @@ bool screen_OK; // is it legitimate to call blank_rectangle, paint_row, and upda
 
 // 570
 #define start_screen do {\
-	if (!screen_started) {\
-		screen_OK = init_screen(); screen_started = true;\
-	}\
+  if (!screen_started) {\
+    screen_OK = init_screen(); screen_started = true;\
+  }\
 } while (false)
 
 // 571
@@ -1415,22 +1336,17 @@ Array<screen_col, 0, 15> m_window; // offset between user and screen columns
 Array<screen_col, 0, 15> n_window; // offset between user and screen rows
 Array<screen_col, 0, 15> window_time; // it has been updated this often
 
-
 // 579
 trans_spec row_transition; // an array of black/white transitions
-
 
 // 585
 const int s_scale = 64; // the serial numbers are multiplied by this factor
 #define new_indep(n) do { /*{create a new independent variable}*/\
-	if (serial_no > el_gordo - s_scale)\
-		overflow(TEX_STRING("independent variables"),serial_no / s_scale);\
-	type(n) = independent; serial_no = serial_no + s_scale;\
-	value(n) = serial_no;\
-} while(false)
-
-
-
+  if (serial_no > el_gordo - s_scale)\
+    overflow(TEX_STRING("independent variables"),serial_no / s_scale);\
+  type(n) = independent; serial_no = serial_no + s_scale;\
+  value(n) = serial_no;\
+} while (false)
 
 int serial_no; // the most recent serial number, times s_scale
 
@@ -1443,7 +1359,6 @@ const int dep_node_size = 2; // the number of words per dependency node
 const int coef_bound = 04525252525; // fraction approximation to 7/3
 const int independent_needing_fix = 0;
 
-
 bool fix_needed; // does at least one independent variable need scaling?
 bool watch_coefs; // should we scale coefficients that exceed coef_bound
 pointer dep_final; // location of the constant term and final link
@@ -1454,32 +1369,27 @@ const int half_fraction_threshold = 1342; // half of fraction_threshold
 const int scaled_threshold = 8; // a scaled coefficient less than this is zeroed
 const int half_scaled_threshold = 4; // half of scaled_threshold
 
-
 // 605
 const int independent_being_fixed = 1; // this variable already appears in s
-
 
 // 624
 eight_bits cur_cmd; // current command set by get_next
 int cur_mod; // operand of current command
 halfword cur_sym; // hash address of current symbol
 
-
 // 626
 #define show_cur_cmd_mod show_cmd_mod(cur_cmd, cur_mod)
-
 
 // 627
 typedef struct
 {
-	quarterword index_field;
-	halfword start_field;
-	halfword loc_field;
-	halfword limit_field;
-	halfword name_field;
-	halfword full_name_field;
+  quarterword index_field;
+  halfword start_field;
+  halfword loc_field;
+  halfword limit_field;
+  halfword name_field;
+  halfword full_name_field;
 } in_state_record;
-
 
 // 628
 Array<in_state_record, 0, stack_size> input_stack;
@@ -1497,7 +1407,6 @@ in_state_record cur_input; // the ``top'' input state
 // 631
 #define terminal_input (name == 0) // are we reading from the terminal?
 #define cur_file input_file[index] // the current alpha_file variable
-
 
 int in_open; // 0..max_in_open, the number of lines in the buffer, less one
 int open_parens; // 0..max_in_open, the number of open text files
@@ -1526,22 +1435,22 @@ int max_param_stack; // largest value of param_ptr
 int file_ptr; // 0..stack_size, shallowest level shown by show_context
 
 // 642
-#define begin_pseudoprint do {l = tally;tally=0;selector=pseudo;trick_count=1000000;}while(0)
-#define set_trick_count do {first_count = tally;trick_count=tally+1+error_line-half_error_line;if(trick_count<error_line)trick_count=error_line;}while(0)
+#define begin_pseudoprint do {l = tally;tally=0;selector=pseudo;trick_count=1000000;}while (0)
+#define set_trick_count do {first_count = tally;trick_count=tally+1+error_line-half_error_line;if (trick_count<error_line)trick_count=error_line;}while (0)
 
 // 647
 #define push_input do {\
-	if (input_ptr > max_in_stack) {\
-		max_in_stack = input_ptr;\
-		if (input_ptr == stack_size) overflow(TEX_STRING("input stack size"), stack_size);\
-	}\
-	input_stack[input_ptr] = cur_input;\
-	input_ptr++;\
-} while(false)
+  if (input_ptr > max_in_stack) {\
+    max_in_stack = input_ptr;\
+    if (input_ptr == stack_size) overflow(TEX_STRING("input stack size"), stack_size);\
+  }\
+  input_stack[input_ptr] = cur_input;\
+  input_ptr++;\
+} while (false)
 
 #define pop_input do{\
-	input_ptr--; cur_input = input_stack[input_ptr];\
-} while(false)
+  input_ptr--; cur_input = input_stack[input_ptr];\
+} while (false)
 
 // 649
 #define back_list(s) begin_token_list(s, backed_up) // backs up a simple token list
@@ -1599,7 +1508,6 @@ const int progression_node_size = 4; // the number of words in a progression nod
 #define step_size(n) mem[n+2].sc // the step size in an arithmetic progression
 #define final_value(n) mem[n+3].sc // the final value in an arithmetic progression
 
-
 pointer loop_ptr; // top of the loop-control-node stack
 
 // 767
@@ -1617,11 +1525,11 @@ pool_pointer ext_delimiter; // the relevant '.', if any
 
 // 774
 #define append_to_name(s) do{\
-	c = s;\
-	k++;\
-	if(k <= file_name_size)\
-		name_of_file[k] = xchr[c];\
-} while(0)
+  c = s;\
+  k++;\
+  if (k <= file_name_size)\
+    name_of_file[k] = xchr[c];\
+} while (0)
 
 // 775
 const int base_area_length = 0; // length of its area part, NOTE: used to be 8
@@ -1638,19 +1546,17 @@ str_number log_name; // full name of the log file
 // 784
 #define pack_cur_name pack_file_name(cur_name, cur_area, cur_ext)
 
-
 // 785
 str_number gf_ext; // default extension for the output file
 
 // 791
 #define set_output_file_name do{\
-	if (job_name == 0) open_log_file();\
-	pack_job_name(gf_ext);\
-	while (!b_open_out(&gf_file))\
-		prompt_file_name(TEX_STRING("file name for output"),gf_ext);\
-	output_file_name = b_make_name_string(gf_file);\
+  if (job_name == 0) open_log_file();\
+  pack_job_name(gf_ext);\
+  while (!b_open_out(&gf_file))\
+    prompt_file_name(TEX_STRING("file name for output"),gf_ext);\
+  output_file_name = b_make_name_string(gf_file);\
 } while (false)
-
 
 byte_file gf_file; // the generic font output goes here
 str_number output_file_name; // full name of the output file
@@ -1667,7 +1573,6 @@ Array<int, dependent, proto_dependent> max_c; // max coefficient magnitude
 Array<pointer, dependent, proto_dependent> max_ptr; // where p occurs with max_c
 Array<pointer, dependent, proto_dependent> max_link; // other occurrences of p
 
-
 // 821
 int var_flag; // 0..max_command_code, command that wants a variable
 
@@ -1680,17 +1585,16 @@ int var_flag; // 0..max_command_code, command that wants a variable
 
 // 918
 #define type_range(a, b) do {\
-	if (cur_type >= a && cur_type <= b) flush_cur_exp(true_code);\
-	else flush_cur_exp(false_code);\
-	cur_type = boolean_type;\
+  if (cur_type >= a && cur_type <= b) flush_cur_exp(true_code);\
+  else flush_cur_exp(false_code);\
+  cur_type = boolean_type;\
 } while (false)
 
 #define type_test(a) do {\
-	if (cur_type == a) flush_cur_exp(true_code);\
-	else flush_cur_exp(false_code);\
-	cur_type = boolean_type;\
-} while(false)
-
+  if (cur_type == a) flush_cur_exp(true_code);\
+  else flush_cur_exp(false_code);\
+  cur_type = boolean_type;\
+} while (false)
 
 // 954
 scaled txx, txy, tyx, tyy, tx, ty; // current transform coefficients
@@ -1698,11 +1602,11 @@ scaled txx, txy, tyx, tyy, tx, ty; // current transform coefficients
 // 1037
 enum show_code
 {
-	show_token_code=0, //{show the meaning of a single token}
-	show_stats_code=1, //{show current memory and string usage}
-	show_code=2, //{show a list of expressions}
-	show_var_code=3, //{show a variable and its descendents}
-	show_dependencies_code=4, //{show dependent variables in terms of independents}
+  show_token_code=0, //{show the meaning of a single token}
+  show_stats_code=1, //{show current memory and string usage}
+  show_code=2, //{show a list of expressions}
+  show_var_code=3, //{show a variable and its descendents}
+  show_dependencies_code=4, //{show dependent variables in terms of independents}
 };
 
 // 1052
@@ -1717,10 +1621,8 @@ const int message_code = 0;
 const int err_message_code = 1;
 const int err_help_code = 2;
 
-
 // 1084
 bool long_help_seen; // has the long errmessage help been used?
-
 
 // 1087
 byte_file tfm_file; // the font metric output goes here
@@ -1731,7 +1633,6 @@ const int no_tag = 0; // vanilla character
 const int lig_tag = 1; // character has a ligature/kerning program
 const int list_tag = 2; // character has successor in a charlist
 const int ext_tag = 3; // character is extensible
-
 
 // 1093
 const int stop_flag = 128 + min_quarterword; // valud indicating 'STOP' in a lig/kern program
@@ -1747,10 +1648,8 @@ const int kern_flag = 128 + min_quarterword; // op code for a kern step
 #define ext_bot(n) exten[n].b2 // bot piece in a recipe
 #define ext_rep(n) exten[n].b3 // rep piece in a recipe
 
-
 // 1096
 #define undefined_label lig_table_size // an undefined local label
-
 
 eight_bits bc, ec; // smallest and largest character codes shipped out
 Array<scaled, 0, 255> tfm_width; // charwd values
@@ -1779,8 +1678,6 @@ Array<int, 0, 256> label_loc; // -1..lig_table_size, lig/kern starting addresses
 Array<eight_bits, 1, 256> label_char; // characters for label_loc
 int label_ptr; // 0..256, highest position occupied in label_loc
 
-
-
 // 1101
 const int char_list_code = 0;
 const int lig_table_code = 1;
@@ -1788,35 +1685,28 @@ const int extensible_code = 2;
 const int header_byte_code = 3;
 const int font_dimen_code = 4;
 
-
-
 // 1110
 #define cancel_skips(n) do{\
-	ll = n;\
-	do {\
-		lll = qo(skip_byte(ll)); skip_byte(ll) = stop_flag; ll = ll - lll;\
-	} while(!(lll == 0));\
-} while(false)
+  ll = n;\
+  do {\
+    lll = qo(skip_byte(ll)); skip_byte(ll) = stop_flag; ll = ll - lll;\
+  } while (!(lll == 0));\
+} while (false)
 
 #define skip_error(n) do{\
-	print_err(TEX_STRING("Too far to skip"));\
-	help1(TEX_STRING("At most 127 lig/kern steps can separate skipto1 from 1::.")); error();\
-	cancel_skips(n);\
-} while(false)
+  print_err(TEX_STRING("Too far to skip"));\
+  help1(TEX_STRING("At most 127 lig/kern steps can separate skipto1 from 1::.")); error();\
+  cancel_skips(n);\
+} while (false)
 
 // 1113
 #define missing_extensible_punctuation(s) do {\
-	missing_err(s);\
-	help1(TEX_STRING("I'm processing `extensible c: t,m,b,r'.")); back_error();\
+  missing_err(s);\
+  help1(TEX_STRING("I'm processing `extensible c: t,m,b,r'.")); back_error();\
 } while (false)
-
-
-
-
 
 // 1117
 #define clear_the_list link(temp_head) = inf_val
-
 
 // 1119
 scaled perturbation; // quantity related to TFM rounding
@@ -1828,7 +1718,6 @@ Array<pointer, 1, 4> dimen_head; // lists of TFM dimensions
 // 1128
 const int three_bytes = 0100000000; // 2^24
 
-
 // 1130
 scaled max_tfm_dimen; // bound on widths, heights, kerns, etc.
 int tfm_changed; // the number of data entries that were out of bounds
@@ -1836,28 +1725,26 @@ int tfm_changed; // the number of data entries that were out of bounds
 // 1144
 const int gf_id_byte = 131; // identifies the kind of GF files described here
 
-
 // 1145
 enum opcodes
 {
-	paint_0=0, //{beginning of the \\{paint} commands}
-	paint1=64, //{move right a given number of columns, then
-	boc=67, //{beginning of a character}
-	boc1=68, //{short form of |boc|}
-	eoc=69, //{end of a character}
-	skip0=70, //{skip no blank rows}
-	skip1=71, //{skip over blank rows}
-	new_row_0=74, //{move down one row and then right}
-	max_new_row=164, //{the largest \\{new\_row} command is |new_row_164|}
-	xxx1=239, //{for \&{special} strings}
-	xxx3=241, //{for long \&{special} strings}
-	yyy=243, //{for \&{numspecial} numbers}
-	char_loc=245, //{character locators in the postamble}
-	pre=247, //{preamble}
-	post=248, //{postamble beginning}
-	post_post=249, //{postamble ending}
+  paint_0=0, //{beginning of the \\{paint} commands}
+  paint1=64, //{move right a given number of columns, then
+  boc=67, //{beginning of a character}
+  boc1=68, //{short form of |boc|}
+  eoc=69, //{end of a character}
+  skip0=70, //{skip no blank rows}
+  skip1=71, //{skip over blank rows}
+  new_row_0=74, //{move down one row and then right}
+  max_new_row=164, //{the largest \\{new\_row} command is |new_row_164|}
+  xxx1=239, //{for \&{special} strings}
+  xxx3=241, //{for long \&{special} strings}
+  yyy=243, //{for \&{numspecial} numbers}
+  char_loc=245, //{character locators in the postamble}
+  pre=247, //{preamble}
+  post=248, //{postamble beginning}
+  post_post=249, //{postamble ending}
 };
-
 
 // 1149
 int gf_min_m, gf_max_m, gf_min_n, gf_max_n; // bounding rectangle
@@ -1879,75 +1766,70 @@ int gf_offset; // gf_buf_size times the number of times the output buffer has be
 
 // 1155
 #define gf_out(n) do{\
-	gf_buf[gf_ptr] = n; gf_ptr++;\
-	if (gf_ptr == gf_limit) gf_swap();\
-} while(false)
+  gf_buf[gf_ptr] = n; gf_ptr++;\
+  if (gf_ptr == gf_limit) gf_swap();\
+} while (false)
 
 // 1161
 #define one_byte(n) n >= 0 && n < 256
 
-
 // 1162
 int boc_c, boc_p; // parameters of the next boc command
 
-
 // 1163
 #define check_gf if (output_file_name == 0) init_gf();
-
 
 // 1183
 str_number base_ident;
 
 // 1187
 #define too_small(s) do{\
-	wake_up_terminal();\
-	wterm_s("---! Must increase the ");\
-	wterm_ln_s(s);\
-	goto off_base;\
-} while(0)
+  wake_up_terminal();\
+  wterm_s("---! Must increase the ");\
+  wterm_ln_s(s);\
+  goto off_base;\
+} while (0)
 
 // 1188
 word_file base_file; // for input or output of base information
 
 // 1189
 #define undump_size(a,b,c,d) do{\
-	undump_int(&x);\
-	if(x < a) goto off_base;\
-	if(x > b) too_small(c);\
-	else d = x;\
-} while(0)
+  undump_int(&x);\
+  if (x < a) goto off_base;\
+  if (x > b) too_small(c);\
+  else d = x;\
+} while (0)
 
 // 1189
 #define undump(a,b,c) do{\
-	undump_int(&x);\
-	if(x < a||x > b) goto off_base;\
-	else c = x;\
-} while(0)
+  undump_int(&x);\
+  if (x < a || x > b) goto off_base;\
+  else c = x;\
+} while (0)
 
 // 1192
 #define dump_four_ASCII do {\
-	w.b0 = qi(str_pool[k]);\
-	w.b1 = qi(str_pool[k+1]);\
-	w.b2 = qi(str_pool[k+2]);\
-	w.b3 = qi(str_pool[k+3]);\
-	dump_qqqq(w);\
-} while(0)
+  w.b0 = qi(str_pool[k]);\
+  w.b1 = qi(str_pool[k+1]);\
+  w.b2 = qi(str_pool[k+2]);\
+  w.b3 = qi(str_pool[k+3]);\
+  dump_qqqq(w);\
+} while (0)
 
 word_file fmt_file;
 
 // 1193
 #define undump_four_ASCII do{\
-	undump_qqqq(&w);\
-	str_pool[k] = qo(w.b0);\
-	str_pool[k+1] = qo(w.b1);\
-	str_pool[k+2] = qo(w.b2);\
-	str_pool[k+3] = qo(w.b3);\
-} while(0)
+  undump_qqqq(&w);\
+  str_pool[k] = qo(w.b0);\
+  str_pool[k+1] = qo(w.b1);\
+  str_pool[k+2] = qo(w.b2);\
+  str_pool[k+3] = qo(w.b3);\
+} while (0)
 
 // 1203
 //int ready_already; // NOTE: not used
-
-
 
 // function prototypes
 
@@ -2307,7 +2189,7 @@ void find_edges_var(pointer t);
 void offset_prep(pointer c, pointer h);
 void dual_moves(pointer h, pointer p, pointer q);
 void fin_offset_prep(pointer p, halfword k, pointer w, int x0, int x1, int x2, int y0, int y1, int y2,
-						bool rising, int n);
+            bool rising, int n);
 void split_for_offset(pointer p, fraction t);
 void print_word(memory_word w);
 void search_mem(pointer p);
@@ -2336,6 +2218,4 @@ eight_bits get_code();
 void set_tag(halfword c, small_number t, halfword r);
 void gf_paint(int d);
 void gf_boc(int min_m, int max_m, int min_n, int max_n);
-
-
 

@@ -42,10 +42,7 @@ const int no_file_path = 0;
 const int font_file_path = 3;
 ///////////////////////////////////////////////////////////////////////////
 
-
-
 #define banner "This is rsDVItype, Version 1.0 for Unix" // printed when the program starts
-
 
 #define random_reading true
 
@@ -57,13 +54,11 @@ const int font_file_path = 3;
 #define loop  while(true) //{repeat over and over until a |goto| happens}
 #define do_nothing
 
-
 #define four_cases(s) s: case s+1: case s+2: case s+3
 #define eight_cases(s) four_cases(s): case four_cases(s+4)
 #define sixteen_cases(s) eight_cases(s): case eight_cases(s+8)
 #define thirty_two_cases(s) sixteen_cases(s): case sixteen_cases(s+16)
 #define sixty_four_cases(s) thirty_two_cases(s): case thirty_two_cases(s+32)
-
 
 // Constants
 const int max_fonts = 100; //{maximum number of distinct fonts per \.{DVI} file}
@@ -74,7 +69,6 @@ const int stack_size = 100; //{\.{DVI} files shouldn't |push| beyond this depth}
 const int name_size = 1000; //{total length of all font file names}
 const int name_length = 257; //{a file name shouldn't be longer than this}
 
-
 typedef unsigned char text_char; //{the data type of characters in text files}
 const int first_text_char = 0; //{ordinal number of the smallest element of |text_char|}
 const int last_text_char = 255; //{ordinal number of the largest element of |text_char|}
@@ -83,10 +77,8 @@ typedef FILE* text_file;
 
 typedef unsigned char ASCII_code; //32..126
 
-
 Array<ASCII_code, 0, 255> xord; // {specifies conversion of input characters}
 Array<text_char, 0, 255> xchr; // {specifies conversion of output characters}
-
 
 #define abort(s) do {\
 	fprintf(stdout, " %s\n",s); jump_out();\
@@ -97,7 +89,6 @@ Array<text_char, 0, 255> xchr; // {specifies conversion of output characters}
 	sprintf(temp, "Bad DVI file: %s!",n);\
 	abort(temp);\
 } while (false)
-
 
 typedef unsigned char eight_bits; // {unsigned one-byte quantity}
 typedef FILE* byte_file; // {files that contain binary data}
@@ -150,7 +141,6 @@ Array<bool, 0, 9> start_there; //{is the |start_count| value relevant?}
 int start_vals; //:0..9; //{the last count considered significant}
 Array<int, 0, 9> count; //:array[0..9] of int; //{the count values on the current page}
 
-
 Array<ASCII_code, 0, terminal_line_length> buffer; //:array[0..terminal_line_length] of ASCII_code;
 #define term_in stdin
 //text_file term_in; //{the terminal, considered as an input file}
@@ -163,14 +153,12 @@ bool in_postamble; //{are we reading the postamble?}
 //#define default_directory_name "TeXfonts:" //{change this to the correct name}
 //const int default_directory_name_length=9+1; //{change this to the correct length}
 
-
 //Array<char, 1, default_directory_name_length> default_directory; //:packed array[1..default_directory_name_length] of char;
 
 int text_ptr; //:0..line_length; //{the number of characters in |text_buf|}
 Array<ASCII_code, 1, line_length> text_buf; //:array[1..line_length] of ASCII_code; //{saved characters}
 
 eight_bits b0, b1, b2, b3; //{four bytes input at once}
-
 
 Array<int, 0, max_fonts> font_num; //:array [0..max_fonts] of integer; //{external font numbers}
 Array<int, 0, max_fonts>  font_name; //:array [0..max_fonts] of 1..name_size; //{starting positions of external font names}
@@ -246,7 +234,6 @@ const int invalid_width = 017777777777;
 const int infinity = 017777777777; // {$\infty$ (approximately)}
 const int max_drift = 2; //{we insist that abs|(hh-pixel_round(h))<=max_drift|}
 
-
 #define show(s) do {\
 	flush_text(); showing = true;\
 	printf("%d: %s", a, s);\
@@ -279,7 +266,6 @@ const int max_drift = 2; //{we insist that abs|(hh-pixel_round(h))<=max_drift|}
 	_minor(temp); q = p; goto move_right;\
 } while (false)
 
-
 #define out_vmove(s) do {\
 	char temp[300];\
 	if (myabs(p)>=5 * font_space[cur_font]) vv = (int)pixel_round(v + p);\
@@ -287,8 +273,6 @@ const int max_drift = 2; //{we insist that abs|(hh-pixel_round(h))<=max_drift|}
 	sprintf(temp, "%s %d", s, p);\
 	_major(temp); goto move_down;\
 } while (false)
-
-
 
 int first_par(eight_bits o);
 void scan_bop();
