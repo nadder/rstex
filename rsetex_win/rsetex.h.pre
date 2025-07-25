@@ -30,7 +30,7 @@ struct Array
 };
 
 // 2
-#define banner "This is rse-TeX, Version 1.1 for Win (e-TeX 3.141592653-2.6)" // printed when rsTeX starts
+#define banner "This is rse-TeX, Version 1.3 for Win (e-TeX 3.141592653-2.6)" // printed when rsTeX starts
 
 int expand_depth_count;
 

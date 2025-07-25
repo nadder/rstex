@@ -43,7 +43,7 @@ const int no_file_path = 0;
 const int font_file_path = 3;
 ///////////////////////////////////////////////////////////////////////////
 
-#define banner "This is rsDVItype, Version 1.0 for Windows" // printed when the program starts
+#define banner "This is rsDVItype, Version 1.3 for Windows" // printed when the program starts
 
 #define random_reading true
 
