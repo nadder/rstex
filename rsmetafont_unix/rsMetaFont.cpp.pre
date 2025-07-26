@@ -1029,7 +1029,7 @@ void error() //{completes the job of error reporting}
             if (input_stack[file_ptr].name_field >= 256)
             {
               ed_name_start = str_start[edit_file.full_name_field];
-              ed_name_length = str_start[edit_file.full_name_field+1] - str_start[edit_file.full_name_field];
+              ed_name_length = str_start[edit_file.full_name_field + 1] - str_start[edit_file.full_name_field];
               edit_line = line;
               jump_out();
             }
@@ -1192,7 +1192,7 @@ void fix_date_and_time()
   time(&unixtime);
   struct tm *tm_struct = localtime(&unixtime);
 
-  sys_time = tm_struct->tm_hour*60+tm_struct->tm_min;
+  sys_time = tm_struct->tm_hour*60 + tm_struct->tm_min;
   sys_day = tm_struct->tm_mday;
   sys_month = tm_struct->tm_mon + 1;
   sys_year = 1900 + tm_struct->tm_year;
@@ -1488,19 +1488,19 @@ fraction velocity(fraction st, fraction ct, fraction sf, fraction cf, scaled t)
   int acc, num, denom; //{registers for intermediate calculations}
 
   acc = take_fraction(st - (sf / 16), sf - (st / 16));
-  acc = take_fraction(acc,ct - cf);
-  num = fraction_two + take_fraction(acc,379625062);
+  acc = take_fraction(acc, ct - cf);
+  num = fraction_two + take_fraction(acc, 379625062);
   //{$2^{28}\sqrt2\approx379625062.497$}
-  denom = fraction_three + take_fraction(ct,497706707) + take_fraction(cf,307599661);
+  denom = fraction_three + take_fraction(ct, 497706707) + take_fraction(cf, 307599661);
   //{$3\cdot2^{27}\cdot(\sqrt5-1)\approx497706706.78$ and $3\cdot2^{27}\cdot(3-\sqrt5\,)\approx307599661.22$}
-  if (t != unity) num = make_scaled(num,t);
+  if (t != unity) num = make_scaled(num, t);
   //{|make_scaled(fraction,scaled)=fraction|}
   if (num / 4 >= denom) return fraction_four;
-  else return make_fraction(num,denom);
+  else return make_fraction(num, denom);
 }
 
 // 117
-int ab_vs_cd(int a,int b,int c,int d)
+int ab_vs_cd(int a, int b, int c, int d)
 {
   int q, r; //{temporary registers}
 
@@ -1593,7 +1593,7 @@ scaled round_fraction(fraction x) // floor(x/2^12 + .5)
 scaled square_rt(scaled x)
 {
   small_number k; //{iteration control counter}
-  int y,q; //{registers for intermediate calculations}
+  int y, q; //{registers for intermediate calculations}
   if (x <= 0)
   {
     if (x < 0)
@@ -1700,7 +1700,7 @@ int pyth_sub(int a, int b)
       r = make_fraction(b, a);
       r = take_fraction(r, r); //{now $r\approx b^2/a^2$}
       if (r == 0) goto done;
-      r = make_fraction(r, fraction_four-r);
+      r = make_fraction(r, fraction_four - r);
       a = a - take_fraction(a + a, r); b = take_fraction(b, r);
     }
 done:
@@ -1838,12 +1838,12 @@ angle n_arg(int x, int y)
 
     switch(octant) {
       case first_octant:return z;
-      case second_octant:return ninety_deg-z;
-      case third_octant:return ninety_deg+z;
-      case fourth_octant:return one_eighty_deg-z;
-      case fifth_octant:return z-one_eighty_deg;
-      case sixth_octant:return -z-ninety_deg;
-      case seventh_octant:return z-ninety_deg;
+      case second_octant:return ninety_deg - z;
+      case third_octant:return ninety_deg + z;
+      case fourth_octant:return one_eighty_deg - z;
+      case fifth_octant:return z - one_eighty_deg;
+      case sixth_octant:return -z - ninety_deg;
+      case seventh_octant:return z - ninety_deg;
       case eighth_octant:return -z;
     } //{there are no other cases}
   }
@@ -2649,7 +2649,7 @@ void flush_token_list(pointer p)
           break;
         default: confusion(TEX_STRING("token")); break;
       }
-    free_node(q, token_node_size);
+      free_node(q, token_node_size);
     }
   }
 }
@@ -2796,7 +2796,7 @@ void init_big_node(pointer p)
   s = big_node_size[type(p)]; q = get_node(s);
   do {
     s = s - 2;
-    new_indep(q+s);
+    new_indep(q + s);
     name_type(q + s) = half(s) + x_part_sector; link(q + s) = null;
   } while (s != 0);
   link(q) = p; value(p) = q;
@@ -3583,8 +3583,8 @@ void solve_choices(pointer p, pointer q, halfword n)
           do {
             k--;
             if (k == 0) k = n;
-            aa = vv[k]-take_fraction(aa, uu[k]);
-            bb = ww[k]-take_fraction(bb, uu[k]);
+            aa = vv[k] - take_fraction(aa, uu[k]);
+            bb = ww[k] - take_fraction(bb, uu[k]);
           } while (k != n); //{now $\theta_n=\\{aa}+\\{bb}\cdot\theta_n$}
           aa = make_fraction(aa, fraction_one - bb);
           theta[n] = aa; vv[0] = aa;
@@ -3597,7 +3597,7 @@ void solve_choices(pointer p, pointer q, halfword n)
         if (rt == unity && lt == unity)
         ff = make_fraction(cc + cc + unity, cc + two);
         else ff = curl_ratio(cc, lt, rt);
-        theta[n] = -make_fraction(take_fraction(vv[n - 1], ff), fraction_one - take_fraction(ff,uu[n - 1]));
+        theta[n] = -make_fraction(take_fraction(vv[n - 1], ff), fraction_one - take_fraction(ff, uu[n - 1]));
         goto found;
         break;
       case given:
@@ -3646,10 +3646,10 @@ void set_controls(pointer p, pointer q, int k)
             ss = make_fraction(myabs(st), sine);
       }
     }
-  right_x(p) = x_coord(p) + take_fraction(take_fraction(delta_x[k], ct)-take_fraction(delta_y[k], st), rr);
-  right_y(p) = y_coord(p)+take_fraction(take_fraction(delta_y[k], ct)+take_fraction(delta_x[k], st), rr);
-  left_x(q) = x_coord(q)-take_fraction(take_fraction(delta_x[k], cf)+take_fraction(delta_y[k], sf), ss);
-  left_y(q) = y_coord(q)-take_fraction(take_fraction(delta_y[k], cf)-take_fraction(delta_x[k], sf), ss);
+  right_x(p) = x_coord(p) + take_fraction(take_fraction(delta_x[k], ct) - take_fraction(delta_y[k], st), rr);
+  right_y(p) = y_coord(p) + take_fraction(take_fraction(delta_y[k], ct) + take_fraction(delta_x[k], st), rr);
+  left_x(q) = x_coord(q) - take_fraction(take_fraction(delta_x[k], cf) + take_fraction(delta_y[k], sf), ss);
+  left_y(q) = y_coord(q) - take_fraction(take_fraction(delta_y[k], cf) - take_fraction(delta_x[k], sf), ss);
   right_type(p) = _explicit; left_type(q) = _explicit;
 }
 
@@ -3666,7 +3666,7 @@ fraction curl_ratio(scaled gamma, scaled a_tension, scaled b_tension)
     gamma = take_fraction(gamma, ff);
     beta = beta / 010000; //{convert |fraction| to |scaled|}
     denom = take_fraction(gamma, alpha) + three - beta;
-    num = take_fraction(gamma, fraction_three-alpha) + beta;
+    num = take_fraction(gamma, fraction_three - alpha) + beta;
   }
   else {
     ff = make_fraction(beta, alpha); ff = take_fraction(ff, ff);
@@ -3698,10 +3698,10 @@ void make_moves(scaled xx0, scaled xx1, scaled xx2, scaled xx3, scaled yy0, scal
   n = (yy3 - yy0 + s) / unity;
   if (xx3 - xx0 >= fraction_one || yy3 - yy0 >= fraction_one)
   {
-    x1 = half(x1+xi_corr); x2 = half(x2+xi_corr); x3 = half(x3+xi_corr);
-    r = half(r+xi_corr);
-    y1 = half(y1+eta_corr); y2 = half(y2+eta_corr); y3 = half(y3+eta_corr);
-    s = half(s+eta_corr);
+    x1 = half(x1 + xi_corr); x2 = half(x2 + xi_corr); x3 = half(x3 + xi_corr);
+    r = half(r + xi_corr);
+    y1 = half(y1 + eta_corr); y2 = half(y2 + eta_corr); y3 = half(y3 + eta_corr);
+    s = half(s + eta_corr);
     l = 15;
   }
 
@@ -3719,17 +3719,17 @@ void make_moves(scaled xx0, scaled xx1, scaled xx2, scaled xx3, scaled yy0, scal
       r = two_to_the[l] - r; s = two_to_the[l] - s;
       while (l < 30)
       {
-        x3a = x3; x2a = half(x2+x3+xi_corr); x2 = half(x1+x2+xi_corr);
-        x3 = half(x2+x2a+xi_corr);
-        t = x1+x2+x3; r = r+r-xi_corr;
-        y3a = y3; y2a = half(y2+y3+eta_corr); y2 = half(y1+y2+eta_corr);
-        y3 = half(y2+y2a+eta_corr);
-        u = y1+y2+y3; s = s+s-eta_corr;
+        x3a = x3; x2a = half(x2 + x3 + xi_corr); x2 = half(x1 + x2 + xi_corr);
+        x3 = half(x2 + x2a + xi_corr);
+        t = x1 + x2 + x3; r = r + r - xi_corr;
+        y3a = y3; y2a = half(y2 + y3 + eta_corr); y2 = half(y1 + y2 + eta_corr);
+        y3 = half(y2 + y2a + eta_corr);
+        u = y1 + y2 + y3; s = s + s - eta_corr;
         if (t < r)
           if (u < s)
           {
-            x1 = x3; x2 = x2a; x3 = x3a; r = r-t;
-            y1 = y3; y2 = y2a; y3 = y3a; s = s-u;
+            x1 = x3; x2 = x2a; x3 = x3a; r = r - t;
+            y1 = y3; y2 = y2a; y3 = y3a; s = s - u;
           }
           else {
             {
@@ -3746,7 +3746,7 @@ void make_moves(scaled xx0, scaled xx1, scaled xx2, scaled xx3, scaled yy0, scal
         }
         l++;
       }
-    r = r-xi_corr; s = s-eta_corr;
+    r = r - xi_corr; s = s - eta_corr;
     if (ab_vs_cd(x1 + x2 + x3, s, y1 + y2 + y3, r) - xi_corr >= 0)
     {
       move[move_ptr]++; move_ptr++; move[move_ptr] = 1;
@@ -3760,7 +3760,7 @@ void make_moves(scaled xx0, scaled xx1, scaled xx2, scaled xx3, scaled yy0, scal
     }
     else {
       l++; stack_l = l;
-      stack_x3 = x3; stack_x2 = half(x2+x3+xi_corr); x2 = half(x1+x2+xi_corr);
+      stack_x3 = x3; stack_x2 = half(x2 + x3 + xi_corr); x2 = half(x1 + x2 + xi_corr);
       x3 = half(x2 + stack_x2 + xi_corr); stack_x1 = x3;
       r = r + r + xi_corr; t = x1 + x2 + x3 + r;
       q = t / two_to_the[l]; stack_r = t % two_to_the[l];
@@ -3774,7 +3774,7 @@ void make_moves(scaled xx0, scaled xx1, scaled xx2, scaled xx3, scaled yy0, scal
     }
 
     if (bisect_ptr == 0) return;
-    bisect_ptr = bisect_ptr-move_increment;
+    bisect_ptr = bisect_ptr - move_increment;
     x1 = stack_x1; x2 = stack_x2; x3 = stack_x3; r = stack_r; m = stack_m;
     y1 = stack_y1; y2 = stack_y2; y3 = stack_y3; s = stack_s; n = stack_n;
     l = stack_l;
@@ -3785,7 +3785,7 @@ void make_moves(scaled xx0, scaled xx1, scaled xx2, scaled xx3, scaled yy0, scal
 void smooth_moves(int b, int t)
 {
   int k; //:1..move_size; //{index into |move|}
-  int a, aa, aaa; //{original values of |move[k],move[k-1],move[k-2]|}
+  int a, aa, aaa; //{original values of |move[k], move[k - 1], move[k - 2]|}
   if (t - b >= 3)
   {
     k = b + 2; aa = move[k - 1]; aaa = move[k - 2];
@@ -3903,7 +3903,7 @@ void print_edges(str_number s, bool nuline, int x_off, int y_off)
     q = unsorted(p); r = sorted(p);
     if (q > _void || r != sentinel)
     {
-      print_nl(TEX_STRING("row ")); print_int(n+y_off); print_char(TEX_STRING(":"));
+      print_nl(TEX_STRING("row ")); print_int(n + y_off); print_char(TEX_STRING(":"));
       while (q > _void)
       {
         print_weight(q, x_off); q = link(q);
@@ -4020,8 +4020,7 @@ void y_scale_edges(int s)
 {
   pointer p, q, pp, r, rr, ss; //{list manipulation registers}
   int t; //{replication counter}
-  if (s*(n_max(cur_edges)+1-zero_field) >= 4096 || s*(n_min(cur_edges)-zero_field) <= -4096)
-
+  if (s*(n_max(cur_edges) + 1 - zero_field) >= 4096 || s * (n_min(cur_edges) - zero_field) <= -4096)
   {
     print_err(TEX_STRING("Scaled picture would be too big"));
     help3(TEX_STRING("I can't yscale the picture as requested---it would"),
@@ -4273,7 +4272,7 @@ void xy_swap_edges() //{interchange |x| and |y| in |cur_edges|}
 
   m_spread = m_max(cur_edges) - m_min(cur_edges); //{this is |>=0| by assumption}
   if (m_spread > move_size) overflow(TEX_STRING("move table size"), move_size);
-  for (j = 0; j<= m_spread; j++) move[j] = sentinel;
+  for (j = 0; j <= m_spread; j++) move[j] = sentinel;
 
   p = get_node(row_node_size);
   sorted(p) = sentinel; unsorted(p) = null;
@@ -4848,10 +4847,10 @@ fraction crossing_point(int a, int b, int c)
 // 394
 void  print_spec(str_number s)
 {
-  pointer p,q; // {for list traversal}
+  pointer p, q; // {for list traversal}
   small_number octant; // {the current octant code}
-  print_diagnostic(TEX_STRING("Cycle spec"),s,true); p = cur_spec; octant = left_octant(p); print_ln();
-  print_two_true(x_coord(cur_spec),y_coord(cur_spec)); print(TEX_STRING(" % beginning in octant `"));
+  print_diagnostic(TEX_STRING("Cycle spec"), s, true); p = cur_spec; octant = left_octant(p); print_ln();
+  print_two_true(x_coord(cur_spec), y_coord(cur_spec)); print(TEX_STRING(" % beginning in octant `"));
   while (true) {
     print(octant_dir[octant]); print_char(TEX_STRING("'"));
     while (true) {
@@ -4937,9 +4936,9 @@ void print_strange(str_number s)
 }
 
 // 402
-pointer make_spec(pointer h,scaled safety_margin,int tracing)//{converts a path to a cycle spec}
+pointer make_spec(pointer h, scaled safety_margin, int tracing)//{converts a path to a cycle spec}
 {
-  pointer p,q,r,s; //{for traversing the lists}
+  pointer p, q, r, s; //{for traversing the lists}
   int k; //{serial number of path segment, or octant code}
   int chopped; //{positive if data truncated, negative if data dangerously large}
   small_number o1, o2; //{octant numbers}
@@ -4949,7 +4948,7 @@ pointer make_spec(pointer h,scaled safety_margin,int tracing)//{converts a path 
 
   cur_spec = h;
   if (tracing > 0)
-    print_path(cur_spec,TEX_STRING(", before subdivision into octants"),true);
+    print_path(cur_spec, TEX_STRING(", before subdivision into octants"), true);
   max_allowed = fraction_one -half_unit - 1 - safety_margin;
   p = cur_spec; k = 1; chopped = 0; dmax = half(max_allowed);
   do {
@@ -4983,8 +4982,8 @@ mycontinue:
           if (x_coord(p) == left_x(q))
             if (y_coord(p) == left_y(q))
             {
-              unskew(x_coord(q),y_coord(q),right_type(q));
-              skew(cur_x,cur_y,right_type(p));
+              unskew(x_coord(q), y_coord(q), right_type(q));
+              skew(cur_x, cur_y, right_type(p));
               if (x_coord(p) == cur_x)
                 if (y_coord(p) == cur_y)
                 {
@@ -5003,13 +5002,13 @@ mycontinue:
     r = link(q);
     if (right_type(p) != right_type(q) || q == r)
     {
-      new_boundary(p,right_type(p)); s = link(p);
+      new_boundary(p, right_type(p)); s = link(p);
       o1 = octant_number[right_type(p)]; o2 = octant_number[right_type(q)];
       switch(o2 - o1) {
         case 1: case -7: case 7: case -1: goto done;
         case 2: case -6: clockwise = false; break;
         case 3: case -5: case 4: case -4: case 5: case -3:
-          dx1 = x_coord(s) - left_x(s); dy1 = y_coord(s)-left_y(s);
+          dx1 = x_coord(s) - left_x(s); dy1 = y_coord(s) - left_y(s);
           if (dx1 == 0)
             if (dy1 == 0)
             {
@@ -5017,7 +5016,7 @@ mycontinue:
               if (dx1 == 0)
                 if (dy1 == 0)
                 {
-                  dx1 = x_coord(s) - x_coord(p); dy1 = y_coord(s)-y_coord(p);
+                  dx1 = x_coord(s) - x_coord(p); dy1 = y_coord(s) - y_coord(p);
                 }  //{and they {\sl can't} both be zero}
             }
           dmax = myabs(dx1);
@@ -5039,8 +5038,8 @@ mycontinue:
                     cur_x = x_coord(r); cur_y = y_coord(r);
                   }
                   else {
-                    unskew(x_coord(r),y_coord(r),right_type(r));
-                    skew(cur_x,cur_y,right_type(q));
+                    unskew(x_coord(r), y_coord(r), right_type(r));
+                    skew(cur_x, cur_y, right_type(q));
                   }
                   dx2 = cur_x - x_coord(q); dy2 = cur_y - y_coord(q);
                 }  //{and they {\sl can't} both be zero}
@@ -5051,13 +5050,13 @@ mycontinue:
           {
             _double(dmax); _double(dx2); _double(dy2);
           }
-          unskew(dx1,dy1,right_type(p)); del = pyth_add(cur_x,cur_y);
-          dx1 = make_fraction(cur_x,del); dy1 = make_fraction(cur_y,del);
+          unskew(dx1, dy1, right_type(p)); del = pyth_add(cur_x, cur_y);
+          dx1 = make_fraction(cur_x, del); dy1 = make_fraction(cur_y, del);
           //{$\cos\theta_1$ and $\sin\theta_1$}
-          unskew(dx2,dy2,right_type(q)); del = pyth_add(cur_x,cur_y);
-          dx2 = make_fraction(cur_x,del); dy2 = make_fraction(cur_y,del);
+          unskew(dx2, dy2, right_type(q)); del = pyth_add(cur_x, cur_y);
+          dx2 = make_fraction(cur_x, del); dy2 = make_fraction(cur_y, del);
           //{$\cos\theta_2$ and $\sin\theta_2$}
-          del = take_fraction(dx1,dy2) - take_fraction(dx2,dy1); //{$\sin(\theta_2-\theta_1)$}
+          del = take_fraction(dx1, dy2) - take_fraction(dx2, dy1); //{$\sin(\theta_2-\theta_1)$}
           if (del > 4684844) clockwise = false;
           else if (del < -4684844) clockwise = true;
           //{$2^{28}\cdot\sin 1^\circ\approx4684844.68$}
@@ -5071,14 +5070,14 @@ mycontinue:
           if (o1 == 1) o1 = 8; else o1--;
           else if (o1 == 8) o1 = 1; else o1++;
         if (o1 == o2) goto done;
-        new_boundary(s,octant_code[o1]);
+        new_boundary(s, octant_code[o1]);
         s = link(s); left_octant(s) = right_octant(s);
       }
     done:
       if (q == r)
       {
         q = link(q); r = q; p = s; link(s) = q; left_octant(q) = right_octant(q);
-        left_type(q) = endpoint; free_node(cur_spec,knot_node_size); cur_spec = q;
+        left_type(q) = endpoint; free_node(cur_spec, knot_node_size); cur_spec = q;
       }
       p = link(p);
       do {
@@ -5119,7 +5118,7 @@ void remove_cubic(pointer p) //{removes the cubic following~|p|}
   q = link(p); right_type(p) = right_type(q); link(p) = link(q);
   x_coord(p) = x_coord(q); y_coord(p) = y_coord(q);
   right_x(p) = right_x(q); right_y(p) = right_y(q);
-  free_node(q,knot_node_size);
+  free_node(q, knot_node_size);
 }
 
 // 406
@@ -5350,18 +5349,18 @@ void split_cubic(pointer p, fraction t, scaled xq, scaled yq) //{splits the cubi
   pointer q, r; //{for list manipulation}
   q = link(p); r = get_node(knot_node_size); link(p) = r; link(r) = q;
   left_type(r) = left_type(q); right_type(r) = right_type(p);
-  v = t_of_the_way(right_x(p),left_x(q));
-  right_x(p) = t_of_the_way(x_coord(p),right_x(p));
-  left_x(q) = t_of_the_way(left_x(q),xq);
-  left_x(r) = t_of_the_way(right_x(p),v);
-  right_x(r) = t_of_the_way(v,left_x(q));
-  x_coord(r) = t_of_the_way(left_x(r),right_x(r));
-  v = t_of_the_way(right_y(p),left_y(q));
-  right_y(p) = t_of_the_way(y_coord(p),right_y(p));
-  left_y(q) = t_of_the_way(left_y(q),yq);
-  left_y(r) = t_of_the_way(right_y(p),v);
-  right_y(r) = t_of_the_way(v,left_y(q));
-  y_coord(r) = t_of_the_way(left_y(r),right_y(r));
+  v = t_of_the_way(right_x(p), left_x(q));
+  right_x(p) = t_of_the_way(x_coord(p), right_x(p));
+  left_x(q) = t_of_the_way(left_x(q), xq);
+  left_x(r) = t_of_the_way(right_x(p), v);
+  right_x(r) = t_of_the_way(v, left_x(q));
+  x_coord(r) = t_of_the_way(left_x(r), right_x(r));
+  v = t_of_the_way(right_y(p), left_y(q));
+  right_y(p) = t_of_the_way(y_coord(p), right_y(p));
+  left_y(q) = t_of_the_way(left_y(q), yq);
+  left_y(r) = t_of_the_way(right_y(p), v);
+  right_y(r) = t_of_the_way(v, left_y(q));
+  y_coord(r) = t_of_the_way(left_y(r), right_y(r));
 }
 
 // 419
@@ -5379,11 +5378,11 @@ void octant_subdivide()
     left_x(q) = left_x(q) - left_y(q);
     if (q == cur_spec)
     {
-      unskew(x_coord(q),y_coord(q),right_type(q));
-      skew(cur_x,cur_y,right_type(p)); dest_x = cur_x; dest_y = cur_y;
+      unskew(x_coord(q), y_coord(q), right_type(q));
+      skew(cur_x, cur_y, right_type(p)); dest_x = cur_x; dest_y = cur_y;
     }
     else {
-      abnegate(x_coord(q),y_coord(q),right_type(q),right_type(p));
+      abnegate(x_coord(q), y_coord(q), right_type(q), right_type(p));
       dest_x = cur_x - cur_y; dest_y = cur_y;
     }
     del1 = right_x(p) - x_coord(p); del2 = left_x(q) - right_x(p);
@@ -5414,10 +5413,10 @@ void octant_subdivide()
         dest_y = dest_x + dest_y; negate(dest_x);
         right_type(p) = right_type(p) + switch_x_and_y;
       }
-      t = crossing_point(del1,del2,del3);
+      t = crossing_point(del1, del2, del3);
       if (t < fraction_one)
       {
-        split_cubic(p,t,dest_x,dest_y); r = link(p);
+        split_cubic(p, t, dest_x, dest_y); r = link(p);
         if (right_type(r) > switch_x_and_y) right_type(r) = right_type(r) - switch_x_and_y;
         else right_type(r) = right_type(r) + switch_x_and_y;
         if (y_coord(r) < y_coord(p)) y_coord(r) = y_coord(p);
@@ -5449,13 +5448,13 @@ void octant_subdivide()
           right_y(r) = y_coord(r);
           if (left_y(q) < y_coord(r)) left_y(q) = y_coord(r);
         }
-        del2 = t_of_the_way(del2,del3);
+        del2 = t_of_the_way(del2, del3);
         //{now |0,del2,del3| represent $x'-y'$ on the remaining interval}
         if (del2 > 0) del2 = 0;
-        t = crossing_point(0,-del2,-del3);
+        t = crossing_point(0, -del2, -del3);
         if (t < fraction_one)
         {
-          split_cubic(r,t,dest_x,dest_y); s = link(r);
+          split_cubic(r, t, dest_x, dest_y); s = link(r);
           if (y_coord(s) < y_coord(r)) y_coord(s) = y_coord(r);
           else if (y_coord(s) > dest_y) y_coord(s) = dest_y;
           if (x_coord(r) + y_coord(s) > dest_x + dest_y)
@@ -5550,7 +5549,7 @@ void before_and_after(scaled b, scaled a, pointer p)
 }
 
 // 431
-scaled good_val(scaled b,scaled o)
+scaled good_val(scaled b, scaled o)
 {
   scaled a; //{accumulator}
   a = b + o;
@@ -5569,7 +5568,7 @@ scaled compromise(scaled u, scaled v)
 // 433
 void xy_round()
 {
-  pointer p,q; //{list manipulation registers}
+  pointer p, q; //{list manipulation registers}
   scaled b, a; //{before and after values}
   scaled pen_edge = INT_MAX; //{offset that governs rounding}
   fraction alpha; //{coefficient of linear transformation}
@@ -5586,17 +5585,17 @@ void xy_round()
       {
         if (cur_pen == null_pen) pen_edge = 0;
         else if (cur_path_type == double_path_code)
-          pen_edge = compromise(east_edge(cur_pen),west_edge(cur_pen));
+          pen_edge = compromise(east_edge(cur_pen), west_edge(cur_pen));
         else if (myodd(right_type(q))) pen_edge = west_edge(cur_pen);
         else pen_edge = east_edge(cur_pen);
-        a = good_val(b,pen_edge);
+        a = good_val(b, pen_edge);
       }
       else a = b;
       if (myabs(a) > max_allowed) {
         if (a > 0) a = max_allowed;
         else a = -max_allowed;
       }
-      before_and_after(b,a,q);
+      before_and_after(b, a, q);
     }
     p = q;
   } while (p != cur_spec);
@@ -5605,7 +5604,7 @@ void xy_round()
     make_safe();
     do {
       cur_rounding_ptr--;
-      if (after[cur_rounding_ptr] != before[cur_rounding_ptr] || after[cur_rounding_ptr+1] != before[cur_rounding_ptr+1])
+      if (after[cur_rounding_ptr] != before[cur_rounding_ptr] || after[cur_rounding_ptr + 1] != before[cur_rounding_ptr + 1])
       {
         p = node_to_round[cur_rounding_ptr];
         if (myodd(right_type(p)))
@@ -5617,11 +5616,11 @@ void xy_round()
         }
         if (before[cur_rounding_ptr] == before[cur_rounding_ptr + 1])
           alpha = fraction_one;
-        else alpha = make_fraction(after[cur_rounding_ptr + 1]-after[cur_rounding_ptr],before[cur_rounding_ptr + 1]-before[cur_rounding_ptr]);
+        else alpha = make_fraction(after[cur_rounding_ptr + 1]-after[cur_rounding_ptr], before[cur_rounding_ptr + 1]-before[cur_rounding_ptr]);
         do {
-          x_coord(p) = take_fraction(alpha,x_coord(p) - b) + a;
-          right_x(p) = take_fraction(alpha,right_x(p) - b) + a;
-          p = link(p); left_x(p) = take_fraction(alpha,left_x(p) - b) + a;
+          x_coord(p) = take_fraction(alpha, x_coord(p) - b) + a;
+          right_x(p) = take_fraction(alpha, right_x(p) - b) + a;
+          p = link(p); left_x(p) = take_fraction(alpha, left_x(p) - b) + a;
         } while (p != node_to_round[cur_rounding_ptr + 1]);
       }
     } while (cur_rounding_ptr != 0);
@@ -5632,20 +5631,20 @@ void xy_round()
     if ((right_type(p) > negate_y) != (right_type(q) > negate_y))
     {
       if (right_type(q) <= negate_y) b = y_coord(q); else b = -y_coord(q);
-      if (myabs(y_coord(q) - right_y(q)) < 655 || myabs(y_coord(q)+left_y(q)) < 655)
+      if (myabs(y_coord(q) - right_y(q)) < 655 || myabs(y_coord(q) + left_y(q)) < 655)
       {
         if (cur_pen == null_pen) pen_edge = 0;
         else if (cur_path_type == double_path_code)
-          pen_edge = compromise(north_edge(cur_pen),south_edge(cur_pen));
+          pen_edge = compromise(north_edge(cur_pen), south_edge(cur_pen));
         else if (right_type(q) <= negate_y) pen_edge = south_edge(cur_pen);
         else pen_edge = north_edge(cur_pen);
-        a = good_val(b,pen_edge);
+        a = good_val(b, pen_edge);
       }
       else a = b;
       if (myabs(a) > max_allowed) {
         if (a > 0) a = max_allowed; else a = -max_allowed;
       }
-      before_and_after(b,a,q);
+      before_and_after(b, a, q);
     }
     p = q;
   } while (p != cur_spec);
@@ -5654,7 +5653,7 @@ void xy_round()
     make_safe();
     do {
       cur_rounding_ptr--;
-      if (after[cur_rounding_ptr] != before[cur_rounding_ptr] || after[cur_rounding_ptr+1] != before[cur_rounding_ptr+1])
+      if (after[cur_rounding_ptr] != before[cur_rounding_ptr] || after[cur_rounding_ptr + 1] != before[cur_rounding_ptr + 1])
       {
         p = node_to_round[cur_rounding_ptr];
         if (right_type(p) <= negate_y)
@@ -5666,11 +5665,11 @@ void xy_round()
         }
         if (before[cur_rounding_ptr] == before[cur_rounding_ptr + 1])
           alpha = fraction_one;
-        else alpha = make_fraction(after[cur_rounding_ptr+1]-after[cur_rounding_ptr],before[cur_rounding_ptr+1]-before[cur_rounding_ptr]);
+        else alpha = make_fraction(after[cur_rounding_ptr + 1] - after[cur_rounding_ptr], before[cur_rounding_ptr + 1]-before[cur_rounding_ptr]);
         do {
-          y_coord(p) = take_fraction(alpha,y_coord(p) - b) + a;
-          right_y(p) = take_fraction(alpha,right_y(p) - b) + a;
-          p = link(p); left_y(p) = take_fraction(alpha,left_y(p) - b) + a;
+          y_coord(p) = take_fraction(alpha, y_coord(p) - b) + a;
+          right_y(p) = take_fraction(alpha, right_y(p) - b) + a;
+          p = link(p); left_y(p) = take_fraction(alpha, left_y(p) - b) + a;
         } while (p != node_to_round[cur_rounding_ptr + 1]);
       }
     } while (cur_rounding_ptr != 0);
@@ -5681,14 +5680,14 @@ void xy_round()
 // 440
 void diag_round()
 {
-  pointer p,q,pp; //{list manipulation registers}
-  scaled b,a,bb,aa,d = INT_MAX,c = INT_MAX,dd = INT_MAX,cc = INT_MAX; //{before and after values}
+  pointer p, q, pp; //{list manipulation registers}
+  scaled b, a, bb, aa, d = INT_MAX, c = INT_MAX, dd = INT_MAX, cc = INT_MAX; //{before and after values}
   scaled pen_edge = INT_MAX; //{offset that governs rounding}
-  fraction alpha,beta; //{coefficients of linear transformation}
+  fraction alpha, beta; //{coefficients of linear transformation}
   scaled next_a; //{after[k] before it might have changed}
   bool all_safe; //{does everything look OK so far?}
   int k; // 0 .. max_wiggle, {runs through before-and-after values}
-  scaled first_x,first_y; //{coordinates before rounding}
+  scaled first_x, first_y; //{coordinates before rounding}
 
   p = cur_spec; cur_rounding_ptr = 0;
   do {
@@ -5708,11 +5707,11 @@ void diag_round()
             {
               case first_octant:
               case second_octant:
-                pen_edge = compromise(diag_offset(first_octant),-diag_offset(fifth_octant));
+                pen_edge = compromise(diag_offset(first_octant), -diag_offset(fifth_octant));
                 break;
               case fifth_octant:
               case sixth_octant:
-                pen_edge = -compromise(diag_offset(first_octant),-diag_offset(fifth_octant));
+                pen_edge = -compromise(diag_offset(first_octant), -diag_offset(fifth_octant));
                 break;
               case third_octant: case fourth_octant:
                 pen_edge = compromise(diag_offset(fourth_octant),
@@ -5727,12 +5726,12 @@ void diag_round()
           }
           else if (right_type(q) <= switch_x_and_y) pen_edge = diag_offset(right_type(q));
           else pen_edge = -diag_offset(right_type(q));
-          if (myodd(right_type(q))) a = good_val(b,pen_edge + half(cur_gran));
-          else a = good_val(b - 1,pen_edge + half(cur_gran));
+          if (myodd(right_type(q))) a = good_val(b, pen_edge + half(cur_gran));
+          else a = good_val(b - 1, pen_edge + half(cur_gran));
         }
         else a = b;
       else a = b;
-      before_and_after(b,a,q);
+      before_and_after(b, a, q);
     }
     p = q;
   } while (p != cur_spec);
@@ -5754,9 +5753,9 @@ void diag_round()
 
           if (aa == bb)
           {
-            if (pp == node_to_round[0]) unskew(first_x,first_y,right_type(pp));
-            else unskew(x_coord(pp),y_coord(pp),right_type(pp));
-            skew(cur_x,cur_y,right_type(p)); bb = cur_x; aa = bb; dd = cur_y; cc = dd;
+            if (pp == node_to_round[0]) unskew(first_x, first_y, right_type(pp));
+            else unskew(x_coord(pp), y_coord(pp), right_type(pp));
+            skew(cur_x, cur_y, right_type(p)); bb = cur_x; aa = bb; dd = cur_y; cc = dd;
             if (right_type(p) > switch_x_and_y)
             {
               b = -b; a = -a;
@@ -5797,9 +5796,9 @@ void diag_round()
         p = node_to_round[k]; pp = node_to_round[k + 1];
         if (aa == bb)
         {
-          if (pp == node_to_round[0]) unskew(first_x,first_y,right_type(pp));
-          else unskew(x_coord(pp),y_coord(pp),right_type(pp));
-          skew(cur_x,cur_y,right_type(p)); bb = cur_x; aa = bb; dd = cur_y; cc = dd;
+          if (pp == node_to_round[0]) unskew(first_x, first_y, right_type(pp));
+          else unskew(x_coord(pp), y_coord(pp), right_type(pp));
+          skew(cur_x, cur_y, right_type(p)); bb = cur_x; aa = bb; dd = cur_y; cc = dd;
           if (right_type(p) > switch_x_and_y)
           {
             b = -b; a = -a;
@@ -5823,15 +5822,15 @@ void diag_round()
         else c = d - half (a - b);
 
         if (b == bb) alpha = fraction_one;
-        else alpha = make_fraction(aa - a,bb - b);
+        else alpha = make_fraction(aa - a, bb - b);
         if (d == dd) beta = fraction_one;
-        else beta = make_fraction(cc - c,dd - d);
+        else beta = make_fraction(cc - c, dd - d);
         do {
-          x_coord(p) = take_fraction(alpha,x_coord(p) - b) + a;
-          y_coord(p) = take_fraction(beta,y_coord(p) - d) + c;
-          right_x(p) = take_fraction(alpha,right_x(p) - b) + a;
-          right_y(p) = take_fraction(beta,right_y(p) - d) + c; p = link(p);
-          left_x(p) = take_fraction(alpha,left_x(p)-b)+a; left_y(p) = take_fraction(beta,left_y(p)-d)+c;
+          x_coord(p) = take_fraction(alpha, x_coord(p) - b) + a;
+          y_coord(p) = take_fraction(beta, y_coord(p) - d) + c;
+          right_x(p) = take_fraction(alpha, right_x(p) - b) + a;
+          right_y(p) = take_fraction(beta, right_y(p) - d) + c; p = link(p);
+          left_x(p) = take_fraction(alpha, left_x(p) - b) + a; left_y(p) = take_fraction(beta, left_y(p) - d) + c;
         } while (p != pp);
       }
     }
@@ -5842,15 +5841,15 @@ void diag_round()
 // 451
 void new_boundary(pointer p, small_number octant)
 {
-  pointer q,r; //{for list manipulation}
+  pointer q, r; //{for list manipulation}
   q = link(p); //{we assume that |right_type(q)<>endpoint|}
   r = get_node(knot_node_size); link(r) = q; link(p) = r;
   left_type(r) = left_type(q); //{but possibly |left_type(q)=endpoint|}
   left_x(r) = left_x(q); left_y(r) = left_y(q);
   right_type(r) = endpoint; left_type(q) = endpoint;
   right_octant(r) = octant; left_octant(q) = right_type(q);
-  unskew(x_coord(q),y_coord(q),right_type(q));
-  skew(cur_x,cur_y,octant); x_coord(r) = cur_x; y_coord(r) = cur_y;
+  unskew(x_coord(q), y_coord(q), right_type(q));
+  skew(cur_x, cur_y, octant); x_coord(r) = cur_x; y_coord(r) = cur_y;
 }
 
 // 463
@@ -5865,7 +5864,7 @@ void end_round(scaled x, scaled y)
 // 465
 void fill_spec(pointer h)
 {
-  pointer p,q,r,s; // {for list traversal}
+  pointer p, q, r, s; // {for list traversal}
 
   if (internal[tracing_edges] > 0) begin_edge_tracing();
   p = h; // {we assume that left type(h) = endpoint }
@@ -5878,18 +5877,18 @@ void fill_spec(pointer h)
       end_round(x_coord(p), y_coord(p)); m0 = m1; n0 = n1; d0 = d1;
       end_round(x_coord(q), y_coord(q));
 
-      if (n1 - n0 >= move_size) overflow(TEX_STRING("move table size"),move_size);
+      if (n1 - n0 >= move_size) overflow(TEX_STRING("move table size"), move_size);
       move[0] = d0; move_ptr = 0; r = p;
       do {
         s = link(r);
-        make_moves(x_coord(r),right_x(r),left_x(s),x_coord(s),
-        y_coord(r) + half_unit,right_y(r) + half_unit,left_y(s) + half_unit,y_coord(s) + half_unit,
-        xy_corr[octant],y_corr[octant]); r = s;
+        make_moves(x_coord(r), right_x(r), left_x(s), x_coord(s),
+        y_coord(r) + half_unit, right_y(r) + half_unit, left_y(s) + half_unit, y_coord(s) + half_unit,
+        xy_corr[octant], y_corr[octant]); r = s;
       } while (r != q);
       move[move_ptr] = move[move_ptr] - d1;
-      if (internal[smoothing] > 0) smooth_moves(0,move_ptr);
+      if (internal[smoothing] > 0) smooth_moves(0, move_ptr);
 
-      move_to_edges(m0,n0,m1,n1);
+      move_to_edges(m0, n0, m1, n1);
     }
     p = link(q);
   } while (p != h);
@@ -5962,7 +5961,7 @@ pointer make_pen(pointer h)
       dx = x_coord(r) - x_coord(q); dy = y_coord(r) - y_coord(q);
       if (dx == 0)
         if (dy == 0) goto not_found; //{double point}
-      if (ab_vs_cd(dx,y_coord(s) - y_coord(r), dy, x_coord(s) - x_coord(r)) < 0)
+      if (ab_vs_cd(dx, y_coord(s) - y_coord(r), dy, x_coord(s) - x_coord(r)) < 0)
         goto not_found; //{right turn}
       if (dx > 0) octant = first_octant;
       else if (dx == 0)
@@ -5998,7 +5997,7 @@ pointer make_pen(pointer h)
     octant = octant_code[k]; n = 0; h = p + octant;
     while (true) {
       r = get_node(coord_node_size);
-      skew(x_coord(q),y_coord(q),octant); x_coord(r) = cur_x; y_coord(r) = cur_y;
+      skew(x_coord(q), y_coord(q), octant); x_coord(r) = cur_x; y_coord(r) = cur_y;
       if (n == 0) link(h) = r;
       else
         if (myodd(k))
@@ -6028,7 +6027,7 @@ pointer make_pen(pointer h)
     r = knil(r);
     if (x_coord(r) != x_coord(knil(r))) dup_offset(r);
     else n--;
-    if (n >= max_quarterword) overflow(TEX_STRING("pen polygon size"),max_quarterword);
+    if (n >= max_quarterword) overflow(TEX_STRING("pen polygon size"), max_quarterword);
     info(h) = n;
   }
   goto found;
@@ -6048,7 +6047,7 @@ not_found:
   }
   put_get_error();
 found:
-  if (internal[tracing_pens] > 0) print_pen(p,TEX_STRING(" (newly created)"),true);
+  if (internal[tracing_pens] > 0) print_pen(p, TEX_STRING(" (newly created)"), true);
   return p;
 }
 
@@ -6058,8 +6057,8 @@ pointer make_path(pointer pen_head)
   pointer p; //{the most recently copied knot}
   int k; //1 .. 8, {octant number}
   pointer h; //{offset list head}
-  int m,n; //{offset indices}
-  pointer w,ww; //{pointers that traverse the offset list}
+  int m, n; //{offset indices}
+  pointer w, ww; //{pointers that traverse the offset list}
   p = temp_head;
   for (k = 1; k <= 8; k++)
   {
@@ -6078,7 +6077,7 @@ pointer make_path(pointer pen_head)
   }
   if (p == temp_head)
   {
-    w = link(pen_head + first_octant); p = trivial_knot(x_coord(w) + y_coord(w),y_coord(w));
+    w = link(pen_head + first_octant); p = trivial_knot(x_coord(w) + y_coord(w), y_coord(w));
     link(temp_head) = p;
   }
   link(p) = link(temp_head); return link(temp_head);
@@ -6146,11 +6145,11 @@ void find_offset(scaled x, scaled y, pointer p)
   h = p + octant; w = link(link(h)); ww = link(w); n = info(h);
   while (n > 1)
   {
-    if (ab_vs_cd(x,y_coord(ww) - y_coord(w),y,x_coord(ww)-x_coord(w)) != s) goto done;
+    if (ab_vs_cd(x, y_coord(ww) - y_coord(w), y, x_coord(ww) - x_coord(w)) != s) goto done;
     w = ww; ww = link(w); n--;
   }
 done:
-  unskew(x_coord(w),y_coord(w),octant);
+  unskew(x_coord(w), y_coord(w), octant);
 }
 
 // 491
@@ -6207,13 +6206,13 @@ void offset_prep(pointer c, pointer h)
         }
 
       if (dx == 0)
-        fin_offset_prep(p,n,knil(knil(lh)),-x0,-x1,-x2,-y0,-y1,-y2,false,n);
+        fin_offset_prep(p, n, knil(knil(lh)), -x0, -x1, -x2, -y0, -y1, -y2, false, n);
     else {
       k = 1; w = link(lh);
       while (true) {
         if (k == n) goto done;
         ww = link(w);
-        if (ab_vs_cd(dy,myabs(x_coord(ww) - x_coord(w)),dx,myabs(y_coord(ww) - y_coord(w))) >= 0)
+        if (ab_vs_cd(dy, myabs(x_coord(ww) - x_coord(w)), dx, myabs(y_coord(ww) - y_coord(w))) >= 0)
         {
           k++; w = ww;
         }
@@ -6226,41 +6225,41 @@ done:
         du = x_coord(ww) - x_coord(w); dv = y_coord(ww) - y_coord(w);
         if (myabs(du) >= myabs(dv)) //{$s_{k-1}\le1$ or $s_k\le1$}
         {
-          s = make_fraction(dv,du);
-          t0 = take_fraction(x0,s) - y0;
-          t1 = take_fraction(x1,s) - y1;
-          t2 = take_fraction(x2,s) - y2;
+          s = make_fraction(dv, du);
+          t0 = take_fraction(x0, s) - y0;
+          t1 = take_fraction(x1, s) - y1;
+          t2 = take_fraction(x2, s) - y2;
         }
         else {
-          s = make_fraction(du,dv);
-          t0 = x0 - take_fraction(y0,s);
-          t1 = x1 - take_fraction(y1,s);
-          t2 = x2 - take_fraction(y2,s);
+          s = make_fraction(du, dv);
+          t0 = x0 - take_fraction(y0, s);
+          t1 = x1 - take_fraction(y1, s);
+          t2 = x2 - take_fraction(y2, s);
         }
-        t = crossing_point(-t0,-t1,-t2);
+        t = crossing_point(-t0, -t1, -t2);
       }
-      if (t >= fraction_one) fin_offset_prep(p,k,w,x0,x1,x2,y0,y1,y2,true,n);
+      if (t >= fraction_one) fin_offset_prep(p, k, w, x0, x1, x2, y0, y1, y2, true, n);
       else {
-        split_for_offset(p,t); r = link(p);
-        x1a = t_of_the_way(x0,x1); x1 = t_of_the_way(x1,x2);
-        x2a = t_of_the_way(x1a,x1);
-        y1a = t_of_the_way(y0,y1); y1 = t_of_the_way(y1,y2);
-        y2a = t_of_the_way(y1a,y1);
-        fin_offset_prep(p,k,w,x0,x1a,x2a,y0,y1a,y2a,true,n); x0 = x2a; y0 = y2a;
-        t1 = t_of_the_way(t1,t2);
+        split_for_offset(p, t); r = link(p);
+        x1a = t_of_the_way(x0, x1); x1 = t_of_the_way(x1, x2);
+        x2a = t_of_the_way(x1a, x1);
+        y1a = t_of_the_way(y0, y1); y1 = t_of_the_way(y1, y2);
+        y2a = t_of_the_way(y1a, y1);
+        fin_offset_prep(p, k, w, x0, x1a, x2a, y0, y1a, y2a, true, n); x0 = x2a; y0 = y2a;
+        t1 = t_of_the_way(t1, t2);
         if (t1 < 0) t1 = 0;
-        t = crossing_point(0,t1,t2);
+        t = crossing_point(0, t1, t2);
         if (t < fraction_one)
         {
-          split_for_offset(r,t);
-          x1a = t_of_the_way(x1,x2); x1 = t_of_the_way(x0,x1);
-          x0a = t_of_the_way(x1,x1a);
-          y1a = t_of_the_way(y1,y2); y1 = t_of_the_way(y0,y1);
-          y0a = t_of_the_way(y1,y1a);
-          fin_offset_prep(link(r),k,w,x0a,x1a,x2,y0a,y1a,y2,true,n);
+          split_for_offset(r, t);
+          x1a = t_of_the_way(x1, x2); x1 = t_of_the_way(x0, x1);
+          x0a = t_of_the_way(x1, x1a);
+          y1a = t_of_the_way(y1, y2); y1 = t_of_the_way(y0, y1);
+          y0a = t_of_the_way(y1, y1a);
+          fin_offset_prep(link(r), k, w, x0a, x1a, x2, y0a, y1a, y2, true, n);
           x2 = x0a; y2 = y0a;
         }
-        fin_offset_prep(r,k-1,ww,-x0,-x1,-x2,-y0,-y1,-y2,false,n);
+        fin_offset_prep(r, k - 1, ww, -x0, -x1, -x2, -y0, -y1, -y2, false, n);
       }
     }
   not_found:
@@ -6290,7 +6289,7 @@ void split_for_offset(pointer p, fraction t)
 {
   pointer q; //{the successor of p}
   pointer r; //{the new node}
-  q = link(p); split_cubic(p,t,x_coord(q),y_coord(q)); r = link(p);
+  q = link(p); split_cubic(p, t, x_coord(q), y_coord(q)); r = link(p);
   if (y_coord(r) < y_coord(p)) y_coord(r) = y_coord(p);
   else if (y_coord(r) > y_coord(q)) y_coord(r) = y_coord(q);
   if (x_coord(r) < x_coord(p)) x_coord(r) = x_coord(p);
@@ -6321,8 +6320,8 @@ void fin_offset_prep(pointer p, halfword k, pointer w, int x0, int x1, int x2, i
           bool rising, int n)
 {
   pointer ww; //{for list manipulation}
-  scaled du,dv; //{for slope calculation}
-  int t0,t1,t2; //{test coefficients}
+  scaled du, dv; //{for slope calculation}
+  int t0, t1, t2; //{test coefficients}
   fraction t; //{place where the derivative passes a critical slope}
   fraction s; //{slope or reciprocal slope}
   int v; //{intermediate value for updating x0 .. y2 }
@@ -6334,31 +6333,31 @@ void fin_offset_prep(pointer p, halfword k, pointer w, int x0, int x1, int x2, i
       if (k == n) return;
       else ww = link(w); //{a pointer to w k+1 }
     else if (k == 1) return;
-    else ww = knil(w); //{a pointer to w k-1 }
+    else ww = knil(w); //{a pointer to w k - 1 }
     du = x_coord(ww) - x_coord(w); dv = y_coord(ww) - y_coord(w);
     if (myabs(du) >= myabs(dv)) //{s k-1 = 1 or s k = 1}
     {
-      s = make_fraction(dv,du); t0 = take_fraction(x0,s) - y0; t1 = take_fraction(x1,s) - y1;
-      t2 = take_fraction(x2,s) - y2;
+      s = make_fraction(dv, du); t0 = take_fraction(x0, s) - y0; t1 = take_fraction(x1, s) - y1;
+      t2 = take_fraction(x2, s) - y2;
     }
     else {
-      s = make_fraction(du,dv); t0 = x0 - take_fraction(y0,s); t1 = x1 - take_fraction(y1,s);
-      t2 = x2 - take_fraction(y2,s);
+      s = make_fraction(du, dv); t0 = x0 - take_fraction(y0, s); t1 = x1 - take_fraction(y1, s);
+      t2 = x2 - take_fraction(y2, s);
     }
-    t = crossing_point(t0,t1,t2);
+    t = crossing_point(t0, t1, t2);
     if (t >= fraction_one) return;
     {
-      split_for_offset(p,t); right_type(p) = halfword_to_quarterword(k); p = link(p);
-      v = t_of_the_way(x0,x1); x1 = t_of_the_way(x1,x2); x0 = t_of_the_way(v,x1);
-      v = t_of_the_way(y0,y1); y1 = t_of_the_way(y1,y2); y0 = t_of_the_way(v,y1);
-      t1 = t_of_the_way(t1,t2);
+      split_for_offset(p, t); right_type(p) = halfword_to_quarterword(k); p = link(p);
+      v = t_of_the_way(x0, x1); x1 = t_of_the_way(x1, x2); x0 = t_of_the_way(v, x1);
+      v = t_of_the_way(y0, y1); y1 = t_of_the_way(y1, y2); y0 = t_of_the_way(v, y1);
+      t1 = t_of_the_way(t1, t2);
       if (t1 > 0) t1 = 0; //{without rounding error, t1 would be = 0}
-      t = crossing_point(0,-t1,-t2);
+      t = crossing_point(0, -t1, -t2);
       if (t < fraction_one)
       {
-        split_for_offset(p,t); right_type(link(p)) = (quarterword)k;
-        v = t_of_the_way(x1,x2); x1 = t_of_the_way(x0,x1); x2 = t_of_the_way(x1,v);
-        v = t_of_the_way(y1,y2); y1 = t_of_the_way(y0,y1); y2 = t_of_the_way(y1,v);
+        split_for_offset(p, t); right_type(link(p)) = (quarterword)k;
+        v = t_of_the_way(x1, x2); x1 = t_of_the_way(x0, x1); x2 = t_of_the_way(x1, v);
+        v = t_of_the_way(y1, y2); y1 = t_of_the_way(y0, y1); y2 = t_of_the_way(y1, v);
       }
     }
     if (rising) k++; else k--;
@@ -6373,8 +6372,8 @@ void fill_envelope(pointer spec_head)
   pointer h; //{head of pen offset list for current octant}
   pointer www; //{a pen offset of temporary interest}
 
-  int m,n; //{current lattice position}
-  int mm0,mm1; //{skewed equivalents of |m0| and |m1|}
+  int m, n; //{current lattice position}
+  int mm0, mm1; //{skewed equivalents of |m0| and |m1|}
   int k; //{current offset number}
   pointer w, ww; //{pointers to the current offset and its neighbor}
   int smooth_bot = INT_MAX, smooth_top = INT_MAX; //:0..move_size; //{boundaries of smoothing}
@@ -6396,21 +6395,21 @@ void fill_envelope(pointer spec_head)
       print(TEX_STRING(" (")); print_int(info(h)); print(TEX_STRING(" offset"));
       if (info(h) != 1) print_char(TEX_STRING("s"));
       print(TEX_STRING("), from "));
-      print_two_true(x_coord(p)+x_coord(w),y_coord(p)+y_coord(w));
+      print_two_true(x_coord(p) + x_coord(w), y_coord(p) + y_coord(w));
       ww = link(h);
       if (right_transition(q) == diagonal) ww = knil(ww);
       print(TEX_STRING(" to "));
-      print_two_true(x_coord(q) + x_coord(ww),y_coord(q) + y_coord(ww));
+      print_two_true(x_coord(q) + x_coord(ww), y_coord(q) + y_coord(ww));
     }
 #endif
     ww = link(h); www = ww; //{starting and ending offsets}
     if (myodd(octant_number[octant])) www = knil(www); else ww = knil(ww);
-    if (w != ww) skew_line_edges(p,w,ww);
-    end_round(x_coord(p) + x_coord(ww),y_coord(p) + y_coord(ww));
+    if (w != ww) skew_line_edges(p, w, ww);
+    end_round(x_coord(p) + x_coord(ww), y_coord(p) + y_coord(ww));
     m0 = m1; n0 = n1; d0 = d1;
-    end_round(x_coord(q) + x_coord(www),y_coord(q) + y_coord(www));
-    if (n1 - n0 >= move_size) overflow(TEX_STRING("move table size"),move_size);
-    offset_prep(p,h); //{this may clobber node~|q|, if it becomes ``dead''}
+    end_round(x_coord(q) + x_coord(www), y_coord(q) + y_coord(www));
+    if (n1 - n0 >= move_size) overflow(TEX_STRING("move table size"), move_size);
+    offset_prep(p, h); //{this may clobber node~|q|, if it becomes ``dead''}
     q = p;
     while (right_type(q) != endpoint) q = link(q);
 
@@ -6447,9 +6446,9 @@ void fill_envelope(pointer spec_head)
               {
                 delx = xp - xx; yy = unity - yy;
                 while (true)  {
-                  tx = take_fraction(delx,make_fraction(yy,dely));
-                  if (ab_vs_cd(tx,dely,delx,yy) + xy_corr[octant] > 0) tx--;
-                  m = floor_unscaled(xx+tx);
+                  tx = take_fraction(delx, make_fraction(yy, dely));
+                  if (ab_vs_cd(tx, dely, delx, yy) + xy_corr[octant] > 0) tx--;
+                  m = floor_unscaled(xx + tx);
                   if (m > env_move[move_ptr]) env_move[move_ptr] = m;
                   ty = ty - unity;
                   if (ty < unity) goto done1;
@@ -6468,7 +6467,7 @@ void fill_envelope(pointer spec_head)
           if (internal[tracing_edges] > unity)
           {
             print(TEX_STRING(" to "));
-            print_two_true(xp,yp - half_unit);
+            print_two_true(xp, yp - half_unit);
             print_nl(TEX_STRING(""));
           }
 #endif
@@ -6480,10 +6479,10 @@ void fill_envelope(pointer spec_head)
         if (r == p) smooth_bot = move_ptr;
         if (r == q) goto done;
         move[move_ptr] = 1; n = move_ptr; s = link(r);
-        make_moves(x_coord(r)+x_coord(w),right_x(r)+x_coord(w),left_x(s)+x_coord(w),
-              x_coord(s)+x_coord(w),y_coord(r)+y_coord(w)+half_unit,
-              right_y(r)+y_coord(w)+half_unit,left_y(s)+y_coord(w)+half_unit,
-              y_coord(s)+y_coord(w)+half_unit,xy_corr[octant],y_corr[octant]);
+        make_moves(x_coord(r) + x_coord(w), right_x(r) + x_coord(w), left_x(s) + x_coord(w),
+              x_coord(s) + x_coord(w), y_coord(r) + y_coord(w) + half_unit,
+              right_y(r) + y_coord(w) + half_unit, left_y(s) + y_coord(w) + half_unit,
+              y_coord(s) + y_coord(w) + half_unit, xy_corr[octant], y_corr[octant]);
         do {
           m = m + move[n] - 1;
           if (m > env_move[n]) env_move[n] = m;
@@ -6499,14 +6498,14 @@ done:
       for (n = 1; n <= move_ptr; n++)
         move[n] = env_move[n] - env_move[n - 1] + 1;
       move[move_ptr] = move[move_ptr] - d1;
-      if (internal[smoothing] > 0) smooth_moves(smooth_bot,smooth_top);
-      move_to_edges(m0,n0,m1,n1);
+      if (internal[smoothing] > 0) smooth_moves(smooth_bot, smooth_top);
+      move_to_edges(m0, n0, m1, n1);
       if (right_transition(q) == axis)
       {
-        w = link(h); skew_line_edges(q,knil(w),w);
+        w = link(h); skew_line_edges(q, knil(w), w);
       }
     }
-    else dual_moves(h,p,q);
+    else dual_moves(h, p, q);
     right_type(q) = endpoint;
     p = link(q);
   } while (p != spec_head);
@@ -6517,23 +6516,23 @@ done:
 // 510
 void skew_line_edges(pointer p, pointer w, pointer ww)
 {
-  scaled x0,y0,x1,y1; //{from and to}
+  scaled x0, y0, x1, y1; //{from and to}
 
   if (x_coord(w) != x_coord(ww) || y_coord(w) != y_coord(ww))
   {
     x0 = x_coord(p) + x_coord(w); y0 = y_coord(p) + y_coord(w);
     x1 = x_coord(p) + x_coord(ww); y1 = y_coord(p) + y_coord(ww);
-    unskew(x0,y0,octant); //{unskew and unrotate the coordinates}
+    unskew(x0, y0, octant); //{unskew and unrotate the coordinates}
     x0 = cur_x; y0 = cur_y;
-    unskew(x1,y1,octant);
+    unskew(x1, y1, octant);
     #ifndef NO_STAT
     if (internal[tracing_edges] > unity)
     {
-      print_nl(TEX_STRING("@ retrograde line from ")); print_two(x0,y0); print(TEX_STRING(" to "));
-      print_two(cur_x,cur_y); print_nl(TEX_STRING(""));
+      print_nl(TEX_STRING("@ retrograde line from ")); print_two(x0, y0); print(TEX_STRING(" to "));
+      print_two(cur_x, cur_y); print_nl(TEX_STRING(""));
     }
     #endif
-    line_edges(x0,y0,cur_x,cur_y); //{then draw a straight line}
+    line_edges(x0, y0, cur_x, cur_y); //{then draw a straight line}
   }
 }
 
@@ -6550,8 +6549,8 @@ void dual_moves(pointer h, pointer p, pointer q)
     //{registers for coordinate calculations}
 
   k = info(h) + 1; ww = link(h); w = knil(ww);
-  mm0 = floor_unscaled(x_coord(p)+x_coord(w)-xy_corr[octant]);
-  mm1 = floor_unscaled(x_coord(q)+x_coord(ww)-xy_corr[octant]);
+  mm0 = floor_unscaled(x_coord(p) + x_coord(w) - xy_corr[octant]);
+  mm1 = floor_unscaled(x_coord(q) + x_coord(ww) - xy_corr[octant]);
   for (n = 1; n <= n1 - n0 + 1; n++) env_move[n] = mm1;
   env_move[0] = mm0; move_ptr = 0; m = mm0;
 
@@ -6560,33 +6559,33 @@ void dual_moves(pointer h, pointer p, pointer q)
     if (r == q) smooth_top = move_ptr;
     while (right_type(r) != k)
     {
-      xx = x_coord(r)+x_coord(w); yy = y_coord(r)+y_coord(w)+half_unit;
+      xx = x_coord(r) + x_coord(w); yy = y_coord(r) + y_coord(w) + half_unit;
   #ifndef NO_STAT
       if (internal[tracing_edges] > unity)
       {
         print_nl(TEX_STRING("@ transition line ")); print_int(k); print(TEX_STRING(", from "));
-        print_two_true(xx,yy-half_unit);
+        print_two_true(xx, yy - half_unit);
       }
   #endif
       if (right_type(r) < k)
       {
         k--; w = knil(w);
-        xp = x_coord(r)+x_coord(w); yp = y_coord(r)+y_coord(w)+half_unit;
+        xp = x_coord(r) + x_coord(w); yp = y_coord(r) + y_coord(w) + half_unit;
         if (yp != yy)
         {
-          ty = floor_scaled(yy-y_corr[octant]); dely = yp-yy; yy = yy-ty;
-          ty = yp-y_corr[octant]-ty;
+          ty = floor_scaled(yy - y_corr[octant]); dely = yp - yy; yy = yy - ty;
+          ty = yp - y_corr[octant] - ty;
           if (ty >= unity)
           {
-            delx = xp-xx; yy = unity-yy;
+            delx = xp - xx; yy = unity - yy;
             while (true) {
               if (m < env_move[move_ptr]) env_move[move_ptr] = m;
-              tx = take_fraction(delx,make_fraction(yy,dely));
-              if (ab_vs_cd(tx,dely,delx,yy)+xy_corr[octant] > 0) tx--;
-              m = floor_unscaled(xx+tx);
-              ty = ty-unity; move_ptr++;
+              tx = take_fraction(delx, make_fraction(yy, dely));
+              if (ab_vs_cd(tx, dely, delx, yy) + xy_corr[octant] > 0) tx--;
+              m = floor_unscaled(xx + tx);
+              ty = ty - unity; move_ptr++;
               if (ty < unity) goto done1;
-              yy = yy+unity;
+              yy = yy + unity;
             }
           done1:
             if (m < env_move[move_ptr]) env_move[move_ptr] = m;
@@ -6595,51 +6594,51 @@ void dual_moves(pointer h, pointer p, pointer q)
       }
       else {
         k++; w = link(w);
-        xp = x_coord(r)+x_coord(w); yp = y_coord(r)+y_coord(w)+half_unit;
+        xp = x_coord(r) + x_coord(w); yp = y_coord(r) + y_coord(w) + half_unit;
       }
   #ifndef NO_STAT
       if (internal[tracing_edges] > unity)
       {
         print(TEX_STRING(" to "));
-        print_two_true(xp,yp-half_unit);
+        print_two_true(xp, yp - half_unit);
         print_nl(TEX_STRING(""));
       }
   #endif
-      m = floor_unscaled(xp-xy_corr[octant]);
-      move_ptr = floor_unscaled(yp-y_corr[octant])-n0;
+      m = floor_unscaled(xp - xy_corr[octant]);
+      move_ptr = floor_unscaled(yp - y_corr[octant]) - n0;
       if (m < env_move[move_ptr]) env_move[move_ptr] = m;
     }
     if (r == p) smooth_bot = move_ptr;
     if (r == q) goto done;
     move[move_ptr] = 1; n = move_ptr; s = link(r);
-    make_moves(x_coord(r)+x_coord(w),right_x(r)+x_coord(w), left_x(s)+x_coord(w),x_coord(s)+x_coord(w),y_coord(r)+y_coord(w)+half_unit,right_y(r)+y_coord(w)+half_unit,left_y(s)+y_coord(w)+half_unit,y_coord(s)+y_coord(w)+half_unit,xy_corr[octant],y_corr[octant]);
+    make_moves(x_coord(r) + x_coord(w), right_x(r) + x_coord(w), left_x(s) + x_coord(w), x_coord(s) + x_coord(w), y_coord(r) + y_coord(w) + half_unit, right_y(r) + y_coord(w) + half_unit, left_y(s) + y_coord(w) + half_unit, y_coord(s) + y_coord(w) + half_unit, xy_corr[octant], y_corr[octant]);
     do {
       if (m < env_move[n]) env_move[n] = m;
-      m = m+move[n]-1;
+      m = m + move[n] - 1;
       n++;
     } while (n <= move_ptr);
     r = s;
   }
 done:
 #ifndef NO_DEBUG
-  if (m != mm1 || move_ptr != n1-n0) confusion(TEX_STRING("2"));
+  if (m != mm1 || move_ptr != n1 - n0) confusion(TEX_STRING("2"));
 #endif
-  move[0] = d0+env_move[1]-mm0;
+  move[0] = d0 + env_move[1] - mm0;
   for (n = 1; n <= move_ptr; n++)
-    move[n] = env_move[n+1]-env_move[n]+1;
-  move[move_ptr] = move[move_ptr]-d1;
-  if (internal[smoothing] > 0) smooth_moves(smooth_bot,smooth_top);
-  move_to_edges(m0,n0,m1,n1);
+    move[n] = env_move[n + 1] - env_move[n] + 1;
+  move[move_ptr] = move[move_ptr] - d1;
+  if (internal[smoothing] > 0) smooth_moves(smooth_bot, smooth_top);
+  move_to_edges(m0, n0, m1, n1);
   if (right_transition(q) == diagonal)
   {
-    w = link(h); skew_line_edges(q,w,knil(w));
+    w = link(h); skew_line_edges(q, w, knil(w));
   }
 }
 
 // 527
 pointer make_ellipse(scaled major_axis, scaled minor_axis, angle theta)
 {
-  pointer p,q,r,s; //{for list manipulation}
+  pointer p, q, r, s; //{for list manipulation}
   pointer h; //{head of the constructed knot list}
   int alpha, beta, gamma, delta; //{special points}
   int c, d; //{class numbers}
@@ -6661,15 +6660,15 @@ pointer make_ellipse(scaled major_axis, scaled minor_axis, angle theta)
   else {
     symmetric = false;
     n_sin_cos(theta); //{set up $|n_sin|=\sin\theta$ and $|n_cos|=\cos\theta$}
-    gamma = take_fraction(major_axis,n_sin);
-    delta = take_fraction(minor_axis,n_cos);
-    beta = pyth_add(gamma,delta);
-    alpha = take_fraction(take_fraction(major_axis,make_fraction(gamma,beta)),n_cos)-take_fraction(take_fraction(minor_axis,make_fraction(delta,beta)),n_sin);
+    gamma = take_fraction(major_axis, n_sin);
+    delta = take_fraction(minor_axis, n_cos);
+    beta = pyth_add(gamma, delta);
+    alpha = take_fraction(take_fraction(major_axis, make_fraction(gamma, beta)), n_cos) - take_fraction(take_fraction(minor_axis, make_fraction(delta, beta)), n_sin);
     alpha = (alpha + half_unit) / unity;
-    gamma = pyth_add(take_fraction(major_axis,n_cos),take_fraction(minor_axis,n_sin));
+    gamma = pyth_add(take_fraction(major_axis, n_cos), take_fraction(minor_axis, n_sin));
   }
-  beta = (beta+half_unit) / unity;
-  gamma = (gamma+half_unit) / unity;
+  beta = (beta + half_unit) / unity;
+  gamma = (gamma + half_unit) / unity;
 
   p = get_node(knot_node_size); q = get_node(knot_node_size);
   r = get_node(knot_node_size);
@@ -6690,33 +6689,33 @@ pointer make_ellipse(scaled major_axis, scaled minor_axis, angle theta)
   right_u(q) = half_unit; left_v(r) = 0;
   right_u(r) = 0;
   right_class(p) = beta; right_class(q) = gamma; right_class(r) = beta;
-  left_length(q) = gamma+alpha;
+  left_length(q) = gamma + alpha;
   if (symmetric)
   {
     y_coord(r) = 0; left_length(r) = beta;
   }
   else {
-    y_coord(r) = -y_coord(p); left_length(r) = beta+beta;
+    y_coord(r) = -y_coord(p); left_length(r) = beta + beta;
     x_coord(s) = -x_coord(p); y_coord(s) = y_coord(r);
-    left_v(s) = half_unit; left_length(s) = gamma-alpha;
+    left_v(s) = half_unit; left_length(s) = gamma - alpha;
   }
   while (true) {
-    u = right_u(p)+right_u(q); v = left_v(q)+left_v(r);
-    c = right_class(p)+right_class(q);
-    delta = pyth_add(u,v);
+    u = right_u(p) + right_u(q); v = left_v(q) + left_v(r);
+    c = right_class(p) + right_class(q);
+    delta = pyth_add(u, v);
     if (major_axis == minor_axis) d = major_axis; //{circles are easy}
     else {
       if (theta == 0) {
         alpha = u; beta = v;
       }
       else {
-        alpha = take_fraction(u,n_cos)+take_fraction(v,n_sin);
-        beta = take_fraction(v,n_cos)-take_fraction(u,n_sin);
+        alpha = take_fraction(u, n_cos) + take_fraction(v, n_sin);
+        beta = take_fraction(v, n_cos) - take_fraction(u, n_sin);
       }
-      alpha = make_fraction(alpha,delta);
-      beta = make_fraction(beta,delta);
-      d = pyth_add(take_fraction(major_axis,alpha),
-      take_fraction(minor_axis,beta));
+      alpha = make_fraction(alpha, delta);
+      beta = make_fraction(beta, delta);
+      d = pyth_add(take_fraction(major_axis, alpha),
+      take_fraction(minor_axis, beta));
     }
     alpha = myabs(u); beta = myabs(v);
     if (alpha < beta)
@@ -6724,10 +6723,10 @@ pointer make_ellipse(scaled major_axis, scaled minor_axis, angle theta)
       alpha = myabs(v); beta = myabs(u);
     } //{now $\alpha=\max(\vert u\vert,\vert v\vert)$, $\beta=\min(\vert u\vert,\vert v\vert)$}
     if (internal[fillin] != 0)
-      d = d - take_fraction(internal[fillin],make_fraction(beta+beta,delta));
-    d = take_fraction((d + 4) / 8,delta); alpha = alpha / half_unit;
+      d = d - take_fraction(internal[fillin], make_fraction(beta + beta, delta));
+    d = take_fraction((d + 4) / 8, delta); alpha = alpha / half_unit;
     if (d < alpha) d = alpha;
-    delta = c-d; //{we want to move |delta| steps back from the intersection vertex~|q|}
+    delta = c - d; //{we want to move |delta| steps back from the intersection vertex~|q|}
     if (delta > 0)
     {
       if (delta > left_length(r)) delta = left_length(r);
@@ -6737,7 +6736,7 @@ pointer make_ellipse(scaled major_axis, scaled minor_axis, angle theta)
         right_class(p) = c - delta; right_u(p) = u; left_v(q) = v;
         x_coord(q) = x_coord(q) - delta * left_v(r);
         y_coord(q) = y_coord(q) + delta * right_u(q);
-        left_length(r) = left_length(r)-delta;
+        left_length(r) = left_length(r) - delta;
       }
       else
       {
@@ -6748,8 +6747,8 @@ pointer make_ellipse(scaled major_axis, scaled minor_axis, angle theta)
         y_coord(q) = y_coord(q) + delta * right_u(q);
         left_v(s) = left_v(q); right_u(s) = u; left_v(q) = v;
         right_class(s) = c - delta;
-        left_length(s) = left_length(q)-delta; left_length(q) = delta;
-        left_length(r) = left_length(r)-delta;
+        left_length(s) = left_length(q) - delta; left_length(q) = delta;
+        left_length(r) = left_length(r) - delta;
       }
     }
     else p = q;
@@ -6759,14 +6758,14 @@ pointer make_ellipse(scaled major_axis, scaled minor_axis, angle theta)
       if (left_length(q) == 0)
       {
         link(p) = link(q); right_class(p) = right_class(q);
-        right_u(p) = right_u(q); free_node(q,knot_node_size);
+        right_u(p) = right_u(q); free_node(q, knot_node_size);
       }
       else {
         r = link(q);
         if (r == null) goto done;
         if (left_length(r) == 0)
         {
-          link(p) = r; free_node(q,knot_node_size); p = r;
+          link(p) = r; free_node(q, knot_node_size); p = r;
         }
         else goto found;
       }
@@ -6786,7 +6785,7 @@ pointer make_ellipse(scaled major_axis, scaled minor_axis, angle theta)
       if (y_coord(q) == 0) goto done1;
     }
     done1:
-    if (link(p) != null) free_node(link(p),knot_node_size);
+    if (link(p) != null) free_node(link(p), knot_node_size);
     link(p) = s; beta = -y_coord(h);
     while (y_coord(p) != beta) p = link(p);
     q = link(p);
@@ -6796,7 +6795,7 @@ pointer make_ellipse(scaled major_axis, scaled minor_axis, angle theta)
   {
     if (right_u(h) == 0)
     {
-      p = h; h = link(h); free_node(p,knot_node_size);
+      p = h; h = link(h); free_node(p, knot_node_size);
       x_coord(q) = -x_coord(h);
     }
     p = q;
@@ -6825,7 +6824,7 @@ scaled find_direction_time(scaled x, scaled y, pointer h)
 
   if (myabs(x) < myabs(y))
   {
-    x = make_fraction(x,myabs(y));
+    x = make_fraction(x, myabs(y));
     if (y > 0) y = fraction_one; else y = -fraction_one;
   }
   else if (x == 0)
@@ -6833,7 +6832,7 @@ scaled find_direction_time(scaled x, scaled y, pointer h)
     return 0;
   }
   else {
-    y = make_fraction(y,myabs(x));
+    y = make_fraction(y, myabs(x));
     if (x > 0) x = fraction_one; else x = -fraction_one;
   }
   n = 0; p = h;
@@ -6841,10 +6840,10 @@ scaled find_direction_time(scaled x, scaled y, pointer h)
     if (right_type(p) == endpoint) goto not_found;
     q = link(p);
     tt = 0;
-    x1 = right_x(p)-x_coord(p); x2 = left_x(q)-right_x(p);
-    x3 = x_coord(q)-left_x(q);
-    y1 = right_y(p)-y_coord(p); y2 = left_y(q)-right_y(p);
-    y3 = y_coord(q)-left_y(q);
+    x1 = right_x(p) - x_coord(p); x2 = left_x(q) - right_x(p);
+    x3 = x_coord(q) - left_x(q);
+    y1 = right_y(p) - y_coord(p); y2 = left_y(q) - right_y(p);
+    y3 = y_coord(q) - left_y(q);
     max = myabs(x1);
     if (myabs(x2) > max) max = myabs(x2);
     if (myabs(x3) > max) max = myabs(x3);
@@ -6857,47 +6856,47 @@ scaled find_direction_time(scaled x, scaled y, pointer h)
       _double(max); _double(x1); _double(x2); _double(x3);
       _double(y1); _double(y2); _double(y3);
     }
-    t = x1; x1 = take_fraction(x1,x)+take_fraction(y1,y);
-    y1 = take_fraction(y1,x)-take_fraction(t,y);
-    t = x2; x2 = take_fraction(x2,x)+take_fraction(y2,y);
-    y2 = take_fraction(y2,x)-take_fraction(t,y);
-    t = x3; x3 = take_fraction(x3,x)+take_fraction(y3,y);
-    y3 = take_fraction(y3,x)-take_fraction(t,y);
+    t = x1; x1 = take_fraction(x1, x) + take_fraction(y1, y);
+    y1 = take_fraction(y1, x) - take_fraction(t, y);
+    t = x2; x2 = take_fraction(x2, x) + take_fraction(y2, y);
+    y2 = take_fraction(y2, x) - take_fraction(t, y);
+    t = x3; x3 = take_fraction(x3, x) + take_fraction(y3, y);
+    y3 = take_fraction(y3, x) - take_fraction(t, y);
 
     if (y1 == 0)
       if (x1 >= 0) goto found;
     if (n > 0)
     {
-      theta = n_arg(x1,y1);
+      theta = n_arg(x1, y1);
       if (theta >= 0)
         if (phi <= 0)
-          if (phi >= theta-one_eighty_deg) goto found;
+          if (phi >= theta - one_eighty_deg) goto found;
       if (theta <= 0)
         if (phi >= 0)
-          if (phi <= theta+one_eighty_deg) goto found;
+          if (phi <= theta + one_eighty_deg) goto found;
       if (p == h) goto not_found;
     }
-    if (x3 != 0 || y3 != 0) phi = n_arg(x3,y3);
+    if (x3 != 0 || y3 != 0) phi = n_arg(x3, y3);
     if (x1 < 0)
       if (x2 < 0)
         if (x3 < 0) goto done;
-    if (ab_vs_cd(y1,y3,y2,y2) == 0)
+    if (ab_vs_cd(y1, y3, y2, y2) == 0)
     {
-      if (ab_vs_cd(y1,y2,0,0) < 0)
+      if (ab_vs_cd(y1, y2, 0, 0) < 0)
       {
-        t = make_fraction(y1,y1-y2);
-        x1 = t_of_the_way(x1,x2);
-        x2 = t_of_the_way(x2,x3);
-        if (t_of_the_way(x1,x2) >= 0) we_found_it;
+        t = make_fraction(y1, y1 - y2);
+        x1 = t_of_the_way(x1, x2);
+        x2 = t_of_the_way(x2, x3);
+        if (t_of_the_way(x1, x2) >= 0) we_found_it;
       }
       else if (y3 == 0) {
         if (y1 == 0)
         {
-          t = crossing_point(-x1,-x2,-x3);
+          t = crossing_point(-x1, -x2, -x3);
           if (t <= fraction_one) we_found_it;
-          if (ab_vs_cd(x1,x3,x2,x2) <= 0)
+          if (ab_vs_cd(x1, x3, x2, x2) <= 0)
           {
-            t = make_fraction(x1,x1-x2); we_found_it;
+            t = make_fraction(x1, x1 - x2); we_found_it;
           }
         }
         else if (x3 >= 0)
@@ -6917,35 +6916,35 @@ scaled find_direction_time(scaled x, scaled y, pointer h)
         y2 = -y2; y3 = -y3;
       }
     }
-    t = crossing_point(y1,y2,y3);
+    t = crossing_point(y1, y2, y3);
     if (t > fraction_one) goto done;
-    y2 = t_of_the_way(y2,y3);
-    x1 = t_of_the_way(x1,x2);
-    x2 = t_of_the_way(x2,x3);
-    x1 = t_of_the_way(x1,x2);
+    y2 = t_of_the_way(y2, y3);
+    x1 = t_of_the_way(x1, x2);
+    x2 = t_of_the_way(x2, x3);
+    x1 = t_of_the_way(x1, x2);
     if (x1 >= 0) we_found_it;
     if (y2 > 0) y2 = 0;
-    tt = t; t = crossing_point(0,-y2,-y3);
+    tt = t; t = crossing_point(0, -y2, -y3);
     if (t > fraction_one) goto done;
-    x1 = t_of_the_way(x1,x2);
-    x2 = t_of_the_way(x2,x3);
-    if (t_of_the_way(x1,x2) >= 0)
+    x1 = t_of_the_way(x1, x2);
+    x2 = t_of_the_way(x2, x3);
+    if (t_of_the_way(x1, x2) >= 0)
     {
-      t = t_of_the_way(tt,fraction_one); we_found_it;
+      t = t_of_the_way(tt, fraction_one); we_found_it;
     }
 done:
-    p = q; n = n+unity;
+    p = q; n = n + unity;
   }
 not_found:
   return -unity;
 found:
-  return n+tt;
+  return n + tt;
 }
 
 // 556
 void cubic_intersection(pointer p, pointer pp)
 {
-  pointer q,qq; //{link(p), link(pp)}
+  pointer q, qq; //{link(p), link(pp)}
 
   time_to_go = max_patience; max_t = 2;
   q = link(p); qq = link(pp); bisect_ptr = int_packets;
@@ -7035,8 +7034,8 @@ void cubic_intersection(pointer p, pointer pp)
 void path_intersection(pointer h, pointer hh)
 {
 
-  pointer p,pp; // {link registers that traverse the given paths}
-  int n,nn; // {integer parts of intersection times, minus unity }
+  pointer p, pp; // {link registers that traverse the given paths}
+  int n, nn; // {integer parts of intersection times, minus unity }
 
   if (right_type(h) == endpoint)
   {
@@ -7059,7 +7058,7 @@ void path_intersection(pointer h, pointer hh)
         do {
           if (right_type(pp) != endpoint)
           {
-            cubic_intersection(p,pp);
+            cubic_intersection(p, pp);
             if (cur_t > 0)
             {
               cur_t = cur_t + n; cur_tt = cur_tt + nn; return;
@@ -7091,7 +7090,7 @@ void update_screen() // {will be called only if |init_screen| returns |true|}
 }
 
 // 567
-void blank_rectangle(screen_col left_col,screen_col right_col, screen_row top_row,screen_row bot_row)
+void blank_rectangle(screen_col left_col, screen_col right_col, screen_row top_row, screen_row bot_row)
 {
   screen_row r;
   screen_col c;
@@ -7132,7 +7131,7 @@ void paint_row(screen_row r, pixel_color b, trans_spec& a, screen_col n)
 }
 
 // 574
-void open_a_window(window_number k,scaled r0, scaled c0,scaled r1,scaled c1,scaled x,scaled y)
+void open_a_window(window_number k, scaled r0, scaled c0, scaled r1, scaled c1, scaled x, scaled y)
 {
   int m, n; //{pixel coordinates}
   if (r0 < 0) r0 = 0; else r0 = round_unscaled(r0);
@@ -7156,7 +7155,7 @@ void open_a_window(window_number k,scaled r0, scaled c0,scaled r1,scaled c1,scal
   start_screen;
   if (screen_OK)
   {
-    blank_rectangle(c0,c1,r0,r1); update_screen();
+    blank_rectangle(c0, c1, r0, r1); update_screen();
   }
 }
 
@@ -7170,7 +7169,7 @@ void disp_edges(window_number k)
   screen_col n; //{the highest active index in |row_transition|}
   int w, ww; //{old and new accumulated weights}
   pixel_color b = INT_MAX; //{status of first pixel in the row transitions}
-  int m,mm; //{old and new screen column positions}
+  int m, mm; //{old and new screen column positions}
   int d; //{edge-and-weight without |min_halfword| compensation}
   int m_adjustment; //{conversion between edge and screen coordinates}
   int right_edge; //{largest edge-and-weight that could affect the window}
@@ -7185,7 +7184,7 @@ void disp_edges(window_number k)
           if (last_window_time(cur_edges) == window_time[k])
             already_there = true;
         if (!already_there)
-          blank_rectangle(left_col[k],right_col[k],top_row[k],bot_row[k]);
+          blank_rectangle(left_col[k], right_col[k], top_row[k], bot_row[k]);
         m_adjustment = m_window[k] - m_offset(cur_edges);
         right_edge = 8 * (right_col[k] - m_adjustment);
         min_col = left_col[k];
@@ -7209,12 +7208,13 @@ void disp_edges(window_number k)
                 {
                   if (ww > 0) if (m > min_col)
                   {
-                    if (n == 0)
+                    if (n == 0) {
                       if (already_there)
                       {
                         b = white; n++;
                       }
                       else b = black;
+                    }
                     else n++;
                     row_transition[n] = m;
                   }
@@ -7242,7 +7242,7 @@ void disp_edges(window_number k)
             }
             else if (n == 0) goto done;
 
-            paint_row(r,b,row_transition,n);
+            paint_row(r, b, row_transition, n);
           done:
               ;
           }
@@ -7300,8 +7300,8 @@ fraction max_coef(pointer p)
 // 594
 pointer p_plus_fq(pointer p, int f, pointer q, small_number t, small_number tt)
 {
-  pointer pp,qq; //{|info(p)| and |info(q)|, respectively}
-  pointer r,s; //{for list manipulation}
+  pointer pp, qq; //{|info(p)| and |info(q)|, respectively}
+  pointer r, s; //{for list manipulation}
   int threshold; //{defines a neighborhood of zero}
   int v; //{temporary register}
   if (t == dependent) threshold = fraction_threshold;
@@ -7312,10 +7312,10 @@ pointer p_plus_fq(pointer p, int f, pointer q, small_number t, small_number tt)
       if (pp == null) goto done;
       else
       {
-        if (tt == dependent) v = value(p) + take_fraction(f,value(q));
-        else v = value(p) + take_scaled(f,value(q));
+        if (tt == dependent) v = value(p) + take_fraction(f, value(q));
+        else v = value(p) + take_scaled(f, value(q));
         value(p) = v; s = p; p = link(p);
-        if (myabs(v) < threshold) free_node(s,dep_node_size);
+        if (myabs(v) < threshold) free_node(s, dep_node_size);
         else  {
           if (myabs(v) >= coef_bound)
             if (watch_coefs)
@@ -7328,8 +7328,8 @@ pointer p_plus_fq(pointer p, int f, pointer q, small_number t, small_number tt)
       }
     else if (value(pp) < value(qq))
     {
-      if (tt == dependent) v = take_fraction(f,value(q));
-      else v = take_scaled(f,value(q));
+      if (tt == dependent) v = take_fraction(f, value(q));
+      else v = take_scaled(f, value(q));
       if (myabs(v) > half(threshold))
       {
         s = get_node(dep_node_size); info(s) = qq; value(s) = v;
@@ -7347,8 +7347,8 @@ pointer p_plus_fq(pointer p, int f, pointer q, small_number t, small_number tt)
     }
 done:
   if (t == dependent)
-    value(p) = slow_add(value(p),take_fraction(value(q),f));
-  else value(p) = slow_add(value(p),take_scaled(value(q),f));
+    value(p) = slow_add(value(p), take_fraction(value(q), f));
+  else value(p) = slow_add(value(p), take_scaled(value(q), f));
 
   link(r) = p; dep_final = p; return link(temp_head);
 }
@@ -7356,8 +7356,8 @@ done:
 // 597
 pointer p_plus_q(pointer p, pointer q, small_number t)
 {
-  pointer pp,qq; //{|info(p)| and |info(q)|, respectively}
-  pointer r,s; //{for list manipulation}
+  pointer pp, qq; //{|info(p)| and |info(q)|, respectively}
+  pointer r, s; //{for list manipulation}
   int threshold; //{defines a neighborhood of zero}
   int v; //{temporary register}
   if (t == dependent) threshold = fraction_threshold;
@@ -7370,7 +7370,7 @@ pointer p_plus_q(pointer p, pointer q, small_number t)
       {
         v = value(p) + value(q);
         value(p) = v; s = p; p = link(p); pp = info(p);
-        if (myabs(v) < threshold) free_node(s,dep_node_size);
+        if (myabs(v) < threshold) free_node(s, dep_node_size);
         else  {
           if (myabs(v) >= coef_bound)
             if (watch_coefs)
@@ -7389,7 +7389,7 @@ pointer p_plus_q(pointer p, pointer q, small_number t)
     else  {
       link(r) = p; r = p; p = link(p); pp = info(p);
     }
-  done: value(p) = slow_add(value(p),value(q));
+  done: value(p) = slow_add(value(p), value(q));
   link(r) = p; dep_final = p; return link(temp_head);
 }
 
@@ -7406,11 +7406,11 @@ pointer p_times_v(pointer p, int v, small_number t0, small_number t1, bool v_is_
   r = temp_head;
   while (info(p) != null)
   {
-    if (scaling_down) w = take_fraction(v,value(p));
-    else w = take_scaled(v,value(p));
+    if (scaling_down) w = take_fraction(v, value(p));
+    else w = take_scaled(v, value(p));
     if (myabs(w) <= threshold)
     {
-      s = link(p); free_node(p,dep_node_size); p = s;
+      s = link(p); free_node(p, dep_node_size); p = s;
     }
     else {
       if (myabs(w) >= coef_bound)
@@ -7421,15 +7421,15 @@ pointer p_times_v(pointer p, int v, small_number t0, small_number t1, bool v_is_
     }
   }
   link(r) = p;
-  if (v_is_scaled) value(p) = take_scaled(value(p),v);
-  else value(p) = take_fraction(value(p),v);
+  if (v_is_scaled) value(p) = take_scaled(value(p), v);
+  else value(p) = take_fraction(value(p), v);
   return link(temp_head);
 }
 
 // 600
 pointer p_over_v(pointer p, scaled v, small_number t0, small_number t1)
 {
-  pointer r,s; //{for list manipulation}
+  pointer r, s; //{for list manipulation}
   int w; //{tentative coefficient}
   int threshold;
   bool scaling_down;
@@ -7440,12 +7440,12 @@ pointer p_over_v(pointer p, scaled v, small_number t0, small_number t1)
   while (info(p) != null)
   {
     if (scaling_down)
-      if (myabs(v) < 02000000) w = make_scaled(value(p),v*010000);
-      else w = make_scaled(round_fraction(value(p)),v);
-    else w = make_scaled(value(p),v);
+      if (myabs(v) < 02000000) w = make_scaled(value(p), v*010000);
+      else w = make_scaled(round_fraction(value(p)), v);
+    else w = make_scaled(value(p), v);
     if (myabs(w) <= threshold)
     {
-      s = link(p); free_node(p,dep_node_size); p = s;
+      s = link(p); free_node(p, dep_node_size); p = s;
     }
     else {
       if (myabs(w) >= coef_bound)
@@ -7455,14 +7455,14 @@ pointer p_over_v(pointer p, scaled v, small_number t0, small_number t1)
       link(r) = p; r = p; value(p) = w; p = link(p);
     }
   }
-  link(r) = p; value(p) = make_scaled(value(p),v);
+  link(r) = p; value(p) = make_scaled(value(p), v);
   return link(temp_head);
 }
 
 // 601
 pointer p_with_x_becoming_q(pointer p, pointer x, pointer q, small_number t)
 {
-  pointer r,s; //{for list manipulation}
+  pointer r, s; //{for list manipulation}
   int v; //{coefficient of |x|}
   int sx; //{serial number of |x|}
   s = p; r = temp_head; sx = value(x);
@@ -7473,8 +7473,8 @@ pointer p_with_x_becoming_q(pointer p, pointer x, pointer q, small_number t)
   if (info(s) != x) return p;
   else {
     link(temp_head) = p; link(r) = link(s); v = value(s);
-    free_node(s,dep_node_size);
-    return p_plus_fq(link(temp_head),v,q,t,dependent);
+    free_node(s, dep_node_size);
+    return p_plus_fq(link(temp_head), v, q, t, dependent);
   }
 }
 
@@ -7496,7 +7496,7 @@ void make_known(pointer p, pointer q)
   int t; //:dependent..proto_dependent; {the previous type}
   prev_dep(link(q)) = prev_dep(p);
   link(prev_dep(p)) = link(q); t = type(p);
-  type(p) = known; value(p) = value(q); free_node(q,dep_node_size);
+  type(p) = known; value(p) = value(q); free_node(q, dep_node_size);
   if (myabs(value(p)) >= fraction_one) val_too_big(value(p));
   if (internal[tracing_equations] > 0)
     if (interesting(p))
@@ -7509,14 +7509,14 @@ void make_known(pointer p, pointer q)
     if (cur_type == t)
     {
       cur_type = known; cur_exp = value(p);
-      free_node(p,value_node_size);
+      free_node(p, value_node_size);
     }
 }
 
 // 604
 void fix_dependencies()
 {
-  pointer p,q,r,s,t; //{list manipulation registers}
+  pointer p, q, r, s, t; //{list manipulation registers}
   pointer x; //{an independent variable}
   r = link(dep_head); s = null;
   while (r != dep_head)
@@ -7536,14 +7536,14 @@ void fix_dependencies()
         value(q) = value(q) / 4;
         if (value(q) == 0)
         {
-          link(r) = link(q); free_node(q,dep_node_size); q = r;
+          link(r) = link(q); free_node(q, dep_node_size); q = r;
         }
       }
       r = q;
     }
   done:
     r = link(q);
-    if (q == dep_list(t)) make_known(t,q);
+    if (q == dep_list(t)) make_known(t, q);
   }
   while (s != null)
   {
@@ -7598,7 +7598,7 @@ pointer copy_dep_list(pointer p)
 // 610
 void linear_eq(pointer p, small_number t)
 {
-  pointer q,r,s; //{for link manipulation}
+  pointer q, r, s; //{for link manipulation}
   pointer x; //{the variable that loses its independence}
   int n; //{the number of times |x| had been halved}
   int v; //{the coefficient of |x| in list |p|}
@@ -7620,13 +7620,13 @@ void linear_eq(pointer p, small_number t)
   do {
     if (r == q)
     {
-      link(s) = link(r); free_node(r,dep_node_size);
+      link(s) = link(r); free_node(r, dep_node_size);
     }
     else  {
-      w = make_fraction(value(r),v);
+      w = make_fraction(value(r), v);
       if (myabs(w) <= half_fraction_threshold)
       {
-        link(s) = link(r); free_node(r,dep_node_size);
+        link(s) = link(r); free_node(r, dep_node_size);
       }
       else {
         value(r) = -w; s = r;
@@ -7635,8 +7635,8 @@ void linear_eq(pointer p, small_number t)
     r = link(s);
   } while (info(r) != null);
 
-  if (t == proto_dependent) value(r) = -make_scaled(value(r),v);
-  else if (v != -fraction_one) value(r) = -make_fraction(value(r),v);
+  if (t == proto_dependent) value(r) = -make_scaled(value(r), v);
+  else if (v != -fraction_one) value(r) = -make_fraction(value(r), v);
   final_node = r; p = link(temp_head);
   if (internal[tracing_equations] > 0)
     if (interesting(x))
@@ -7647,14 +7647,14 @@ void linear_eq(pointer p, small_number t)
       {
         print(TEX_STRING("*4")); w = w - 2;
       }
-      print_char(TEX_STRING("=")); print_dependency(p,dependent); end_diagnostic(false);
+      print_char(TEX_STRING("=")); print_dependency(p, dependent); end_diagnostic(false);
     }
 
   prev_r = dep_head; r = link(dep_head);
   while (r != dep_head)
   {
-    s = dep_list(r); q = p_with_x_becoming_q(s,x,p,type(r));
-    if (info(q) == null) make_known(r,q);
+    s = dep_list(r); q = p_with_x_becoming_q(s, x, p, type(r));
+    if (info(q) == null) make_known(r, q);
     else {
       dep_list(r) = q;
       do {
@@ -7674,7 +7674,7 @@ void linear_eq(pointer p, small_number t)
       if (myabs(w) <= half_fraction_threshold && info(r) != null)
       {
         link(s) = link(r);
-        free_node(r,dep_node_size);
+        free_node(r, dep_node_size);
       }
       else {
         value(r) = w; s = r;
@@ -7688,16 +7688,16 @@ void linear_eq(pointer p, small_number t)
     type(x) = known;
     value(x) = value(p);
     if (myabs(value(x)) >= fraction_one) val_too_big(value(x));
-    free_node(p,dep_node_size);
+    free_node(p, dep_node_size);
     if (cur_exp == x)
       if (cur_type == independent)
       {
         cur_exp = value(x); cur_type = known;
-        free_node(x,value_node_size);
+        free_node(x, value_node_size);
       }
   }
   else {
-    type(x) = dependent; dep_final = final_node; new_dep(x,p);
+    type(x) = dependent; dep_final = final_node; new_dep(x, p);
     if (cur_exp == x)
       if (cur_type == independent) cur_type = dependent;
   }
@@ -8130,7 +8130,7 @@ void end_token_list() //{leave a token-list input level}
     if (p != null) {
       if (link(p) == _void) //{it's an \&{expr} parameter}
       {
-          recycle_value(p); free_node(p,value_node_size);
+          recycle_value(p); free_node(p, value_node_size);
       }
       else flush_token_list(p); //{it's a \&{suffix} or \&{text} parameter}
     }
@@ -8627,7 +8627,7 @@ void scan_def()
   pointer q; // {tail of the macro token list}
   pointer p; // {temporary storage}
   halfword base; // {expr base, suffix base, or text base }
-  pointer l_delim,r_delim; // {matching delimiters}
+  pointer l_delim, r_delim; // {matching delimiters}
 
   m = cur_mod; c = general_macro; link(hold_head) = null;
   q = get_avail(); ref_count(q) = null; r = null;
@@ -8637,7 +8637,7 @@ void scan_def()
     eq_type(warning_info) = defined_macro; equiv(warning_info) = q;
   }
   else {
-    p = scan_declared_variable(); flush_variable(equiv(info(p)),link(p),true);
+    p = scan_declared_variable(); flush_variable(equiv(info(p)), link(p), true);
     warning_info = find_variable(p); flush_list(p);
     if (warning_info == null)
     {
@@ -8668,11 +8668,11 @@ void scan_def()
       do {
         link(q) = get_avail(); q = link(q); info(q) = base + k;
         get_symbol(); p = get_node(token_node_size); value(p) = base + k; info(p) = cur_sym;
-        if (k == param_size) overflow(TEX_STRING("parameter stack size"),param_size);
+        if (k == param_size) overflow(TEX_STRING("parameter stack size"), param_size);
         k++; link(p) = r; r = p; get_next();
       } while (cur_cmd == comma);
 
-      check_delimiter(l_delim,r_delim); get_next();
+      check_delimiter(l_delim, r_delim); get_next();
     } while (cur_cmd == left_delimiter);
   }
   if (cur_cmd == param_type)
@@ -8688,18 +8688,18 @@ void scan_def()
       else if (cur_mod == suffix_base) c = suffix_macro;
       else c = text_macro;
     }
-    if (k == param_size) overflow(TEX_STRING("parameter stack size"),param_size);
+    if (k == param_size) overflow(TEX_STRING("parameter stack size"), param_size);
     k++; get_symbol(); info(p) = cur_sym; link(p) = r; r = p; get_next();
     if (c == expr_macro)
       if (cur_cmd == of_token)
       {
         c = of_macro; p = get_node(token_node_size);
-        if (k == param_size) overflow(TEX_STRING("parameter stack size"),param_size);
+        if (k == param_size) overflow(TEX_STRING("parameter stack size"), param_size);
         value(p) = expr_base + k; get_symbol(); info(p) = cur_sym; link(p) = r; r = p; get_next();
       }
   }
   check_equals(); p = get_avail(); info(p) = c; link(q) = p;
-  if (m == start_def) link(p) = scan_toks(macro_def,r,null,n);
+  if (m == start_def) link(p) = scan_toks(macro_def, r, null, n);
   else {
     q = get_avail(); info(q) = bg_loc; link(p) = q; p = get_avail(); info(p) = eg_loc;
     link(q) = scan_toks(macro_def, r, p, n);
@@ -8731,7 +8731,7 @@ void expand()
         }
         else
         {
-          print_err(TEX_STRING("Extra ")); print_cmd_mod(fi_or_else,cur_mod);
+          print_err(TEX_STRING("Extra ")); print_cmd_mod(fi_or_else, cur_mod);
           help1(TEX_STRING("I'm ignoring this; it doesn't match any if."));
           error();
         }
@@ -8740,7 +8740,7 @@ void expand()
         {
           p = cond_ptr; if_line = if_line_field(p);
           cur_if = name_type(p); if_limit = type(p); cond_ptr = link(p);
-          free_node(p,if_node_size);
+          free_node(p, if_node_size);
         }
       }
       break;
@@ -8774,7 +8774,7 @@ void expand()
     case exit_test:
       {
         get_boolean();
-        if (internal[tracing_commands] > unity) show_cmd_mod(nullary,cur_exp);
+        if (internal[tracing_commands] > unity) show_cmd_mod(nullary, cur_exp);
         if (cur_exp == true_code)
           if (loop_ptr == null)
           {
@@ -8815,7 +8815,7 @@ void expand()
       get_x_next(); scan_primary();
       if (cur_type != string_type)
       {
-        disp_err(null,TEX_STRING("Not a string"));
+        disp_err(null, TEX_STRING("Not a string"));
         help2(TEX_STRING("I'm going to flush this expression, since"),
         TEX_STRING("scantokens should be followed by a known string."));
         put_get_flush_error(0);
@@ -8845,7 +8845,7 @@ void expand()
       }
       break;
     case defined_macro:
-      macro_call(cur_mod,null,cur_sym);
+      macro_call(cur_mod, null, cur_sym);
       break;
   } //{there are no other cases}
 }
@@ -8868,11 +8868,11 @@ void get_x_next()
 }
 
 // 720
-void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
+void macro_call(pointer def_ref, pointer arg_list, pointer macro_name)
 {
   //{invokes a user-defined sequence of commands}
   pointer r; //{current node in the macro's token list}
-  pointer p,q; //{for list manipulation}
+  pointer p, q; //{for list manipulation}
   int n; //{the number of arguments}
   pointer l_delim=max_halfword, r_delim=max_halfword; //{a delimiter pair}
   pointer tail = max_halfword; //{tail of the argument list}
@@ -8889,15 +8889,15 @@ void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
   }
   if (internal[tracing_macros] > 0)
   {
-    begin_diagnostic(); print_ln(); print_macro_name(arg_list,macro_name);
+    begin_diagnostic(); print_ln(); print_macro_name(arg_list, macro_name);
     if (n == 3) print(TEX_STRING("@#")); //{indicate a suffixed macro}
-    show_macro(def_ref,null,100000);
+    show_macro(def_ref, null, 100000);
     if (arg_list != null)
     {
       n = 0; p = arg_list;
       do {
         q = info(p);
-        print_arg(q,n,0);
+        print_arg(q, n, 0);
         n++; p = link(p);
       } while (p != null);
     }
@@ -8913,7 +8913,7 @@ void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
       if (cur_cmd != left_delimiter)
       {
         print_err(TEX_STRING("Missing argument to "));
-        print_macro_name(arg_list,macro_name);
+        print_macro_name(arg_list, macro_name);
         help3(TEX_STRING("That macro has more parameters than you thought."),
           TEX_STRING("I'll continue by pretending that each missing argument"),
           TEX_STRING("is either zero or null."));
@@ -8928,7 +8928,7 @@ void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
       }
       l_delim = cur_sym; r_delim = cur_mod;
     }
-    if (info(r) >= text_base) scan_text_arg(l_delim,r_delim);
+    if (info(r) >= text_base) scan_text_arg(l_delim, r_delim);
     else {
       get_x_next();
       if (info(r) >= suffix_base) scan_suffix();
@@ -8957,7 +8957,7 @@ void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
     else info(p) = stash_cur_exp();
     if (internal[tracing_macros] > 0)
     {
-      begin_diagnostic(); print_arg(info(p),n,info(r)); end_diagnostic(false);
+      begin_diagnostic(); print_arg(info(p), n, info(r)); end_diagnostic(false);
     }
     if (arg_list == null) arg_list = p;
     else link(tail) = p;
@@ -8967,7 +8967,7 @@ void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
   if (cur_cmd == comma)
   {
     print_err(TEX_STRING("Too many arguments to "));
-    print_macro_name(arg_list,macro_name); print_char(TEX_STRING(";"));
+    print_macro_name(arg_list, macro_name); print_char(TEX_STRING(";"));
     print_nl(TEX_STRING("  Missing `")); slow_print(text(r_delim));
     print(TEX_STRING("' has been inserted"));
     help3(TEX_STRING("I'm going to assume that the comma I just read was a"),
@@ -9000,14 +9000,14 @@ void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
         scan_expression(); p = get_avail(); info(p) = stash_cur_exp();
         if (internal[tracing_macros] > 0)
         {
-          begin_diagnostic(); print_arg(info(p),n,0); end_diagnostic(false);
+          begin_diagnostic(); print_arg(info(p), n, 0); end_diagnostic(false);
         }
         if (arg_list == null) arg_list = p; else link(tail) = p;
         tail = p; n++;
         if (cur_cmd != of_token)
         {
           missing_err(TEX_STRING("of")); print(TEX_STRING(" for "));
-          print_macro_name(arg_list,macro_name);
+          print_macro_name(arg_list, macro_name);
           help1(TEX_STRING("I've got the first argument; will look now for the other."));
           back_error();
         }
@@ -9032,7 +9032,7 @@ void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
         }
         break;
       case text_macro:
-        scan_text_arg(0,0);
+        scan_text_arg(0, 0);
         break;
     } //{there are no other cases}
     back_input();
@@ -9041,7 +9041,7 @@ void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
     else info(p) = stash_cur_exp();
     if (internal[tracing_macros] > 0)
     {
-      begin_diagnostic(); print_arg(info(p),n,info(r)); end_diagnostic(false);
+      begin_diagnostic(); print_arg(info(p), n, info(r)); end_diagnostic(false);
     }
     if (arg_list == null) arg_list = p;
     else link(tail) = p;
@@ -9053,9 +9053,9 @@ void macro_call(pointer def_ref,pointer arg_list,pointer macro_name)
   {
     max_param_stack = param_ptr + n;
     if (max_param_stack > param_size)
-      overflow(TEX_STRING("parameter stack size"),param_size);
+      overflow(TEX_STRING("parameter stack size"), param_size);
   }
-  begin_token_list(def_ref,macro); name = macro_name; loc = r;
+  begin_token_list(def_ref, macro); name = macro_name; loc = r;
   if (n > 0)
   {
     p = arg_list;
@@ -9213,7 +9213,7 @@ found:
   check_colon();
   if (cur_exp == true_code)
   {
-    change_if_limit(new_if_limit,save_cond_ptr);
+    change_if_limit(new_if_limit, save_cond_ptr);
     return; //{wait for \&{elseif}, \&{else}, or \&{fi}}
   }
   while (true) {
@@ -9223,7 +9223,7 @@ found:
     {
       p = cond_ptr; if_line = if_line_field(p);
       cur_if = name_type(p); if_limit = type(p); cond_ptr = link(p);
-      free_node(p,if_node_size);
+      free_node(p, if_node_size);
     }
   }
 done:
@@ -9232,7 +9232,7 @@ done:
     {
       p = cond_ptr; if_line = if_line_field(p);
       cur_if = name_type(p); if_limit = type(p); cond_ptr = link(p);
-      free_node(p,if_node_size);
+      free_node(p, if_node_size);
     }
   else if (cur_mod == else_if_code) goto reswitch;
   else {
@@ -9256,7 +9256,7 @@ void begin_iteration()
 {
   halfword m; //{|expr_base| (\&{for}) or |suffix_base| (\&{forsuffixes})}
   halfword n; //{hash address of the current symbol}
-  pointer p,q,s,pp; //{link manipulation registers}
+  pointer p, q, s, pp; //{link manipulation registers}
   m = cur_mod; n = cur_sym; s = get_node(loop_node_size);
   if (m == start_forever)
   {
@@ -9315,7 +9315,7 @@ found:
 
   q = get_avail(); info(q) = frozen_repeat_loop;
   scanner_status = loop_defining; warning_info = n;
-  info(s) = scan_toks(iteration,p,q,0); scanner_status = normal;
+  info(s) = scan_toks(iteration, p, q, 0); scanner_status = normal;
   link(s) = loop_ptr; loop_ptr = s;
   resume_iteration();
 }
@@ -9323,7 +9323,7 @@ found:
 // 760
 void resume_iteration()
 {
-  pointer p,q; //{link registers}
+  pointer p, q; //{link registers}
   p = loop_type(loop_ptr);
   if (p > _void) //{|p| points to a progression node}
   {
@@ -9339,15 +9339,15 @@ void resume_iteration()
     loop_list(loop_ptr) = link(p); q = info(p); free_avail(p);
   }
   else {
-    begin_token_list(info(loop_ptr),forever_text); return;
+    begin_token_list(info(loop_ptr), forever_text); return;
   }
-  begin_token_list(info(loop_ptr),loop_text);
+  begin_token_list(info(loop_ptr), loop_text);
   stack_argument(q);
   if (internal[tracing_commands] > unity)
   {
     begin_diagnostic(); print_nl(TEX_STRING("{loop value="));
-    if (q != null && link(q) == _void) print_exp(q,1);
-    else show_token_list(q,null,50,0);
+    if (q != null && link(q) == _void) print_exp(q, 1);
+    else show_token_list(q, null, 50, 0);
     print_char(TEX_STRING("}")); end_diagnostic(false);
   }
   return;
@@ -9358,9 +9358,9 @@ not_found:
 // 763
 void stop_iteration()
 {
-  pointer p,q; //{the usual}
+  pointer p, q; //{the usual}
   p = loop_type(loop_ptr);
-  if (p > _void) free_node(p,progression_node_size);
+  if (p > _void) free_node(p, progression_node_size);
   else if (p < _void)
   {
     q = loop_list(loop_ptr);
@@ -9370,7 +9370,7 @@ void stop_iteration()
       if (p != null) {
         if (link(p) == _void) //{it's an \&{expr} parameter}
         {
-          recycle_value(p); free_node(p,value_node_size);
+          recycle_value(p); free_node(p, value_node_size);
         }
         else flush_token_list(p); //{it's a \&{suffix} or \&{text} parameter}
       }
@@ -9378,7 +9378,7 @@ void stop_iteration()
     }
   }
   p = loop_ptr; loop_ptr = link(p); flush_token_list(info(p));
-  free_node(p,loop_node_size);
+  free_node(p, loop_node_size);
 }
 
 // 770
@@ -9405,16 +9405,16 @@ bool more_name(ASCII_code c)
 // 772
 void end_name()
 {
-  if (str_ptr+3 > max_str_ptr)
+  if (str_ptr + 3 > max_str_ptr)
   {
-    if (str_ptr+3 > max_strings)
-      overflow(TEX_STRING("number of strings"),max_strings-init_str_ptr);
-    max_str_ptr = str_ptr+3;
+    if (str_ptr + 3 > max_strings)
+      overflow(TEX_STRING("number of strings"), max_strings-init_str_ptr);
+    max_str_ptr = str_ptr + 3;
   }
   if (area_delimiter == 0) cur_area = TEX_STRING("");
   else {
     cur_area =str_ptr; str_ptr++;
-    str_start[str_ptr] = area_delimiter+1;
+    str_start[str_ptr] = area_delimiter + 1;
   }
   if (ext_delimiter == 0)
   {
@@ -9463,10 +9463,10 @@ void pack_buffered_name(small_number n, int a, int b)
   if (n + b - a + 1 + base_ext_length > file_name_size)
     b = a + file_name_size - n - 1 - base_ext_length;
   k = 0;
-  for (j = 1; j <= n; j++) append_to_name(xord[MF_base_default[j-1]]);
+  for (j = 1; j <= n; j++) append_to_name(xord[MF_base_default[j - 1]]);
   for (j = a; j <= b; j++) append_to_name(buffer[j]);
   for (j = base_default_length - base_ext_length + 1; j <= base_default_length; j++)
-    append_to_name(xord[MF_base_default[j-1]]);
+    append_to_name(xord[MF_base_default[j - 1]]);
 
   // addition for C, add zero terminator
   name_of_file[k + 1] = 0;
@@ -9822,7 +9822,7 @@ void print_dp(small_number t, pointer p, small_number verbosity)
 void disp_err(pointer p, str_number s)
 {
   if (interaction == error_stop_mode) wake_up_terminal();
-  print_nl(TEX_STRING(">> ")); print_exp(p,1); //{``medium verbose'' printing of the expression}
+  print_nl(TEX_STRING(">> ")); print_exp(p, 1); //{``medium verbose'' printing of the expression}
   if (s != TEX_STRING(""))
   {
     print_nl(TEX_STRING("! ")); print(s);
@@ -9894,7 +9894,7 @@ void recycle_value(pointer p)
         do {
           q = q - 2; recycle_value(q);
         } while (q != v);
-        free_node(v,big_node_size[t]);
+        free_node(v, big_node_size[t]);
       }
       break;
     case dependent: case proto_dependent:
@@ -9960,7 +9960,7 @@ void recycle_value(pointer p)
               print(TEX_STRING("*4")); value(p) = value(p) - 2;
             }
             if (t == dependent) print_char(TEX_STRING("=")); else print(TEX_STRING(" = "));
-            print_dependency(s,t);
+            print_dependency(s, t);
             end_diagnostic(false);
           }
 
@@ -9973,12 +9973,12 @@ void recycle_value(pointer p)
           for (t = dependent; t <= proto_dependent; t++)
           {
             r = max_link[t];
-            while (r!=null)
+            while (r != null)
             {
               q = info(r);
-              dep_list(q) = p_plus_fq(dep_list(q),make_fraction(value(r),-v),s,t,dependent);
-              if (dep_list(q) == dep_final) make_known(q,dep_final);
-              q = r; r = link(r); free_node(q,dep_node_size);
+              dep_list(q) = p_plus_fq(dep_list(q), make_fraction(value(r), -v), s, t, dependent);
+              if (dep_list(q) == dep_final) make_known(q, dep_final);
+              q = r; r = link(r); free_node(q, dep_node_size);
             }
           }
         else
@@ -9993,12 +9993,12 @@ void recycle_value(pointer p)
                 if (cur_exp == q)
                   if (cur_type == dependent)
                     cur_type = proto_dependent;
-                dep_list(q) = p_over_v(dep_list(q),unity,dependent,proto_dependent);
+                dep_list(q) = p_over_v(dep_list(q), unity, dependent, proto_dependent);
                 type(q) = proto_dependent; value(r) = round_fraction(value(r));
               }
-              dep_list(q) = p_plus_fq(dep_list(q),make_scaled(value(r),-v),s,proto_dependent,proto_dependent);
-              if (dep_list(q) == dep_final) make_known(q,dep_final);
-              q = r; r = link(r); free_node(q,dep_node_size);
+              dep_list(q) = p_plus_fq(dep_list(q), make_scaled(value(r), -v), s, proto_dependent, proto_dependent);
+              if (dep_list(q) == dep_final) make_known(q, dep_final);
+              q = r; r = link(r); free_node(q, dep_node_size);
             }
           }
         flush_node_list(s);
@@ -10035,7 +10035,7 @@ void put_get_flush_error(scaled v)
 // 823
 void scan_primary()
 {
-  pointer p,q,r; //{for list manipulation}
+  pointer p, q, r; //{for list manipulation}
   quarterword c; //{a primitive operation code}
   int my_var_flag; // 0..max_command_code; //{initial value of |my_var_flag|}
   pointer l_delim, r_delim; //{hash addresses of a delimiter pair}
@@ -10044,7 +10044,7 @@ void scan_primary()
   // 836
   scaled num, denom; //{for primaries that are fractions, like `1/2'}
   // 843
-  pointer pre_head,post_head,tail;
+  pointer pre_head, post_head, tail;
     //{prefix and suffix list variables}
   small_number tt; //{approximation to the type of the variable-so-far}
   pointer t; //{a token}
@@ -10080,10 +10080,10 @@ void scan_primary()
         put_get_flush_error(0);
       }
       stash_in(y_part_loc(q));
-      check_delimiter(l_delim,r_delim);
+      check_delimiter(l_delim, r_delim);
       cur_type = pair_type; cur_exp = p;
     }
-    else check_delimiter(l_delim,r_delim);
+    else check_delimiter(l_delim, r_delim);
     break;
   case begin_group:
     group_line = line;
@@ -10127,17 +10127,17 @@ void scan_primary()
         print_err(TEX_STRING("Division by zero"));
         help1(TEX_STRING("I'll pretend that you meant to divide by 1.")); error();
       }
-      else cur_exp = make_scaled(num,denom);
+      else cur_exp = make_scaled(num, denom);
       check_arith; get_x_next();
     }
     if (cur_cmd >= min_primary_command)
       if (cur_cmd < numeric_token) //{in particular, |cur_cmd != plus_or_minus|}
       {
         p = stash_cur_exp(); scan_primary();
-        if (myabs(num) >= myabs(denom) || cur_type < pair_type)  do_binary(p,times);
+        if (myabs(num) >= myabs(denom) || cur_type < pair_type)  do_binary(p, times);
         else {
-          frac_mult(num,denom);
-          free_node(p,value_node_size);
+          frac_mult(num, denom);
+          free_node(p, value_node_size);
         }
       }
     goto done;
@@ -10152,15 +10152,15 @@ void scan_primary()
     c = cur_mod; get_x_next(); scan_expression();
     if (cur_cmd != of_token)
     {
-      missing_err(TEX_STRING("of")); print(TEX_STRING(" for ")); print_cmd_mod(primary_binary,c);
+      missing_err(TEX_STRING("of")); print(TEX_STRING(" for ")); print_cmd_mod(primary_binary, c);
       help1(TEX_STRING("I've got the first argument; will look now for the other."));
       back_error();
     }
-    p = stash_cur_exp(); get_x_next(); scan_primary(); do_binary(p,c); goto done;
+    p = stash_cur_exp(); get_x_next(); scan_primary(); do_binary(p, c); goto done;
     break;
   case str_op:
     get_x_next(); scan_suffix(); old_setting = selector; selector = new_string;
-    show_token_list(cur_exp, null, 100000,0); flush_token_list(cur_exp);
+    show_token_list(cur_exp, null, 100000, 0); flush_token_list(cur_exp);
     cur_exp = make_string(); selector = old_setting; cur_type = string_type;
     goto done;
     break;
@@ -10224,7 +10224,7 @@ void scan_primary()
           else
           {
             p = get_avail(); info(pre_head) = link(pre_head); link(pre_head) = p;
-            info(p) = t; macro_call(value(q),pre_head,null); get_x_next(); goto restart;
+            info(p) = t; macro_call(value(q), pre_head, null); get_x_next(); goto restart;
           }
         }
       }
@@ -10251,7 +10251,7 @@ void scan_primary()
       back_input(); p = get_avail(); q = link(post_head);
       info(pre_head) = link(pre_head); link(pre_head) = post_head;
       info(post_head) = q; link(post_head) = p; info(p) = link(q); link(q) = null;
-      macro_call(macro_ref,pre_head,null); ref_count(macro_ref)--;
+      macro_call(macro_ref, pre_head, null); ref_count(macro_ref)--;
       get_x_next(); goto restart;
     }
     q = link(pre_head); free_avail(pre_head);
@@ -10299,7 +10299,7 @@ void scan_primary()
             back_error();
           }
           r = stash_cur_exp(); make_exp_copy(q);
-          do_binary(r,minus); do_binary(p,times); do_binary(q,plus); get_x_next();
+          do_binary(r, minus); do_binary(p, times); do_binary(q, plus); get_x_next();
         }
       }
 }
@@ -10309,7 +10309,7 @@ void bad_exp(str_number s)
 {
   int save_flag; //:0..max_command_code;
   print_err(s); print(TEX_STRING(" expression can't begin with `"));
-  print_cmd_mod(cur_cmd,cur_mod); print_char(TEX_STRING("'"));
+  print_cmd_mod(cur_cmd, cur_mod); print_char(TEX_STRING("'"));
   help4(TEX_STRING("I'm afraid I need some sort of value in order to continue,"),
     TEX_STRING("so I've tentatively inserted `0'. You may want to"),
     TEX_STRING("delete this zero and insert something else;"),
@@ -10331,10 +10331,10 @@ void stash_in(pointer p)
       q = single_dependency(cur_exp);
       if (q == dep_final)
       {
-        type(p) = known; value(p) = 0; free_node(q,dep_node_size);
+        type(p) = known; value(p) = 0; free_node(q, dep_node_size);
       }
       else  {
-        type(p) = dependent; new_dep(p,q);
+        type(p) = dependent; new_dep(p, q);
       }
       recycle_value(cur_exp);
     }
@@ -10343,7 +10343,7 @@ void stash_in(pointer p)
       //{|dep_list(p):=dep_list(cur_exp)| and |prev_dep(p):=prev_dep(cur_exp)|}
       link(prev_dep(p)) = p;
     }
-    free_node(cur_exp,value_node_size);
+    free_node(cur_exp, value_node_size);
   }
   cur_type = vacuous;
 }
@@ -10379,7 +10379,7 @@ void obliterated(pointer q)
 // 855
 void make_exp_copy(pointer p)
 {
-  pointer q,r,t; //{registers for list manipulation}
+  pointer q, r, t; //{registers for list manipulation}
 restart:
   cur_type = type(p);
   switch (cur_type) {
@@ -10406,7 +10406,7 @@ restart:
       t = get_node(value_node_size); name_type(t) = capsule; type(t) = cur_type; init_big_node(t);
       q = value(p) + big_node_size[cur_type]; r = value(t) + big_node_size[cur_type];
       do {
-        q = q - 2; r = r - 2; install(r,q);
+        q = q - 2; r = r - 2; install(r, q);
       } while (q != value(p));
       cur_exp = t;
       break;
@@ -10420,7 +10420,7 @@ restart:
       q = single_dependency(p);
       if (q == dep_final)
       {
-        cur_type = known; cur_exp = 0; free_node(q,value_node_size);
+        cur_type = known; cur_exp = 0; free_node(q, value_node_size);
       }
       else {
         cur_type = dependent; encapsulate(q);
@@ -10434,7 +10434,7 @@ restart:
 void encapsulate(pointer p)
 {
   cur_exp = get_node(value_node_size); type(cur_exp) = cur_type;
-  name_type(cur_exp) = capsule; new_dep(cur_exp,p);
+  name_type(cur_exp) = capsule; new_dep(cur_exp, p);
 }
 
 // 858
@@ -10450,14 +10450,14 @@ void install(pointer r, pointer q)
     p = single_dependency(q);
     if (p == dep_final)
     {
-      type(r) = known; value(r) = 0; free_node(p,value_node_size);
+      type(r) = known; value(r) = 0; free_node(p, value_node_size);
     }
     else {
-      type(r) = dependent; new_dep(r,p);
+      type(r) = dependent; new_dep(r, p);
     }
   }
   else {
-    type(r) = type(q); new_dep(r,copy_dep_list(dep_list(q)));
+    type(r) = type(q); new_dep(r, copy_dep_list(dep_list(q)));
   }
 }
 
@@ -10514,9 +10514,9 @@ mycontinue:
         mac_name = cur_sym; add_mac_ref(c);
       }
       get_x_next(); scan_primary();
-      if (d != secondary_primary_macro) do_binary(p,(quarterword)c);
+      if (d != secondary_primary_macro) do_binary(p, (quarterword)c);
       else  {
-        back_input(); binary_mac(p,c,mac_name);
+        back_input(); binary_mac(p, c, mac_name);
         ref_count(c)--; get_x_next(); goto restart;
       }
       goto mycontinue;
@@ -10537,7 +10537,7 @@ void binary_mac(pointer p, pointer c, pointer n)
 void scan_tertiary()
 {
   pointer p; //{for list manipulation}
-  halfword c,d; //{operation codes or modifiers}
+  halfword c, d; //{operation codes or modifiers}
   pointer mac_name = max_halfword; //{token defined with \&{secondarydef}}
 
   restart:
@@ -10555,9 +10555,9 @@ mycontinue:
       mac_name = cur_sym; add_mac_ref(c);
     }
     get_x_next(); scan_secondary();
-    if (d != tertiary_secondary_macro) do_binary(p,(quarterword)c);
+    if (d != tertiary_secondary_macro) do_binary(p, (quarterword)c);
     else  {
-      back_input(); binary_mac(p,c,mac_name);
+      back_input(); binary_mac(p, c, mac_name);
       ref_count(c)--; get_x_next(); goto restart;
     }
     goto mycontinue;
@@ -10567,7 +10567,7 @@ mycontinue:
 // 865
 void materialize_pen()
 {
-  scaled a_minus_b,a_plus_b,major_axis,minor_axis; //{ellipse variables}
+  scaled a_minus_b, a_plus_b, major_axis, minor_axis; //{ellipse variables}
   angle theta; //{amount by which the ellipse has been rotated}
   pointer p; //{path traverser}
   pointer q; //{the knot list to be made into a pen}
@@ -10583,12 +10583,12 @@ void materialize_pen()
   else if (left_type(q) == _open_)
   {
       tx = x_coord(q); ty = y_coord(q); txx = left_x(q) - tx; tyx = left_y(q) - ty;
-      txy = right_x(q) - tx; tyy = right_y(q) - ty; a_minus_b = pyth_add(txx - tyy,tyx + txy);
-      a_plus_b = pyth_add(txx + tyy,tyx - txy); major_axis = half(a_minus_b + a_plus_b);
+      txy = right_x(q) - tx; tyy = right_y(q) - ty; a_minus_b = pyth_add(txx - tyy, tyx + txy);
+      a_plus_b = pyth_add(txx + tyy, tyx - txy); major_axis = half(a_minus_b + a_plus_b);
       minor_axis = half (myabs(a_plus_b - a_minus_b));
       if (major_axis == minor_axis) theta = 0; //{circle}
-      else theta = half(n_arg(txx - tyy,tyx + txy) + n_arg(txx + tyy,tyx - txy));
-      free_node(q,knot_node_size); q = make_ellipse(major_axis,minor_axis,theta);
+      else theta = half(n_arg(txx - tyy, tyx + txy) + n_arg(txx + tyy, tyx - txy));
+      free_node(q, knot_node_size); q = make_ellipse(major_axis, minor_axis, theta);
       if (tx != 0 || ty != 0)
       {
           p = q;
@@ -10779,7 +10779,7 @@ mycontinue:
                 }
               right_type(q) = right_type(pp); link(q) = link(pp);
               right_x(q) = right_x(pp); right_y(q) = right_y(pp);
-              free_node(pp,knot_node_size);
+              free_node(pp, knot_node_size);
               if (qq == pp) qq = q;
             }
             else  {
@@ -10822,9 +10822,9 @@ mycontinue:
         }
         else {
           get_x_next(); scan_tertiary();
-          if (d != expression_tertiary_macro) do_binary(p,(quarterword)c);
+          if (d != expression_tertiary_macro) do_binary(p, (quarterword)c);
           else {
-            back_input(); binary_mac(p,c,mac_name);
+            back_input(); binary_mac(p, c, mac_name);
             ref_count(c)--; get_x_next(); goto restart;
           }
         }
@@ -10857,7 +10857,7 @@ void known_pair()
     p = value(cur_exp);
     if (type(x_part_loc(p)) == known) cur_x = value(x_part_loc(p));
     else {
-      disp_err(x_part_loc(p),TEX_STRING("Undefined x coordinate has been replaced by 0"));
+      disp_err(x_part_loc(p), TEX_STRING("Undefined x coordinate has been replaced by 0"));
       help5(TEX_STRING("I need a `known' x value for this part of the path."),
       TEX_STRING("The value I found (see above) was no good;"),
       TEX_STRING("so I'll try to keep going by using zero instead."),
@@ -10867,7 +10867,7 @@ void known_pair()
     }
     if (type(y_part_loc(p)) == known) cur_y = value(y_part_loc(p));
     else {
-      disp_err(y_part_loc(p),TEX_STRING("Undefined y coordinate has been replaced by 0"));
+      disp_err(y_part_loc(p), TEX_STRING("Undefined y coordinate has been replaced by 0"));
       help5(TEX_STRING("I need a `known' y value for this part of the path."),
       TEX_STRING("The value I found (see above) was no good;"),
       TEX_STRING("so I'll try to keep going by using zero instead."),
@@ -11007,7 +11007,7 @@ void do_unary(quarterword c)
   if (internal[tracing_commands] > two)
   {
     begin_diagnostic(); print_nl(TEX_STRING("{")); print_op(c); print_char(TEX_STRING("("));
-    print_exp(null,0); //{show the operand, but not verbosely}
+    print_exp(null, 0); //{show the operand, but not verbosely}
     print(TEX_STRING(")}")); end_diagnostic(false);
   }
   switch(c) {
@@ -11028,7 +11028,7 @@ void do_unary(quarterword c)
           if (type(y_part_loc(p)) == known) negate(value(y_part_loc(p)));
           else negate_dep_list(dep_list(y_part_loc(p)));
         } //{if |cur_type=known| then |cur_exp=0|}
-        recycle_value(q); free_node(q,value_node_size);
+        recycle_value(q); free_node(q, value_node_size);
         break;
       case dependent: case proto_dependent:
         negate_dep_list(dep_list(cur_exp));
@@ -11087,10 +11087,10 @@ void do_unary(quarterword c)
       break;
     // 907
     case angle_op:
-      if (nice_pair(cur_exp,cur_type))
+      if (nice_pair(cur_exp, cur_type))
       {
         p = value(cur_exp);
-        x = n_arg(value(x_part_loc(p)),value(y_part_loc(p)));
+        x = n_arg(value(x_part_loc(p)), value(y_part_loc(p)));
         if (x >= 0) flush_cur_exp((x + 8) / 16);
         else flush_cur_exp(-((-x + 8) / 16));
       }
@@ -11135,8 +11135,8 @@ void do_unary(quarterword c)
       if (cur_type == string_type) flush_cur_exp(length(cur_exp)*unity);
       else if (cur_type == path_type) flush_cur_exp(path_length());
       else if (cur_type == known) cur_exp = myabs(cur_exp);
-      else if (nice_pair(cur_exp,cur_type))
-        flush_cur_exp(pyth_add(value(x_part_loc(value(cur_exp))),value(y_part_loc(value(cur_exp)))));
+      else if (nice_pair(cur_exp, cur_type))
+        flush_cur_exp(pyth_add(value(x_part_loc(value(cur_exp))), value(y_part_loc(value(cur_exp)))));
       else bad_unary(c);
       break;
     // 917
@@ -11154,25 +11154,25 @@ void do_unary(quarterword c)
 
     // 918
     case boolean_type:
-      type_range(boolean_type,unknown_boolean);
+      type_range(boolean_type, unknown_boolean);
       break;
     case string_type:
-      type_range(string_type,unknown_string);
+      type_range(string_type, unknown_string);
       break;
     case pen_type:
-      type_range(pen_type,future_pen);
+      type_range(pen_type, future_pen);
       break;
     case path_type:
-      type_range(path_type,unknown_path);
+      type_range(path_type, unknown_path);
       break;
     case picture_type:
-      type_range(picture_type,unknown_picture);
+      type_range(picture_type, unknown_picture);
       break;
     case transform_type: case pair_type:
       type_test(c);
       break;
     case numeric_type:
-      type_range(known,independent);
+      type_range(known, independent);
       break;
     case known_op: case unknown_op:
       test_known(c);
@@ -11382,9 +11382,9 @@ void do_binary(pointer p, quarterword c)
   if (internal[tracing_commands] > two)
   {
     begin_diagnostic(); print_nl(TEX_STRING("{("));
-    print_exp(p,0); //{show the operand, but not verbosely}
+    print_exp(p, 0); //{show the operand, but not verbosely}
     print_char(TEX_STRING(")")); print_op(c); print_char(TEX_STRING("("));
-    print_exp(null,0); print(TEX_STRING(")}")); end_diagnostic(false);
+    print_exp(null, 0); print(TEX_STRING(")}")); end_diagnostic(false);
   }
 
   switch(type(p)) {
@@ -11424,27 +11424,27 @@ void do_binary(pointer p, quarterword c)
           if (c == minus) negate_edges(cur_exp);
           cur_edges = cur_exp; merge_edges(value(p));
         }
-        else bad_binary(p,c);
+        else bad_binary(p, c);
       else if (cur_type == pair_type)
-        if (type(p) != pair_type) bad_binary(p,c);
+        if (type(p) != pair_type) bad_binary(p, c);
         else {
           q = value(p); r = value(cur_exp);
-          add_or_subtract(x_part_loc(q),x_part_loc(r),c);
-          add_or_subtract(y_part_loc(q),y_part_loc(r),c);
+          add_or_subtract(x_part_loc(q), x_part_loc(r), c);
+          add_or_subtract(y_part_loc(q), y_part_loc(r), c);
         }
-      else if (type(p) == pair_type) bad_binary(p,c);
-      else add_or_subtract(p,null,c);
+      else if (type(p) == pair_type) bad_binary(p, c);
+      else add_or_subtract(p, null, c);
       break;
 
     case less_than: case less_or_equal: case greater_than: case greater_or_equal: case equal_to: case unequal_to:
       if (cur_type > pair_type && type(p) > pair_type)
-        add_or_subtract(p,null,minus); //{|cur_exp:=(p)-cur_exp|}
+        add_or_subtract(p, null, minus); //{|cur_exp:=(p)-cur_exp|}
       else if (cur_type != type(p))
       {
-        bad_binary(p,c); goto done;
+        bad_binary(p, c); goto done;
       }
       else if (cur_type == string_type)
-        flush_cur_exp(str_vs_str(value(p),cur_exp));
+        flush_cur_exp(str_vs_str(value(p), cur_exp));
       else if (cur_type == unknown_string || cur_type == unknown_boolean)
       {
         q = value(cur_exp);
@@ -11456,7 +11456,7 @@ void do_binary(pointer p, quarterword c)
         q = value(p); r = value(cur_exp);
         rr = r + big_node_size[cur_type] - 2;
         while (true) {
-          add_or_subtract(q,r,minus);
+          add_or_subtract(q, r, minus);
           if (type(r) != known) goto done1;
           if (value(r) != 0) goto done1;
           if (r == rr) goto done1;
@@ -11467,13 +11467,13 @@ void do_binary(pointer p, quarterword c)
       }
       else if (cur_type == boolean_type) flush_cur_exp(cur_exp - value(p));
       else {
-        bad_binary(p,c); goto done;
+        bad_binary(p, c); goto done;
       }
       if (cur_type != known)
       {
         if (cur_type < known)
         {
-          disp_err(p,TEX_STRING(""));
+          disp_err(p, TEX_STRING(""));
           help1(TEX_STRING("The quantities shown above have not been equated."));
         }
         else help2(TEX_STRING("Oh dear. I can't decide if the expression above is positive,"),
@@ -11495,40 +11495,40 @@ void do_binary(pointer p, quarterword c)
 
     case and_op: case or_op:
       if (type(p) != boolean_type || cur_type != boolean_type)
-        bad_binary(p,c);
+        bad_binary(p, c);
       else if (value(p) == c + false_code - and_op) cur_exp = value(p);
       break;
 
     case times:
-      if (cur_type < pair_type || type(p) < pair_type) bad_binary(p,times);
+      if (cur_type < pair_type || type(p) < pair_type) bad_binary(p, times);
       else if (cur_type == known || type(p) == known)
       {
         if (type(p) == known)
         {
-          v = value(p); free_node(p,value_node_size);
+          v = value(p); free_node(p, value_node_size);
         }
         else  {
           v = cur_exp; unstash_cur_exp(p);
         }
-        if (cur_type == known) cur_exp = take_scaled(cur_exp,v);
+        if (cur_type == known) cur_exp = take_scaled(cur_exp, v);
         else if (cur_type == pair_type)
         {
           p = value(cur_exp);
-          dep_mult(x_part_loc(p),v,true);
-          dep_mult(y_part_loc(p),v,true);
+          dep_mult(x_part_loc(p), v, true);
+          dep_mult(y_part_loc(p), v, true);
         }
-        else dep_mult(null,v,true);
+        else dep_mult(null, v, true);
         goto _exit;
       }
-      else if ((nice_pair(p,type(p)) && cur_type > pair_type) || (nice_pair(cur_exp,cur_type) && type(p) >pair_type))
+      else if ((nice_pair(p, type(p)) && cur_type > pair_type) || (nice_pair(cur_exp, cur_type) && type(p) >pair_type))
       {
         hard_times(p); goto _exit;
       }
-      else bad_binary(p,times);
+      else bad_binary(p, times);
       break;
 
     case over:
-      if (cur_type != known || type(p) < pair_type) bad_binary(p,over);
+      if (cur_type != known || type(p) < pair_type) bad_binary(p, over);
       else  {
         v = cur_exp; unstash_cur_exp(p);
         if (v == 0)
@@ -11539,14 +11539,14 @@ void do_binary(pointer p, quarterword c)
           put_get_error();
         }
         else {
-          if (cur_type == known) cur_exp = make_scaled(cur_exp,v);
+          if (cur_type == known) cur_exp = make_scaled(cur_exp, v);
           else if (cur_type == pair_type)
           {
             p = value(cur_exp);
-            dep_div(x_part_loc(p),v);
-            dep_div(y_part_loc(p),v);
+            dep_div(x_part_loc(p), v);
+            dep_div(y_part_loc(p), v);
           }
-          else dep_div(null,v);
+          else dep_div(null, v);
         }
         goto _exit;
       }
@@ -11554,59 +11554,59 @@ void do_binary(pointer p, quarterword c)
 
     case pythag_add: case pythag_sub:
       if (cur_type == known && type(p) == known)
-        if (c == pythag_add) cur_exp = pyth_add(value(p),cur_exp);
-        else cur_exp = pyth_sub(value(p),cur_exp);
-      else bad_binary(p,c);
+        if (c == pythag_add) cur_exp = pyth_add(value(p), cur_exp);
+        else cur_exp = pyth_sub(value(p), cur_exp);
+      else bad_binary(p, c);
       break;
 
     case rotated_by: case slanted_by: case scaled_by: case shifted_by: case transformed_by:
     case x_scaled: case y_scaled: case z_scaled:
       if (type(p) == path_type || type(p) == future_pen || type(p) == pen_type)
       {
-        path_trans(p,c); goto _exit;
+        path_trans(p, c); goto _exit;
       }
-      else if (type(p) == pair_type || type(p) == transform_type) big_trans(p,c);
+      else if (type(p) == pair_type || type(p) == transform_type) big_trans(p, c);
       else if (type(p) == picture_type)
       {
-        edges_trans(p,c); goto _exit;
+        edges_trans(p, c); goto _exit;
       }
-      else bad_binary(p,c);
+      else bad_binary(p, c);
       break;
 
     case concatenate:
       if (cur_type == string_type && type(p) == string_type) cat(p);
-      else bad_binary(p,concatenate);
+      else bad_binary(p, concatenate);
       break;
     case substring_of:
-      if (nice_pair(p,type(p)) && cur_type == string_type)
+      if (nice_pair(p, type(p)) && cur_type == string_type)
         chop_string(value(p));
-      else bad_binary(p,substring_of);
+      else bad_binary(p, substring_of);
       break;
     case subpath_of:
       if (cur_type == pair_type) pair_to_path();
-      if (nice_pair(p,type(p)) &&  cur_type == path_type)
+      if (nice_pair(p, type(p)) &&  cur_type == path_type)
         chop_path(value(p));
-      else bad_binary(p,subpath_of);
+      else bad_binary(p, subpath_of);
       break;
 
     case point_of: case precontrol_of: case postcontrol_of:
       if (cur_type == pair_type)
         pair_to_path();
       if (cur_type == path_type && type(p) == known)
-        find_point(value(p),c);
-      else bad_binary(p,c);
+        find_point(value(p), c);
+      else bad_binary(p, c);
       break;
     case pen_offset_of:
       if (cur_type == future_pen) materialize_pen();
-      if (cur_type == pen_type && nice_pair(p,type(p)))
+      if (cur_type == pen_type && nice_pair(p, type(p)))
         set_up_offset(value(p));
-      else bad_binary(p,pen_offset_of);
+      else bad_binary(p, pen_offset_of);
       break;
     case direction_time_of:
       if (cur_type == pair_type) pair_to_path();
-      if (cur_type == path_type && nice_pair(p,type(p)))
+      if (cur_type == path_type && nice_pair(p, type(p)))
         set_up_direction_time(value(p));
-      else bad_binary(p,direction_time_of);
+      else bad_binary(p, direction_time_of);
       break;
 
     case intersect:
@@ -11618,24 +11618,24 @@ void do_binary(pointer p, quarterword c)
       if (cur_type == pair_type) pair_to_path();
       if (cur_type == path_type && type(p) == path_type)
       {
-        path_intersection(value(p),cur_exp);
-        pair_value(cur_t,cur_tt);
+        path_intersection(value(p), cur_exp);
+        pair_value(cur_t, cur_tt);
       }
-      else bad_binary(p,intersect);
+      else bad_binary(p, intersect);
       break;
 
   } //{there are no other cases}
 
-  recycle_value(p); free_node(p,value_node_size); //{|return| to avoid this}
+  recycle_value(p); free_node(p, value_node_size); //{|return| to avoid this}
 _exit:
   check_arith;
   if (old_p != null)
   {
-    recycle_value(old_p); free_node(old_p,value_node_size);
+    recycle_value(old_p); free_node(old_p, value_node_size);
   }
   if (old_exp != null)
   {
-    recycle_value(old_exp); free_node(old_exp,value_node_size);
+    recycle_value(old_exp); free_node(old_exp, value_node_size);
   }
 }
 
@@ -11812,32 +11812,32 @@ void hard_times(pointer p)
 {
   pointer q; //{a copy of the_dependent variable p}
   pointer r; //{the big node for the nice pair}
-  scaled u,v; //{the known values of the nice pair}
+  scaled u, v; //{the known values of the nice pair}
   if (type(p) == pair_type)
   {
     q = stash_cur_exp(); unstash_cur_exp(p); p = q;
   } //{now cur type = pair_type }
   r = value(cur_exp); u = value(x_part_loc(r)); v = value(y_part_loc(r));
-  type(y_part_loc(r)) = type(p); new_dep(y_part_loc(r),copy_dep_list(dep_list(p)));
+  type(y_part_loc(r)) = type(p); new_dep(y_part_loc(r), copy_dep_list(dep_list(p)));
   type(x_part_loc(r)) = type(p); mem[value_loc(x_part_loc(r))] = mem[value_loc(p)];
-  link(prev_dep(p)) = x_part_loc(r); free_node(p,value_node_size);
-  dep_mult(x_part_loc(r),u,true); dep_mult(y_part_loc(r),v,true);
+  link(prev_dep(p)) = x_part_loc(r); free_node(p, value_node_size);
+  dep_mult(x_part_loc(r), u, true); dep_mult(y_part_loc(r), v, true);
 }
 
 // 949
 void dep_div(pointer p, scaled v)
 {
   pointer q; //{the dependency list being divided by v }
-  small_number s,t; //{its type, before and after}
+  small_number s, t; //{its type, before and after}
   if (p == null) q = cur_exp;
   else if (type(p) != known) q = p;
   else {
-    value(p) = make_scaled(value(p),v); return;
+    value(p) = make_scaled(value(p), v); return;
   }
   t = type(q); q = dep_list(q); s = t;
   if (t == dependent)
-    if (ab_vs_cd(max_coef(q),unity,coef_bound - 1,myabs(v)) >= 0) t = proto_dependent;
-  q = p_over_v(q,v,s,t); dep_finish(q,p,t);
+    if (ab_vs_cd(max_coef(q), unity, coef_bound - 1, myabs(v)) >= 0) t = proto_dependent;
+  q = p_over_v(q, v, s, t); dep_finish(q, p, t);
 }
 
 // 953
@@ -11863,44 +11863,44 @@ void set_up_trans(quarterword c)
       case slanted_by:
         if (type(p) > pair_type)
         {
-          install(xy_part_loc(q),p); goto done;
+          install(xy_part_loc(q), p); goto done;
         }
         break;
       case scaled_by:
         if (type(p) > pair_type)
         {
-          install(xx_part_loc(q),p); install(yy_part_loc(q),p); goto done;
+          install(xx_part_loc(q), p); install(yy_part_loc(q), p); goto done;
         }
         break;
       case shifted_by:
         if (type(p) == pair_type)
         {
-          r = value(p); install(x_part_loc(q),x_part_loc(r));
-          install(y_part_loc(q),y_part_loc(r)); goto done;
+          r = value(p); install(x_part_loc(q), x_part_loc(r));
+          install(y_part_loc(q), y_part_loc(r)); goto done;
         }
         break;
       case x_scaled:
         if (type(p) > pair_type)
         {
-          install(xx_part_loc(q),p); goto done;
+          install(xx_part_loc(q), p); goto done;
         }
         break;
       case y_scaled:
         if (type(p) > pair_type)
         {
-          install(yy_part_loc(q),p); goto done;
+          install(yy_part_loc(q), p); goto done;
         }
         break;
       case z_scaled:
         if (type(p) == pair_type)
         {
           r = value(p);
-          install(xx_part_loc(q),x_part_loc(r));
-          install(yy_part_loc(q),x_part_loc(r));
-          install(yx_part_loc(q),y_part_loc(r));
+          install(xx_part_loc(q), x_part_loc(r));
+          install(yy_part_loc(q), x_part_loc(r));
+          install(yx_part_loc(q), y_part_loc(r));
           if (type(y_part_loc(r)) == known) negate(value(y_part_loc(r)));
           else negate_dep_list(dep_list(y_part_loc(r)));
-          install(xy_part_loc(q),y_part_loc(r));
+          install(xy_part_loc(q), y_part_loc(r));
           goto done;
         }
         break;
@@ -11908,13 +11908,13 @@ void set_up_trans(quarterword c)
         //do_nothing;
         break;
     } //{there are no other cases}
-    disp_err(p,TEX_STRING("Improper transformation argument"));
+    disp_err(p, TEX_STRING("Improper transformation argument"));
     help3(TEX_STRING("The expression shown above has the wrong type,"),
       TEX_STRING("so I can't transform anything using it."),
       TEX_STRING("Proceed, and I'll omit the transformation."));
     put_get_error();
   done:
-    recycle_value(p); free_node(p,value_node_size);
+    recycle_value(p); free_node(p, value_node_size);
   }
 
   q = value(cur_exp); r = q + transform_node_size;
@@ -11949,8 +11949,8 @@ void set_up_known_trans(quarterword c)
 void trans(pointer p, pointer q)
 {
   scaled v; //{the new x value}
-  v = take_scaled(mem[p].sc,txx) + take_scaled(mem[q].sc,txy) + tx;
-  mem[q].sc = take_scaled(mem[p].sc,tyx) + take_scaled(mem[q].sc,tyy) + ty; mem[p].sc = v;
+  v = take_scaled(mem[p].sc, txx) + take_scaled(mem[q].sc, txy) + tx;
+  mem[q].sc = take_scaled(mem[p].sc, tyx) + take_scaled(mem[q].sc, tyy) + ty; mem[p].sc = v;
 }
 
 // 962
@@ -11967,9 +11967,9 @@ void path_trans(pointer p, quarterword c)
   }
   q = cur_exp;
   do {
-    if (left_type(q) != endpoint) trans(q + 3,q + 4); //{that's left x and left y }
-    trans(q + 1,q + 2); //{that's x coord and y coord }
-    if (right_type(q) != endpoint) trans(q + 5,q + 6); //{that's right x and right y }
+    if (left_type(q) != endpoint) trans(q + 3, q + 4); //{that's left x and left y }
+    trans(q + 1, q + 2); //{that's x coord and y coord }
+    if (right_type(q) != endpoint) trans(q + 5, q + 6); //{that's right x and right y }
     q = link(q);
   } while (q != cur_exp);
 }
@@ -12053,13 +12053,13 @@ void big_trans(pointer p, quarterword c)
       set_up_known_trans(c); make_exp_copy(p); r = value(cur_exp);
       if (cur_type == transform_type)
       {
-        bilin1(yy_part_loc(r),tyy,xy_part_loc(q),tyx,0);
-        bilin1(yx_part_loc(r),tyy,xx_part_loc(q),tyx,0);
-        bilin1(xy_part_loc(r),txx,yy_part_loc(q),txy,0);
-        bilin1(xx_part_loc(r),txx,yx_part_loc(q),txy,0);
+        bilin1(yy_part_loc(r), tyy, xy_part_loc(q), tyx, 0);
+        bilin1(yx_part_loc(r), tyy, xx_part_loc(q), tyx, 0);
+        bilin1(xy_part_loc(r), txx, yy_part_loc(q), txy, 0);
+        bilin1(xx_part_loc(r), txx, yx_part_loc(q), txy, 0);
       }
-      bilin1(y_part_loc(r),tyy,x_part_loc(q),tyx,ty);
-      bilin1(x_part_loc(r),txx,y_part_loc(q),txy,tx);
+      bilin1(y_part_loc(r), tyy, x_part_loc(q), tyx, ty);
+      bilin1(x_part_loc(r), txx, y_part_loc(q), txy, tx);
       return;
     }
   } while (r != q);
@@ -12070,33 +12070,33 @@ void big_trans(pointer p, quarterword c)
     make_exp_copy(p); r = value(cur_exp);
     if (cur_type == transform_type)
     {
-      bilin3(yy_part_loc(r),tyy,value(xy_part_loc(q)),tyx,0);
-      bilin3(yx_part_loc(r),tyy,value(xx_part_loc(q)),tyx,0);
-      bilin3(xy_part_loc(r),txx,value(yy_part_loc(q)),txy,0);
-      bilin3(xx_part_loc(r),txx,value(yx_part_loc(q)),txy,0);
+      bilin3(yy_part_loc(r), tyy, value(xy_part_loc(q)), tyx, 0);
+      bilin3(yx_part_loc(r), tyy, value(xx_part_loc(q)), tyx, 0);
+      bilin3(xy_part_loc(r), txx, value(yy_part_loc(q)), txy, 0);
+      bilin3(xx_part_loc(r), txx, value(yx_part_loc(q)), txy, 0);
     }
-    bilin3(y_part_loc(r),tyy,value(x_part_loc(q)),tyx,ty);
-    bilin3(x_part_loc(r),txx,value(y_part_loc(q)),txy,tx);
+    bilin3(y_part_loc(r), tyy, value(x_part_loc(q)), tyx, ty);
+    bilin3(x_part_loc(r), txx, value(y_part_loc(q)), txy, tx);
   }
   else {
     pp = stash_cur_exp(); qq = value(pp);
     make_exp_copy(p); r = value(cur_exp);
     if (cur_type == transform_type)
     {
-      bilin2(yy_part_loc(r),yy_part_loc(qq),
-      value(xy_part_loc(q)),yx_part_loc(qq),null);
-      bilin2(yx_part_loc(r),yy_part_loc(qq),
-      value(xx_part_loc(q)),yx_part_loc(qq),null);
-      bilin2(xy_part_loc(r),xx_part_loc(qq),
-      value(yy_part_loc(q)),xy_part_loc(qq),null);
-      bilin2(xx_part_loc(r),xx_part_loc(qq),
-      value(yx_part_loc(q)),xy_part_loc(qq),null);
+      bilin2(yy_part_loc(r), yy_part_loc(qq),
+      value(xy_part_loc(q)), yx_part_loc(qq), null);
+      bilin2(yx_part_loc(r), yy_part_loc(qq),
+      value(xx_part_loc(q)), yx_part_loc(qq), null);
+      bilin2(xy_part_loc(r), xx_part_loc(qq),
+      value(yy_part_loc(q)), xy_part_loc(qq), null);
+      bilin2(xx_part_loc(r), xx_part_loc(qq),
+      value(yx_part_loc(q)), xy_part_loc(qq), null);
     }
-    bilin2(y_part_loc(r),yy_part_loc(qq),
-    value(x_part_loc(q)),yx_part_loc(qq),y_part_loc(qq));
-    bilin2(x_part_loc(r),xx_part_loc(qq),
-    value(y_part_loc(q)),xy_part_loc(qq),x_part_loc(qq));
-    recycle_value(pp); free_node(pp,value_node_size);
+    bilin2(y_part_loc(r), yy_part_loc(qq),
+    value(x_part_loc(q)), yx_part_loc(qq), y_part_loc(qq));
+    bilin2(x_part_loc(r), xx_part_loc(qq),
+    value(y_part_loc(q)), xy_part_loc(qq), x_part_loc(qq));
+    recycle_value(pp); free_node(pp, value_node_size);
   }
 } //{node |p| will now be recycled by |do_binary|}
 
@@ -12104,17 +12104,17 @@ void big_trans(pointer p, quarterword c)
 void bilin1(pointer p, scaled t, pointer q, scaled u, scaled delta)
 {
   pointer r; //{list traverser}
-  if (t != unity) dep_mult(p,t,true);
+  if (t != unity) dep_mult(p, t, true);
   if (u != 0) {
-    if (type(q) == known) delta = delta + take_scaled(value(q),u);
+    if (type(q) == known) delta = delta + take_scaled(value(q), u);
     else {
       if (type(p) != proto_dependent)
       {
-        if (type(p) == known) new_dep(p,const_dependency(value(p)));
-        else dep_list(p) = p_times_v(dep_list(p),unity,dependent,proto_dependent,true);
+        if (type(p) == known) new_dep(p, const_dependency(value(p)));
+        else dep_list(p) = p_times_v(dep_list(p), unity, dependent, proto_dependent, true);
         type(p) = proto_dependent;
       }
-      dep_list(p) = p_plus_fq(dep_list(p),u,dep_list(q),proto_dependent,type(q));
+      dep_list(p) = p_plus_fq(dep_list(p), u, dep_list(q), proto_dependent, type(q));
     }
   }
   if (type(p) == known) value(p) = value(p) + delta;
@@ -12133,22 +12133,22 @@ void bilin1(pointer p, scaled t, pointer q, scaled u, scaled delta)
 // 971
 void add_mult_dep(pointer p, scaled v, pointer r)
 {
-  if (type(r) == known) value(dep_final) = value(dep_final) + take_scaled(value(r),v);
+  if (type(r) == known) value(dep_final) = value(dep_final) + take_scaled(value(r), v);
   else {
-    dep_list(p) = p_plus_fq(dep_list(p),v,dep_list(r),proto_dependent,type(r));
+    dep_list(p) = p_plus_fq(dep_list(p), v, dep_list(r), proto_dependent, type(r));
     if (fix_needed) fix_dependencies();
   }
 }
 
 // 972
-void bilin2(pointer p,pointer t,scaled v,pointer u,pointer q)
+void bilin2(pointer p, pointer t, scaled v, pointer u, pointer q)
 {
   scaled vv; //{temporary storage for |value(p)|}
   vv = value(p); type(p) = proto_dependent;
-  new_dep(p,const_dependency(0)); //{this sets |dep_final|}
-  if (vv != 0) add_mult_dep(p,vv,t); //{|dep_final| doesn't change}
-  if (v != 0) add_mult_dep(p,v,u);
-  if (q != null) add_mult_dep(p,unity,q);
+  new_dep(p, const_dependency(0)); //{this sets |dep_final|}
+  if (vv != 0) add_mult_dep(p, vv, t); //{|dep_final| doesn't change}
+  if (v != 0) add_mult_dep(p, v, u);
+  if (q != null) add_mult_dep(p, unity, q);
   if (dep_list(p) == dep_final)
   {
     vv = value(dep_final); recycle_value(p);
@@ -12157,11 +12157,11 @@ void bilin2(pointer p,pointer t,scaled v,pointer u,pointer q)
 }
 
 // 974
-void bilin3(pointer p,scaled t,scaled v,scaled u,scaled delta)
+void bilin3(pointer p, scaled t, scaled v, scaled u, scaled delta)
 {
-  if (t != unity) delta = delta + take_scaled(value(p),t);
+  if (t != unity) delta = delta + take_scaled(value(p), t);
   else delta = delta + value(p);
-  if (u != 0) value(p) = delta + take_scaled(v,u);
+  if (u != 0) value(p) = delta + take_scaled(v, u);
   else value(p) = delta;
 }
 
@@ -12179,7 +12179,7 @@ void cat(pointer p)
 // 977
 void chop_string(pointer p)
 {
-  int a,b; //{start and stop points}
+  int a, b; //{start and stop points}
   int l; //{length of the original string}
   int k; //{runs from a to b}
   str_number s; //{the original string}
@@ -12254,7 +12254,7 @@ void chop_path(pointer p)
     if (a > 0)
     {
       qq = link(q);
-      split_cubic(q,a * 010000,x_coord(qq),y_coord(qq)); q = link(q);
+      split_cubic(q, a * 010000, x_coord(qq), y_coord(qq)); q = link(q);
     }
     pp = copy_knot(q); qq = pp;
   }
@@ -12267,17 +12267,17 @@ void chop_path(pointer p)
     if (a > 0)
     {
       ss = pp; pp = link(pp);
-      split_cubic(ss,a * 010000,x_coord(pp),y_coord(pp)); pp = link(ss);
-      free_node(ss,knot_node_size);
+      split_cubic(ss, a * 010000, x_coord(pp), y_coord(pp)); pp = link(ss);
+      free_node(ss, knot_node_size);
       if (rr == ss)
       {
-        b = make_scaled(b,unity - a); rr = pp;
+        b = make_scaled(b, unity - a); rr = pp;
       }
     }
     if (b < 0)
     {
-      split_cubic(rr,(b + unity) * 010000,x_coord(qq),y_coord(qq));
-      free_node(qq,knot_node_size);
+      split_cubic(rr, (b + unity) * 010000, x_coord(qq), y_coord(qq));
+      free_node(qq, knot_node_size);
       qq = link(rr);
     }
   }
@@ -12324,9 +12324,10 @@ void find_point(scaled v, quarterword c)
     p = link(p); n = n + unity;
   } while (p != cur_exp);
   if (n == 0) v = 0;
-  else if (v < 0)
+  else if (v < 0) {
     if (left_type(p) == endpoint) v = 0;
     else v = n - 1 - ((-v - 1) % n);
+  }
   else if (v > n) {
     if (left_type(p) == endpoint) v = n;
     else v = v % n;
@@ -12338,20 +12339,20 @@ void find_point(scaled v, quarterword c)
   }
   if (v != 0)
   {
-    q = link(p); split_cubic(p,v * 010000,x_coord(q),y_coord(q)); p = link(p);
+    q = link(p); split_cubic(p, v * 010000, x_coord(q), y_coord(q)); p = link(p);
   }
 
   switch(c) {
     case point_of:
-      pair_value(x_coord(p),y_coord(p));
+      pair_value(x_coord(p), y_coord(p));
       break;
     case precontrol_of:
-      if (left_type(p) == endpoint) pair_value(x_coord(p),y_coord(p));
-      else pair_value(left_x(p),left_y(p));
+      if (left_type(p) == endpoint) pair_value(x_coord(p), y_coord(p));
+      else pair_value(left_x(p), left_y(p));
       break;
     case postcontrol_of:
-      if (right_type(p) == endpoint) pair_value(x_coord(p),y_coord(p));
-      else pair_value(right_x(p),right_y(p));
+      if (right_type(p) == endpoint) pair_value(x_coord(p), y_coord(p));
+      else pair_value(right_x(p), right_y(p));
       break;
   } //{there are no other cases}
 }
@@ -12365,7 +12366,7 @@ void do_statement() //{governs \MF's activities}
       if (cur_cmd < semicolon)
       {
         print_err(TEX_STRING("A statement can't begin with `"));
-        print_cmd_mod(cur_cmd,cur_mod); print_char(TEX_STRING("'"));
+        print_cmd_mod(cur_cmd, cur_mod); print_char(TEX_STRING("'"));
         help5(TEX_STRING("I was looking for the beginning of a new statement."),
         TEX_STRING("If you just proceed without changing anything, I'll ignore"),
         TEX_STRING("everything up to the next `;'. Please insert a semicolon"),
@@ -12389,7 +12390,7 @@ void do_statement() //{governs \MF's activities}
         }
         if (internal[proofing] > 0)
         {
-          check_gf; gf_string(TEX_STRING("title "),cur_exp);
+          check_gf; gf_string(TEX_STRING("title "), cur_exp);
         }
       }
       else if (cur_type != vacuous)
@@ -12529,8 +12530,8 @@ void do_equation()
   else if (cur_cmd == assignment) do_assignment();
   if (internal[tracing_commands] > two)
   {
-    begin_diagnostic(); print_nl(TEX_STRING("{(")); print_exp(lhs,0);
-    print(TEX_STRING(")=(")); print_exp(null,0); print(TEX_STRING(")}")); end_diagnostic(false);
+    begin_diagnostic(); print_nl(TEX_STRING("{(")); print_exp(lhs, 0);
+    print(TEX_STRING(")=(")); print_exp(null, 0); print(TEX_STRING(")}")); end_diagnostic(false);
   }
   if (cur_type == unknown_path)
     if (type(lhs) == pair_type)
@@ -12563,8 +12564,8 @@ void do_assignment()
     {
       begin_diagnostic(); print_nl(TEX_STRING("{"));
       if (info(lhs) > hash_end) slow_print(int_name[info(lhs)-(hash_end)]);
-      else show_token_list(lhs,null,1000,0);
-      print(TEX_STRING(":=")); print_exp(null,0); print_char(TEX_STRING("}")); end_diagnostic(false);
+      else show_token_list(lhs, null, 1000, 0);
+      print(TEX_STRING(":=")); print_exp(null, 0); print_char(TEX_STRING("}")); end_diagnostic(false);
     }
     if (info(lhs) > hash_end)
       if (cur_type == known) internal[info(lhs)-(hash_end)] = cur_exp;
@@ -12598,7 +12599,7 @@ void make_eq(pointer lhs)
 {
   small_number t; //{type of the left-hand side}
   int v = INT_MAX; //{value of the left-hand side}
-  pointer p,q; //{pointers inside of big nodes}
+  pointer p, q; //{pointers inside of big nodes}
 restart:
   t = type(lhs);
   if (t <= pair_type) v = value(lhs);
@@ -12606,7 +12607,7 @@ restart:
     case boolean_type: case string_type: case pen_type: case path_type: case picture_type:
       if (cur_type == t + unknown_tag)
       {
-        nonlinear_eq(v,cur_exp,false); goto done;
+        nonlinear_eq(v, cur_exp, false); goto done;
       }
       else if (cur_type == t)
       {
@@ -12633,11 +12634,11 @@ restart:
     case unknown_types:
       if (cur_type == t - unknown_tag)
       {
-        nonlinear_eq(cur_exp,lhs,true); goto done;
+        nonlinear_eq(cur_exp, lhs, true); goto done;
       }
       else if (cur_type == t)
       {
-        ring_merge(lhs,cur_exp); goto done;
+        ring_merge(lhs, cur_exp); goto done;
       }
       else if (cur_type == pair_type)
         if (t == unknown_path)
@@ -12650,7 +12651,7 @@ restart:
       {
         p = v + big_node_size[t]; q = value(cur_exp) + big_node_size[t];
         do {
-          p = p - 2; q = q - 2; try_eq(p,q);
+          p = p - 2; q = q - 2; try_eq(p, q);
         } while (p != v);
         goto done;
       }
@@ -12658,14 +12659,14 @@ restart:
     case known: case dependent: case proto_dependent: case independent:
       if (cur_type >= known)
       {
-        try_eq(lhs,null); goto done;
+        try_eq(lhs, null); goto done;
       }
       break;
     case vacuous: //do_nothing;
       break;
   } // {all cases have been listed}
 
-  disp_err(lhs,TEX_STRING("")); exp_err(TEX_STRING("Equation cannot be performed ("));
+  disp_err(lhs, TEX_STRING("")); exp_err(TEX_STRING("Equation cannot be performed ("));
   if (type(lhs) <= pair_type) print_type(type(lhs)); else print(TEX_STRING("numeric"));
   print_char(TEX_STRING("="));
   if (cur_type <= pair_type) print_type(cur_type); else print(TEX_STRING("numeric"));
@@ -12673,7 +12674,7 @@ restart:
   help2(TEX_STRING("I'm sorry, but I don't know how to make such things equal."),
     TEX_STRING("(See the two expressions just above the error message.)"));
   put_get_error();
-done: check_arith; recycle_value(lhs); free_node(lhs,value_node_size);
+done: check_arith; recycle_value(lhs); free_node(lhs, value_node_size);
 }
 
 // 1006
@@ -12710,7 +12711,7 @@ void try_eq(pointer l, pointer r)
   if (r == null)
     if (cur_type == known)
     {
-      value(q) = value(q)+cur_exp; goto done1;
+      value(q) = value(q) + cur_exp; goto done1;
     }
     else  {
       tt = cur_type;
@@ -12719,7 +12720,7 @@ void try_eq(pointer l, pointer r)
     }
   else if (type(r) == known)
   {
-    value(q) = value(q)+value(r); goto done1;
+    value(q) = value(q) + value(r); goto done1;
   }
   else  {
     tt = type(r);
@@ -12731,16 +12732,16 @@ void try_eq(pointer l, pointer r)
     copied = true; tt = dependent;
   }
   watch_coefs = false;
-  if (t == tt) p = p_plus_q(p,pp,t);
+  if (t == tt) p = p_plus_q(p, pp, t);
   else if (t == proto_dependent)
-    p = p_plus_fq(p,unity,pp,proto_dependent,dependent);
+    p = p_plus_fq(p, unity, pp, proto_dependent, dependent);
   else {
     q = p;
     while (info(q) != null)
     {
       value(q) = round_fraction(value(q)); q = link(q);
     }
-    t = proto_dependent; p = p_plus_q(p,pp,t);
+    t = proto_dependent; p = p_plus_q(p, pp, t);
   }
   watch_coefs = true;
   if (copied) flush_node_list(pp);
@@ -12762,16 +12763,16 @@ void try_eq(pointer l, pointer r)
       TEX_STRING("But perhaps no harm has been done; let's continue."));
       put_get_error();
     }
-    free_node(p,dep_node_size);
+    free_node(p, dep_node_size);
   }
   else  {
-    linear_eq(p,t);
+    linear_eq(p, t);
     if (r == null)
       if (cur_type != known)
         if (type(cur_exp) == known)
         {
           pp = cur_exp; cur_exp = value(cur_exp); cur_type = known;
-          free_node(pp,value_node_size);
+          free_node(pp, value_node_size);
         }
   }
 }
@@ -12783,7 +12784,7 @@ pointer scan_declared_variable()
   pointer h, t; //{head and tail of the token list to be returned}
   pointer l; //{hash address of left bracket}
   get_symbol(); x = cur_sym;
-  if (cur_cmd != tag_token) clear_symbol(x,false);
+  if (cur_cmd != tag_token) clear_symbol(x, false);
   h = get_avail(); info(h) = x; t = h;
   while (true) {
     get_x_next();
@@ -12804,7 +12805,7 @@ pointer scan_declared_variable()
     link(t) = get_avail(); t = link(t); info(t) = cur_sym;
   }
 done:
-  if (eq_type(x) % outer_tag != tag_token) clear_symbol(x,false);
+  if (eq_type(x) % outer_tag != tag_token) clear_symbol(x, false);
   if (equiv(x) == null) new_root(x);
   return h;
 }
@@ -12819,7 +12820,7 @@ void do_type_declaration()
   if (cur_mod >= transform_type) t = cur_mod; else t = cur_mod + unknown_tag;
   do {
     p = scan_declared_variable();
-    flush_variable(equiv(info(p)),link(p),false);
+    flush_variable(equiv(info(p)), link(p), false);
     q = find_variable(p);
     if (q != null)
     {
@@ -12849,7 +12850,7 @@ void do_type_declaration()
       } while (cur_cmd < comma); //{either |end_of_statement| or |cur_cmd=comma|}
       scanner_status = normal;
     }
-  } while (end_of_statement);
+  } while (!end_of_statement);
 }
 
 // 1017
@@ -13026,7 +13027,7 @@ void disp_token()
   else  {
     slow_print(text(cur_sym)); print_char(TEX_STRING("="));
     if (eq_type(cur_sym) >= outer_tag) print(TEX_STRING("(outer) "));
-    print_cmd_mod(cur_cmd,cur_mod);
+    print_cmd_mod(cur_cmd, cur_mod);
     if (cur_cmd == defined_macro)
     {
       print_ln(); show_macro(cur_mod, null, 100000);
@@ -13051,14 +13052,14 @@ void do_show_stats()
   if (false)
   #endif
   print(TEX_STRING("unknown"));
-  print(TEX_STRING(" (")); print_int(hi_mem_min-lo_mem_max-1);
+  print(TEX_STRING(" (")); print_int(hi_mem_min - lo_mem_max - 1);
   print(TEX_STRING(" still untouched)")); print_ln();
   print_nl(TEX_STRING("String usage "));
-  print_int(str_ptr-init_str_ptr); print_char(TEX_STRING("&"));
-  print_int(pool_ptr-init_pool_ptr);
+  print_int(str_ptr - init_str_ptr); print_char(TEX_STRING("&"));
+  print_int(pool_ptr - init_pool_ptr);
   print(TEX_STRING(" ("));
-  print_int(max_strings-max_str_ptr); print_char(TEX_STRING("&"));
-  print_int(pool_size-max_pool_ptr); print(TEX_STRING(" still untouched)")); print_ln();
+  print_int(max_strings - max_str_ptr); print_char(TEX_STRING("&"));
+  print_int(pool_size - max_pool_ptr); print(TEX_STRING(" still untouched)")); print_ln();
   get_x_next();
 }
 
@@ -13087,12 +13088,12 @@ void disp_var(pointer p)
     print(TEX_STRING("=macro:"));
     if (file_offset >= max_print_line - 20) n = 5;
     else n = max_print_line - file_offset - 15;
-    show_macro(value(p),null,n);
+    show_macro(value(p), null, n);
   }
   else if (type(p) != undefined)
    {
     print_nl(TEX_STRING("")); print_variable_name(p); print_char(TEX_STRING("="));
-    print_exp(p,0);
+    print_exp(p, 0);
    }
 }
 
@@ -13206,7 +13207,7 @@ void find_edges_var(pointer t)
   }
   else if (type(p) != picture_type)
   {
-    print_err(TEX_STRING("Variable ")); show_token_list(t,null,1000,0); print(TEX_STRING(" is the wrong type ("));
+    print_err(TEX_STRING("Variable ")); show_token_list(t, null, 1000, 0); print(TEX_STRING(" is the wrong type ("));
     print_type(type(p)); print_char(TEX_STRING(")"));
     help2(TEX_STRING("I was looking for a ""known"" picture variable."),
     TEX_STRING("So I'll not change anything just now.")); put_get_error();
@@ -13218,7 +13219,7 @@ void find_edges_var(pointer t)
 // 1059
 void do_add_to()
 {
-  pointer lhs,rhs; //{variable on left, path on right}
+  pointer lhs, rhs; //{variable on left, path on right}
   int w; //{tentative weight}
   pointer p; //{list manipulation register}
   pointer q; //{beginning of second half of doubled path}
@@ -13287,10 +13288,10 @@ void do_add_to()
                 p = htap_ypoc(rhs); q = link(p);
                 right_x(path_tail) = right_x(q); right_y(path_tail) = right_y(q);
                 right_type(path_tail) = right_type(q);
-                link(path_tail) = link(q); free_node(q,knot_node_size);
+                link(path_tail) = link(q); free_node(q, knot_node_size);
                 right_x(p) = right_x(rhs); right_y(p) = right_y(rhs);
                 right_type(p) = right_type(rhs);
-                link(p) = link(rhs); free_node(rhs,knot_node_size);
+                link(p) = link(rhs); free_node(rhs, knot_node_size);
                 rhs = p;
               }
             else
@@ -13301,7 +13302,7 @@ void do_add_to()
               toss_knot_list(rhs); goto not_found;
             }
           else if (cur_path_type == double_path_code) lhs = htap_ypoc(rhs);
-          cur_wt = w; rhs = make_spec(rhs,max_offset(cur_pen),internal[tracing_specs]);
+          cur_wt = w; rhs = make_spec(rhs, max_offset(cur_pen), internal[tracing_specs]);
           if (turning_number <= 0)
             if (cur_path_type != double_path_code)
               if (internal[turning_check] > 0) {
@@ -13323,7 +13324,7 @@ void do_add_to()
           if (lhs != null)
           {
             rev_turns = true;
-            lhs = make_spec(lhs,max_offset(cur_pen),internal[tracing_specs]);
+            lhs = make_spec(lhs, max_offset(cur_pen), internal[tracing_specs]);
             rev_turns = false;
             if (max_offset(cur_pen) == 0) fill_spec(lhs);
             else fill_envelope(lhs);
@@ -13342,13 +13343,13 @@ void ship_out(eight_bits c)
 {
   int f; //{current character extension}
   int prev_m, m, mm; //{previous and current pixel column numbers}
-  int prev_n,n; //{previous and current pixel row numbers}
-  pointer p,q; //{for list traversal}
-  int prev_w,w,ww; //{old and new weights}
+  int prev_n, n; //{previous and current pixel row numbers}
+  pointer p, q; //{for list traversal}
+  int prev_w, w, ww; //{old and new weights}
   int d; //{data from edge-weight node}
   int delta; //{number of rows to skip}
   int cur_min_m = INT_MAX; //{starting column, relative to the current offset}
-  int x_off,y_off; //{offsets, rounded to ints}
+  int x_off, y_off; //{offsets, rounded to ints}
 
   check_gf; f = round_unscaled(internal[char_ext]);
   x_off = round_unscaled(internal[x_offset]);
@@ -13366,11 +13367,11 @@ void ship_out(eight_bits c)
   {
     if (x_off != 0)
     {
-      gf_string(TEX_STRING("xoffset"),0); gf_out(yyy); gf_four(x_off*unity);
+      gf_string(TEX_STRING("xoffset"), 0); gf_out(yyy); gf_four(x_off*unity);
     }
     if (y_off != 0)
     {
-      gf_string(TEX_STRING("yoffset"),0); gf_out(yyy); gf_four(y_off*unity);
+      gf_string(TEX_STRING("yoffset"), 0); gf_out(yyy); gf_four(y_off*unity);
     }
   }
   prev_n = 4096; p = knil(cur_edges); n = n_max(cur_edges) - zero_field;
@@ -13442,7 +13443,7 @@ void ship_out(eight_bits c)
   }
   if (prev_n == 4096)
   {
-    gf_boc(0,0,0,0);
+    gf_boc(0, 0, 0, 0);
     if (gf_max_m < 0) gf_max_m = 0;
     if (gf_min_n > 0) gf_min_n = 0;
   }
@@ -13451,7 +13452,7 @@ void ship_out(eight_bits c)
   gf_out(eoc); gf_prev_ptr = gf_offset + gf_ptr; total_chars++;
   print_char(TEX_STRING("]")); update_terminal(); //{progress report}
   if (internal[tracing_output] > 0)
-    print_edges(TEX_STRING(" (just shipped out)"),true,x_off,y_off);
+    print_edges(TEX_STRING(" (just shipped out)"), true, x_off, y_off);
 }
 
 // 1070
@@ -13534,7 +13535,7 @@ bool get_pair(command_code c)
   if (cur_cmd != c) return false;
   else {
     get_x_next(); scan_expression();
-    if (nice_pair(cur_exp,cur_type))
+    if (nice_pair(cur_exp, cur_type))
     {
       p = value(cur_exp);
       cur_x = value(x_part_loc(p)); cur_y = value(y_part_loc(p));
@@ -13560,7 +13561,7 @@ void do_open_window()
   if (!get_pair(to_token)) goto not_found;
   r1 = cur_x; c1 = cur_y;
   if (!get_pair(at_token)) goto not_found;
-  open_a_window(k,r0,c0,r1,c1,cur_x,cur_y); return;
+  open_a_window(k, r0, c0, r1, c1, cur_x, cur_y); return;
 not_found:
   print_err(TEX_STRING("Improper `openwindow'"));
   help2(TEX_STRING("Say `openwindow k from (r0,c0) to (r1,c1) at (x,y)',"),
@@ -13573,7 +13574,7 @@ void do_cull()
 {
   pointer e; //{token list for a picture variable}
   int keeping; //:drop_code..keep_code; //{modifier of |cull_op|}
-  int w,w_in,w_out; //{culling weights}
+  int w, w_in, w_out; //{culling weights}
   w = 1;
   get_x_next(); var_flag = cull_op; scan_primary();
   if (cur_type != token_list)
@@ -13602,7 +13603,7 @@ void do_cull()
   }
   find_edges_var(e);
   if (cur_edges != null)
-    cull_edges(floor_unscaled(cur_x + unity - 1),floor_unscaled(cur_y),w_out,w_in);
+    cull_edges(floor_unscaled(cur_x + unity - 1), floor_unscaled(cur_y), w_out, w_in);
   return;
   not_found:
   print_err(TEX_STRING("Bad culling amounts"));
@@ -13756,7 +13757,7 @@ void do_tfm_command()
           skip_error(skip_table[c]); skip_table[c] = undefined_label;
         }
         if (skip_table[c] == undefined_label) skip_byte(nl - 1) = qi(0);
-        else skip_byte(nl-1) = qi(nl - skip_table[c] - 1);
+        else skip_byte(nl - 1) = qi(nl - skip_table[c] - 1);
         skip_table[c] = nl - 1; goto done;
       }
       if (cur_cmd == bchar_label)
@@ -13770,7 +13771,7 @@ void do_tfm_command()
       {
         if (cur_cmd == colon)
           if (c == 256) bch_label = nl;
-          else set_tag(c,lig_tag,nl);
+          else set_tag(c, lig_tag, nl);
         else if (skip_table[c] < undefined_label)
         {
           ll = skip_table[c]; skip_table[c] = undefined_label;
@@ -13806,7 +13807,7 @@ void do_tfm_command()
           while (kern[k] != cur_exp) k++;
           if (k == nk)
           {
-            if (nk == max_kerns) overflow(TEX_STRING("kern"),max_kerns);
+            if (nk == max_kerns) overflow(TEX_STRING("kern"), max_kerns);
             nk++;
           }
           op_byte(nl) = kern_flag + (k / 256);
@@ -13820,7 +13821,7 @@ void do_tfm_command()
         back_error(); next_char(nl) = qi(0); op_byte(nl) = qi(0); rem_byte(nl) = qi(0);
         skip_byte(nl) = stop_flag + 1; //{this specifies an unconditional stop}
       }
-      if (nl == lig_table_size) overflow(TEX_STRING("ligtable size"),lig_table_size);
+      if (nl == lig_table_size) overflow(TEX_STRING("ligtable size"), lig_table_size);
       nl++;
       if (cur_cmd == comma) goto mycontinue;
       if (skip_byte(nl - 1) < stop_flag) skip_byte(nl - 1) = stop_flag;
@@ -13828,7 +13829,7 @@ void do_tfm_command()
       break;
     case extensible_code:
       if (ne == 256) overflow(TEX_STRING("extensible"),256);
-      c = get_code(); set_tag(c,ext_tag,ne);
+      c = get_code(); set_tag(c, ext_tag, ne);
       if (cur_cmd != colon) missing_extensible_punctuation(TEX_STRING(":"));
       ext_top(ne) = qi(get_code());
       if (cur_cmd != comma) missing_extensible_punctuation(TEX_STRING(","));
@@ -13859,13 +13860,13 @@ void do_tfm_command()
         }
         if (c == header_byte_code)
           do {
-            if (j > header_size) overflow(TEX_STRING("headerbyte"),header_size);
+            if (j > header_size) overflow(TEX_STRING("headerbyte"), header_size);
             header_byte[j] = get_code(); j++;
           } while (cur_cmd == comma);
 
         else
           do {
-            if (j > max_font_dimen) overflow(TEX_STRING("fontdimen"),max_font_dimen);
+            if (j > max_font_dimen) overflow(TEX_STRING("fontdimen"), max_font_dimen);
             while (j > np)
             {
               np++; param[np] = 0;
@@ -14160,7 +14161,7 @@ void init_gf()
   eight_bits k; //{runs through all possible character codes}
   int t; //{the time of this run}
   gf_min_m = 4096; gf_max_m = -4096; gf_min_n = 4096; gf_max_n = -4096;
-  PASCAL_FOR_BEGIN(k,0,255)
+  PASCAL_FOR_BEGIN(k, 0, 255)
     char_ptr[k] = -1;
   PASCAL_FOR_END(k, 255)
   if (internal[hppp] <= 0) gf_ext = TEX_STRING(".gf");
@@ -14179,7 +14180,7 @@ void init_gf()
   t = round_unscaled(internal[_time]);
   print_dd(t / 60); print_dd(t % 60);
   selector = old_setting; gf_out(cur_length);
-  str_start[str_ptr + 1] = pool_ptr; gf_string(0,str_ptr);
+  str_start[str_ptr + 1] = pool_ptr; gf_string(0, str_ptr);
   pool_ptr = str_start[str_ptr]; //{flush that string from memory}
   gf_prev_ptr = gf_offset + gf_ptr;
 }
@@ -14199,7 +14200,7 @@ void do_special()
     }
     else {
       check_gf;
-      if (m == string_type) gf_string(cur_exp,0);
+      if (m == string_type) gf_string(cur_exp, 0);
       else {
         gf_out(yyy); gf_four(cur_exp);
       }
@@ -14403,103 +14404,103 @@ void undump_qqqq(four_quarters *qqqq)
 
 void init_prim()
 {
-  primitive(TEX_STRING("tracingtitles"),internal_quantity,tracing_titles);
-  primitive(TEX_STRING("tracingequations"),internal_quantity,tracing_equations);
-  primitive(TEX_STRING("tracingcapsules"),internal_quantity,tracing_capsules);
-  primitive(TEX_STRING("tracingchoices"),internal_quantity,tracing_choices);
-  primitive(TEX_STRING("tracingspecs"),internal_quantity,tracing_specs);
-  primitive(TEX_STRING("tracingpens"),internal_quantity,tracing_pens);
-  primitive(TEX_STRING("tracingcommands"),internal_quantity,tracing_commands);
-  primitive(TEX_STRING("tracingrestores"),internal_quantity,tracing_restores);
-  primitive(TEX_STRING("tracingmacros"),internal_quantity,tracing_macros);
-  primitive(TEX_STRING("tracingedges"),internal_quantity,tracing_edges);
-  primitive(TEX_STRING("tracingoutput"),internal_quantity,tracing_output);
-  primitive(TEX_STRING("tracingstats"),internal_quantity,tracing_stats);
-  primitive(TEX_STRING("tracingonline"),internal_quantity,tracing_online);
-  primitive(TEX_STRING("year"),internal_quantity,year);
-  primitive(TEX_STRING("month"),internal_quantity,month);
-  primitive(TEX_STRING("day"),internal_quantity,day);
-  primitive(TEX_STRING("time"),internal_quantity,_time);
-  primitive(TEX_STRING("charcode"),internal_quantity,char_code);
-  primitive(TEX_STRING("charext"),internal_quantity,char_ext);
-  primitive(TEX_STRING("charwd"),internal_quantity,char_wd);
-  primitive(TEX_STRING("charht"),internal_quantity,char_ht);
-  primitive(TEX_STRING("chardp"),internal_quantity,char_dp);
-  primitive(TEX_STRING("charic"),internal_quantity,char_ic);
-  primitive(TEX_STRING("chardx"),internal_quantity,char_dx);
-  primitive(TEX_STRING("chardy"),internal_quantity,char_dy);
-  primitive(TEX_STRING("designsize"),internal_quantity,design_size);
-  primitive(TEX_STRING("hppp"),internal_quantity,hppp);
-  primitive(TEX_STRING("vppp"),internal_quantity,vppp);
-  primitive(TEX_STRING("xoffset"),internal_quantity,x_offset);
-  primitive(TEX_STRING("yoffset"),internal_quantity,y_offset);
-  primitive(TEX_STRING("pausing"),internal_quantity,pausing);
-  primitive(TEX_STRING("showstopping"),internal_quantity,showstopping);
-  primitive(TEX_STRING("fontmaking"),internal_quantity,fontmaking);
-  primitive(TEX_STRING("proofing"),internal_quantity,proofing);
-  primitive(TEX_STRING("smoothing"),internal_quantity,smoothing);
-  primitive(TEX_STRING("autorounding"),internal_quantity,autorounding);
-  primitive(TEX_STRING("granularity"),internal_quantity,granularity);
-  primitive(TEX_STRING("fillin"),internal_quantity,fillin);
-  primitive(TEX_STRING("turningcheck"),internal_quantity,turning_check);
-  primitive(TEX_STRING("warningcheck"),internal_quantity,warning_check);
-  primitive(TEX_STRING("boundarychar"),internal_quantity,boundary_char);
+  primitive(TEX_STRING("tracingtitles"), internal_quantity, tracing_titles);
+  primitive(TEX_STRING("tracingequations"), internal_quantity, tracing_equations);
+  primitive(TEX_STRING("tracingcapsules"), internal_quantity, tracing_capsules);
+  primitive(TEX_STRING("tracingchoices"), internal_quantity, tracing_choices);
+  primitive(TEX_STRING("tracingspecs"), internal_quantity, tracing_specs);
+  primitive(TEX_STRING("tracingpens"), internal_quantity, tracing_pens);
+  primitive(TEX_STRING("tracingcommands"), internal_quantity, tracing_commands);
+  primitive(TEX_STRING("tracingrestores"), internal_quantity, tracing_restores);
+  primitive(TEX_STRING("tracingmacros"), internal_quantity, tracing_macros);
+  primitive(TEX_STRING("tracingedges"), internal_quantity, tracing_edges);
+  primitive(TEX_STRING("tracingoutput"), internal_quantity, tracing_output);
+  primitive(TEX_STRING("tracingstats"), internal_quantity, tracing_stats);
+  primitive(TEX_STRING("tracingonline"), internal_quantity, tracing_online);
+  primitive(TEX_STRING("year"), internal_quantity, year);
+  primitive(TEX_STRING("month"), internal_quantity, month);
+  primitive(TEX_STRING("day"), internal_quantity, day);
+  primitive(TEX_STRING("time"), internal_quantity, _time);
+  primitive(TEX_STRING("charcode"), internal_quantity, char_code);
+  primitive(TEX_STRING("charext"), internal_quantity, char_ext);
+  primitive(TEX_STRING("charwd"), internal_quantity, char_wd);
+  primitive(TEX_STRING("charht"), internal_quantity, char_ht);
+  primitive(TEX_STRING("chardp"), internal_quantity, char_dp);
+  primitive(TEX_STRING("charic"), internal_quantity, char_ic);
+  primitive(TEX_STRING("chardx"), internal_quantity, char_dx);
+  primitive(TEX_STRING("chardy"), internal_quantity, char_dy);
+  primitive(TEX_STRING("designsize"), internal_quantity, design_size);
+  primitive(TEX_STRING("hppp"), internal_quantity, hppp);
+  primitive(TEX_STRING("vppp"), internal_quantity, vppp);
+  primitive(TEX_STRING("xoffset"), internal_quantity, x_offset);
+  primitive(TEX_STRING("yoffset"), internal_quantity, y_offset);
+  primitive(TEX_STRING("pausing"), internal_quantity, pausing);
+  primitive(TEX_STRING("showstopping"), internal_quantity, showstopping);
+  primitive(TEX_STRING("fontmaking"), internal_quantity, fontmaking);
+  primitive(TEX_STRING("proofing"), internal_quantity, proofing);
+  primitive(TEX_STRING("smoothing"), internal_quantity, smoothing);
+  primitive(TEX_STRING("autorounding"), internal_quantity, autorounding);
+  primitive(TEX_STRING("granularity"), internal_quantity, granularity);
+  primitive(TEX_STRING("fillin"), internal_quantity, fillin);
+  primitive(TEX_STRING("turningcheck"), internal_quantity, turning_check);
+  primitive(TEX_STRING("warningcheck"), internal_quantity, warning_check);
+  primitive(TEX_STRING("boundarychar"), internal_quantity, boundary_char);
 
   // 211
-  primitive(TEX_STRING(".."),path_join,0);
-  primitive(TEX_STRING("["),left_bracket,0); eqtb[frozen_left_bracket] = eqtb[cur_sym];
-  primitive(TEX_STRING("]"),right_bracket,0);
-  primitive(TEX_STRING("}"),right_brace,0);
-  primitive(TEX_STRING("{"),left_brace,0);
-  primitive(TEX_STRING(":"),colon,0); eqtb[frozen_colon] = eqtb[cur_sym];
-  primitive(TEX_STRING("::"),double_colon,0);
-  primitive(TEX_STRING("||:"),bchar_label,0);
-  primitive(TEX_STRING(":="),assignment,0);
-  primitive(TEX_STRING(","),comma,0);
-  primitive(TEX_STRING(";"),semicolon,0);eqtb[frozen_semicolon] = eqtb[cur_sym];
-  primitive(TEX_STRING("\"),relax,0);
-  primitive(TEX_STRING("addto"),add_to_command,0);
-  primitive(TEX_STRING("at"),at_token,0);
-  primitive(TEX_STRING("atleast"),at_least,0);
-  primitive(TEX_STRING("begingroup"),begin_group,0); bg_loc = cur_sym;
-  primitive(TEX_STRING("controls"),controls,0);
-  primitive(TEX_STRING("cull"),cull_command,0);
-  primitive(TEX_STRING("curl"),curl_command,0);
-  primitive(TEX_STRING("delimiters"),delimiters,0);
-  primitive(TEX_STRING("display"),display_command,0);
-  primitive(TEX_STRING("endgroup"),end_group,0); eqtb[frozen_end_group] = eqtb[cur_sym]; eg_loc = cur_sym;
-  primitive(TEX_STRING("everyjob"),every_job_command,0);
-  primitive(TEX_STRING("exitif"),exit_test,0);
-  primitive(TEX_STRING("expandafter"),expand_after,0);
-  primitive(TEX_STRING("from"),from_token,0);
-  primitive(TEX_STRING("inwindow"),in_window,0);
-  primitive(TEX_STRING("interim"),interim_command,0);
-  primitive(TEX_STRING("let"),let_command,0);
-  primitive(TEX_STRING("newinternal"),new_internal,0);
-  primitive(TEX_STRING("of"),of_token,0);
-  primitive(TEX_STRING("openwindow"),open_window,0);
-  primitive(TEX_STRING("randomseed"),random_seed,0);
-  primitive(TEX_STRING("save"),save_command,0);
-  primitive(TEX_STRING("scantokens"),scan_tokens,0);
-  primitive(TEX_STRING("shipout"),ship_out_command,0);
-  primitive(TEX_STRING("skipto"),skip_to,0);
-  primitive(TEX_STRING("step"),step_token,0);
-  primitive(TEX_STRING("str"),str_op,0);
-  primitive(TEX_STRING("tension"),tension,0);
-  primitive(TEX_STRING("to"),to_token,0);
-  primitive(TEX_STRING("until"),until_token,0);
+  primitive(TEX_STRING(".."), path_join, 0);
+  primitive(TEX_STRING("["), left_bracket, 0); eqtb[frozen_left_bracket] = eqtb[cur_sym];
+  primitive(TEX_STRING("]"), right_bracket, 0);
+  primitive(TEX_STRING("}"), right_brace, 0);
+  primitive(TEX_STRING("{"), left_brace, 0);
+  primitive(TEX_STRING(":"), colon, 0); eqtb[frozen_colon] = eqtb[cur_sym];
+  primitive(TEX_STRING("::"), double_colon, 0);
+  primitive(TEX_STRING("||:"), bchar_label, 0);
+  primitive(TEX_STRING(":="), assignment, 0);
+  primitive(TEX_STRING(","), comma, 0);
+  primitive(TEX_STRING(";"), semicolon, 0);eqtb[frozen_semicolon] = eqtb[cur_sym];
+  primitive(TEX_STRING("\"), relax, 0);
+  primitive(TEX_STRING("addto"), add_to_command, 0);
+  primitive(TEX_STRING("at"), at_token, 0);
+  primitive(TEX_STRING("atleast"), at_least, 0);
+  primitive(TEX_STRING("begingroup"), begin_group, 0); bg_loc = cur_sym;
+  primitive(TEX_STRING("controls"), controls, 0);
+  primitive(TEX_STRING("cull"), cull_command, 0);
+  primitive(TEX_STRING("curl"), curl_command, 0);
+  primitive(TEX_STRING("delimiters"), delimiters, 0);
+  primitive(TEX_STRING("display"), display_command, 0);
+  primitive(TEX_STRING("endgroup"), end_group, 0); eqtb[frozen_end_group] = eqtb[cur_sym]; eg_loc = cur_sym;
+  primitive(TEX_STRING("everyjob"), every_job_command, 0);
+  primitive(TEX_STRING("exitif"), exit_test, 0);
+  primitive(TEX_STRING("expandafter"), expand_after, 0);
+  primitive(TEX_STRING("from"), from_token, 0);
+  primitive(TEX_STRING("inwindow"), in_window, 0);
+  primitive(TEX_STRING("interim"), interim_command, 0);
+  primitive(TEX_STRING("let"), let_command, 0);
+  primitive(TEX_STRING("newinternal"), new_internal, 0);
+  primitive(TEX_STRING("of"), of_token, 0);
+  primitive(TEX_STRING("openwindow"), open_window, 0);
+  primitive(TEX_STRING("randomseed"), random_seed, 0);
+  primitive(TEX_STRING("save"), save_command, 0);
+  primitive(TEX_STRING("scantokens"), scan_tokens, 0);
+  primitive(TEX_STRING("shipout"), ship_out_command, 0);
+  primitive(TEX_STRING("skipto"), skip_to, 0);
+  primitive(TEX_STRING("step"), step_token, 0);
+  primitive(TEX_STRING("str"), str_op, 0);
+  primitive(TEX_STRING("tension"), tension, 0);
+  primitive(TEX_STRING("to"), to_token, 0);
+  primitive(TEX_STRING("until"), until_token, 0);
 
   // 683
-  primitive(TEX_STRING("def"),macro_def ,start_def);
-  primitive(TEX_STRING("vardef"),macro_def ,var_def);
-  primitive(TEX_STRING("primarydef"),macro_def ,secondary_primary_macro);
-  primitive(TEX_STRING("secondarydef"),macro_def ,tertiary_secondary_macro);
-  primitive(TEX_STRING("tertiarydef"),macro_def ,expression_tertiary_macro);
-  primitive(TEX_STRING("enddef"),macro_def ,end_def); eqtb[frozen_end_def] = eqtb[cur_sym];
-  primitive(TEX_STRING("for"),iteration,expr_base);
-  primitive(TEX_STRING("forsuffixes"),iteration,suffix_base);
-  primitive(TEX_STRING("forever"),iteration,start_forever);
-  primitive(TEX_STRING("endfor"),iteration,end_for); eqtb[frozen_end_for] = eqtb[cur_sym];
+  primitive(TEX_STRING("def"), macro_def ,start_def);
+  primitive(TEX_STRING("vardef"), macro_def ,var_def);
+  primitive(TEX_STRING("primarydef"), macro_def ,secondary_primary_macro);
+  primitive(TEX_STRING("secondarydef"), macro_def ,tertiary_secondary_macro);
+  primitive(TEX_STRING("tertiarydef"), macro_def ,expression_tertiary_macro);
+  primitive(TEX_STRING("enddef"), macro_def ,end_def); eqtb[frozen_end_def] = eqtb[cur_sym];
+  primitive(TEX_STRING("for"), iteration, expr_base);
+  primitive(TEX_STRING("forsuffixes"), iteration, suffix_base);
+  primitive(TEX_STRING("forever"), iteration, start_forever);
+  primitive(TEX_STRING("endfor"), iteration, end_for); eqtb[frozen_end_for] = eqtb[cur_sym];
 
   // 688
   primitive(TEX_STRING("quote"), macro_special, quote);
@@ -14527,76 +14528,76 @@ void init_prim()
 
   // 893
 
-  primitive(TEX_STRING("true"),nullary,true_code);
-  primitive(TEX_STRING("false"),nullary,false_code);
-  primitive(TEX_STRING("nullpicture"),nullary,null_picture_code);
-  primitive(TEX_STRING("nullpen"),nullary,null_pen_code);
-  primitive(TEX_STRING("jobname"),nullary,job_name_op);
-  primitive(TEX_STRING("readstring"),nullary,read_string_op);
-  primitive(TEX_STRING("pencircle"),nullary,pen_circle);
-  primitive(TEX_STRING("normaldeviate"),nullary,normal_deviate);
-  primitive(TEX_STRING("odd"),unary,odd_op);
-  primitive(TEX_STRING("known"),unary,known_op);
-  primitive(TEX_STRING("unknown"),unary,unknown_op);
-  primitive(TEX_STRING("not"),unary,not_op);
-  primitive(TEX_STRING("decimal"),unary,decimal);
-  primitive(TEX_STRING("reverse"),unary,reverse);
-  primitive(TEX_STRING("makepath"),unary,make_path_op);
-  primitive(TEX_STRING("makepen"),unary,make_pen_op);
-  primitive(TEX_STRING("totalweight"),unary,total_weight_op);
-  primitive(TEX_STRING("oct"),unary,oct_op);
-  primitive(TEX_STRING("hex"),unary,hex_op);
-  primitive(TEX_STRING("ASCII"),unary,ASCII_op);
-  primitive(TEX_STRING("char"),unary,char_op);
-  primitive(TEX_STRING("length"),unary,length_op);
-  primitive(TEX_STRING("turningnumber"),unary,turning_op);
-  primitive(TEX_STRING("xpart"),unary,x_part);
-  primitive(TEX_STRING("ypart"),unary,y_part);
-  primitive(TEX_STRING("xxpart"),unary,xx_part);
-  primitive(TEX_STRING("xypart"),unary,xy_part);
-  primitive(TEX_STRING("yxpart"),unary,yx_part);
-  primitive(TEX_STRING("yypart"),unary,yy_part);
-  primitive(TEX_STRING("sqrt"),unary,sqrt_op);
-  primitive(TEX_STRING("mexp"),unary,m_exp_op);
-  primitive(TEX_STRING("mlog"),unary,m_log_op);
-  primitive(TEX_STRING("sind"),unary,sin_d_op);
-  primitive(TEX_STRING("cosd"),unary,cos_d_op);
-  primitive(TEX_STRING("floor"),unary,floor_op);
-  primitive(TEX_STRING("uniformdeviate"),unary,uniform_deviate);
-  primitive(TEX_STRING("charexists"),unary,char_exists_op);
-  primitive(TEX_STRING("angle"),unary,angle_op);
-  primitive(TEX_STRING("cycle"),cycle,cycle_op);
-  primitive(TEX_STRING("+"),plus_or_minus,plus);
-  primitive(TEX_STRING("-"),plus_or_minus,minus);
-  primitive(TEX_STRING("*"),secondary_binary,times);
-  primitive(TEX_STRING("/"),slash,over);eqtb[frozen_slash]=eqtb[cur_sym];
-  primitive(TEX_STRING("++"),tertiary_binary,pythag_add);
-  primitive(TEX_STRING("+-+"),tertiary_binary,pythag_sub);
-  primitive(TEX_STRING("and"),and_command,and_op);
-  primitive(TEX_STRING("or"),tertiary_binary,or_op);
-  primitive(TEX_STRING("<"),expression_binary,less_than);
-  primitive(TEX_STRING("<="),expression_binary,less_or_equal);
-  primitive(TEX_STRING(">"),expression_binary,greater_than);
-  primitive(TEX_STRING(">="),expression_binary,greater_or_equal);
-  primitive(TEX_STRING("="),equals,equal_to);
-  primitive(TEX_STRING("<>"),expression_binary,unequal_to);
-  primitive(TEX_STRING("substring"),primary_binary,substring_of);
-  primitive(TEX_STRING("subpath"),primary_binary,subpath_of);
-  primitive(TEX_STRING("directiontime"),primary_binary,direction_time_of);
-  primitive(TEX_STRING("point"),primary_binary,point_of);
-  primitive(TEX_STRING("precontrol"),primary_binary,precontrol_of);
-  primitive(TEX_STRING("postcontrol"),primary_binary,postcontrol_of);
-  primitive(TEX_STRING("penoffset"),primary_binary,pen_offset_of);
-  primitive(TEX_STRING("&"),ampersand,concatenate);
-  primitive(TEX_STRING("rotated"),secondary_binary,rotated_by);
-  primitive(TEX_STRING("slanted"),secondary_binary,slanted_by);
-  primitive(TEX_STRING("scaled"),secondary_binary,scaled_by);
-  primitive(TEX_STRING("shifted"),secondary_binary,shifted_by);
-  primitive(TEX_STRING("transformed"),secondary_binary,transformed_by);
-  primitive(TEX_STRING("xscaled"),secondary_binary,x_scaled);
-  primitive(TEX_STRING("yscaled"),secondary_binary,y_scaled);
-  primitive(TEX_STRING("zscaled"),secondary_binary,z_scaled);
-  primitive(TEX_STRING("intersectiontimes"),tertiary_binary,intersect);
+  primitive(TEX_STRING("true"), nullary, true_code);
+  primitive(TEX_STRING("false"), nullary, false_code);
+  primitive(TEX_STRING("nullpicture"), nullary, null_picture_code);
+  primitive(TEX_STRING("nullpen"), nullary, null_pen_code);
+  primitive(TEX_STRING("jobname"), nullary, job_name_op);
+  primitive(TEX_STRING("readstring"), nullary, read_string_op);
+  primitive(TEX_STRING("pencircle"), nullary, pen_circle);
+  primitive(TEX_STRING("normaldeviate"), nullary, normal_deviate);
+  primitive(TEX_STRING("odd"), unary, odd_op);
+  primitive(TEX_STRING("known"), unary, known_op);
+  primitive(TEX_STRING("unknown"), unary, unknown_op);
+  primitive(TEX_STRING("not"), unary, not_op);
+  primitive(TEX_STRING("decimal"), unary, decimal);
+  primitive(TEX_STRING("reverse"), unary, reverse);
+  primitive(TEX_STRING("makepath"), unary, make_path_op);
+  primitive(TEX_STRING("makepen"), unary, make_pen_op);
+  primitive(TEX_STRING("totalweight"), unary, total_weight_op);
+  primitive(TEX_STRING("oct"), unary, oct_op);
+  primitive(TEX_STRING("hex"), unary, hex_op);
+  primitive(TEX_STRING("ASCII"), unary, ASCII_op);
+  primitive(TEX_STRING("char"), unary, char_op);
+  primitive(TEX_STRING("length"), unary, length_op);
+  primitive(TEX_STRING("turningnumber"), unary, turning_op);
+  primitive(TEX_STRING("xpart"), unary, x_part);
+  primitive(TEX_STRING("ypart"), unary, y_part);
+  primitive(TEX_STRING("xxpart"), unary, xx_part);
+  primitive(TEX_STRING("xypart"), unary, xy_part);
+  primitive(TEX_STRING("yxpart"), unary, yx_part);
+  primitive(TEX_STRING("yypart"), unary, yy_part);
+  primitive(TEX_STRING("sqrt"), unary, sqrt_op);
+  primitive(TEX_STRING("mexp"), unary, m_exp_op);
+  primitive(TEX_STRING("mlog"), unary, m_log_op);
+  primitive(TEX_STRING("sind"), unary, sin_d_op);
+  primitive(TEX_STRING("cosd"), unary, cos_d_op);
+  primitive(TEX_STRING("floor"), unary, floor_op);
+  primitive(TEX_STRING("uniformdeviate"), unary, uniform_deviate);
+  primitive(TEX_STRING("charexists"), unary, char_exists_op);
+  primitive(TEX_STRING("angle"), unary, angle_op);
+  primitive(TEX_STRING("cycle"), cycle, cycle_op);
+  primitive(TEX_STRING("+"), plus_or_minus, plus);
+  primitive(TEX_STRING("-"), plus_or_minus, minus);
+  primitive(TEX_STRING("*"), secondary_binary, times);
+  primitive(TEX_STRING("/"), slash, over);eqtb[frozen_slash]=eqtb[cur_sym];
+  primitive(TEX_STRING("++"), tertiary_binary, pythag_add);
+  primitive(TEX_STRING("+-+"), tertiary_binary, pythag_sub);
+  primitive(TEX_STRING("and"), and_command, and_op);
+  primitive(TEX_STRING("or"), tertiary_binary, or_op);
+  primitive(TEX_STRING("<"), expression_binary, less_than);
+  primitive(TEX_STRING("<="), expression_binary, less_or_equal);
+  primitive(TEX_STRING(">"), expression_binary, greater_than);
+  primitive(TEX_STRING(">="), expression_binary, greater_or_equal);
+  primitive(TEX_STRING("="), equals, equal_to);
+  primitive(TEX_STRING("<>"), expression_binary, unequal_to);
+  primitive(TEX_STRING("substring"), primary_binary, substring_of);
+  primitive(TEX_STRING("subpath"), primary_binary, subpath_of);
+  primitive(TEX_STRING("directiontime"), primary_binary, direction_time_of);
+  primitive(TEX_STRING("point"), primary_binary, point_of);
+  primitive(TEX_STRING("precontrol"), primary_binary, precontrol_of);
+  primitive(TEX_STRING("postcontrol"), primary_binary, postcontrol_of);
+  primitive(TEX_STRING("penoffset"), primary_binary, pen_offset_of);
+  primitive(TEX_STRING("&"), ampersand, concatenate);
+  primitive(TEX_STRING("rotated"), secondary_binary, rotated_by);
+  primitive(TEX_STRING("slanted"), secondary_binary, slanted_by);
+  primitive(TEX_STRING("scaled"), secondary_binary, scaled_by);
+  primitive(TEX_STRING("shifted"), secondary_binary, shifted_by);
+  primitive(TEX_STRING("transformed"), secondary_binary, transformed_by);
+  primitive(TEX_STRING("xscaled"), secondary_binary, x_scaled);
+  primitive(TEX_STRING("yscaled"), secondary_binary, y_scaled);
+  primitive(TEX_STRING("zscaled"), secondary_binary, z_scaled);
+  primitive(TEX_STRING("intersectiontimes"), tertiary_binary, intersect);
 
   // 1013
   primitive(TEX_STRING("numeric"), type_name, numeric_type);
@@ -15021,7 +15022,7 @@ void close_files_and_terminate()
     }
   }
   print_ln();
-  if (ed_name_start!=0 && interaction>batch_mode)
+  if (ed_name_start != 0 && interaction > batch_mode)
     call_edit(&str_pool[ed_name_start], ed_name_length, edit_line);
 }
 

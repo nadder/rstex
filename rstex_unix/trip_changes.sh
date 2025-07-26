@@ -1,5 +1,6 @@
 #!/bin/bash
 # After running cpf on the .pre files you can run this script to make changes suitable for tex trip test.
+# Note: Don't use the "build.sh" script when building because it will overwrite the .h file.
 # See https://ctan.org/tex-archive/systems/knuth/dist/tex for instructions on how to run the test.
 sed -i 's/mem_min = [0-9]\+;/mem_min = 1;/' rstex.h
 sed -i 's/mem_bot = [0-9]\+;/mem_bot = 1;/' rstex.h

@@ -30,7 +30,7 @@ struct Array
 };
 
 // 2
-#define banner "This is rsTeX, Version 1.3 for Unix (TeX 3.141592653)" // printed when rsTeX starts
+#define banner "This is rsTeX, Version 1.4 for Unix (TeX 3.141592653)" // printed when rsTeX starts
 
 // 36
 #define loc cur_input.loc_field // location of first unread character in buffer
@@ -137,24 +137,24 @@ int first_count; // another variable for pseudoprinting
 // 56
 #define wterm_s(s) fputs(s, term_out)
 #define wterm_c(s) fputc(s, term_out)
-#define wterm_ln_s(s) do {fputs(s, term_out);fputc('\n',term_out);} while(0)
-#define wterm_cr fputc('\n',term_out)
-#define wlog_s(s) do{\
+#define wterm_ln_s(s) do {fputs(s, term_out);fputc('\n', term_out);} while (0)
+#define wterm_cr fputc('\n', term_out)
+#define wlog_s(s) do {\
   fputs(s, log_file);\
-} while(0)
+} while (0)
 
-#define wlog_c(s) do{\
+#define wlog_c(s) do {\
   fputc(s, log_file);\
-} while(0)
+} while (0)
 
-#define wlog_ln_s(s) do{\
+#define wlog_ln_s(s) do {\
   fputs(s, log_file);\
   fputc('\n', log_file);\
 } while (0)
 
-#define wlog_cr do{\
-  fputc('\n',log_file);\
-} while(0)
+#define wlog_cr do {\
+  fputc('\n', log_file);\
+} while (0)
 
 // 16
 #define incr(n) (n++) // increase a variable by unity
@@ -170,24 +170,24 @@ const int empty = 0; // symbolic name for a null constant
 
 // 42
 // put ASCII_code thechar at the end of str_pool
-#define append_char(thechar) do{\
+#define append_char(thechar) do {\
   str_pool[pool_ptr] = thechar;\
   pool_ptr++;\
-} while(0)
+} while (0)
 
 #define flush_char pool_ptr-- // forget the last character in the pool
 
 // make sure that pool hasn't overflowed
-#define str_room(num) do{\
+#define str_room(num) do {\
   if (pool_ptr + num > pool_size)\
     overflow(TEX_STRING("pool size"), pool_size - init_pool_ptr);\
-} while(0)
+} while (0)
 
 // 44
 #define flush_string do {\
   str_ptr--;\
   pool_ptr = str_start[str_ptr];\
-} while(0)
+} while (0)
 
 //48
 #define app_lc_hex(num) do {\
@@ -196,7 +196,7 @@ const int empty = 0; // symbolic name for a null constant
     append_char(l + TEX_STRING("0"));\
   else\
     append_char(l - 10 + TEX_STRING("a"));\
-} while(0)
+} while (0)
 
 // 51
 // NOTE: Add extra parameter if we should close the file
@@ -205,17 +205,17 @@ const int empty = 0; // symbolic name for a null constant
   if(do_close)\
     a_close(pool_file);\
   return false;\
-} while(0)
+} while (0)
 
 // 68
 #define print_ASCII print
 
 // 71
-#define prompt_input(s) do{\
+#define prompt_input(s) do {\
   wake_up_terminal();\
   print(s);\
   term_input();\
-}while(0)
+} while (0)
 
 // 73
 const int batch_mode = 0; // omits all stops and omits terminal output
@@ -230,7 +230,7 @@ unsigned char interaction; // batch_mode..error_stop_mode, current level of inte
     wake_up_terminal();\
   print_nl(TEX_STRING("! "));\
   print(s);\
-} while(0)
+} while (0)
 
 // 76
 const int spotless = 0; // history value when nothing has been amiss yet
@@ -245,52 +245,52 @@ int error_count; // -1..100, the number of scrolled errors since the last paragr
 
 // 79
 // sometimes there might be no help
-#define help0 do{\
+#define help0 do {\
   help_ptr = 0;\
-} while(0)
+} while (0)
 
 // use this with one help line
-#define help1(s) do{\
+#define help1(s) do {\
   help_ptr = 1;\
   help_line[0] = s;\
-} while(0)
+} while (0)
 
 // use this with two help lines
-#define help2(s1,s2) do{\
+#define help2(s1, s2) do {\
   help_ptr = 2;\
   help_line[1] = s1;\
   help_line[0] = s2;\
-} while(0)
+} while (0)
 
 // use this with three help lines
-#define help3(s1,s2,s3) do{\
+#define help3(s1, s2, s3) do {\
   help_ptr = 3;\
   help_line[2] = s1;\
   help_line[1] = s2;\
   help_line[0] = s3;\
-} while(0) 
+} while (0) 
 
 // use this with four help lines
-#define help4(s1,s2,s3,s4) do{\
+#define help4(s1, s2, s3, s4) do {\
   help_ptr = 4;\
   help_line[3] = s1;\
   help_line[2] = s2;\
   help_line[1] = s3;\
   help_line[0] = s4;\
-} while(0)
+} while (0)
 
 // use this with five help lines
-#define help5(s1,s2,s3,s4,s5) do{\
+#define help5(s1, s2, s3, s4, s5) do {\
   help_ptr = 5;\
   help_line[4] = s1;\
   help_line[3] = s2;\
   help_line[2] = s3;\
   help_line[1] = s4;\
   help_line[0] = s5;\
-} while(0)
+} while (0)
 
 // use this with six help lines
-#define help6(s1,s2,s3,s4,s5,s6) do{\
+#define help6(s1, s2, s3, s4, s5, s6) do {\
   help_ptr = 6;\
   help_line[5] = s1;\
   help_line[4] = s2;\
@@ -298,7 +298,7 @@ int error_count; // -1..100, the number of scrolled errors since the last paragr
   help_line[2] = s4;\
   help_line[1] = s5;\
   help_line[0] = s6;\
-} while(0) 
+} while (0) 
 
 Array<str_number, 0, 5> help_line; // helps for the next error
 char help_ptr; // 0..6, the number of help lines present
@@ -369,7 +369,7 @@ typedef int halfword; // min_halfword..max_halfword, 1/2 of a word, NOTE: This p
 
 // 121
 // NOTE: made this function instead, to ease debugging
-//#define free_avail(s) do{link(s) = avail;avail=s;/*stat*/decr(dyn_used);/*tats*/}while(0)
+//#define free_avail(s) do {link(s) = avail;avail=s;/*stat*/decr(dyn_used);/*tats*/}while (0)
 
 // 221
 #define eq_level_field(s) s.hh.b1
@@ -435,8 +435,8 @@ const int mu_skip_base = skip_base + 256; // table of 256 ``muskip'' registers
 const int local_base = mu_skip_base + 256; // beginning of region 4
 
 #define skip(s) equiv(skip_base + s) // mem location of glue specification
-#define mu_skip(s) equiv(mu_skip_base+s) // mem location of math glue spec
-#define glue_par(s) equiv(glue_base+s) // mem location of glue specification
+#define mu_skip(s) equiv(mu_skip_base + s) // mem location of math glue spec
+#define glue_par(s) equiv(glue_base + s) // mem location of glue specification
 #define line_skip glue_par(line_skip_code)
 #define baseline_skip glue_par(baseline_skip_code)
 #define par_skip glue_par(par_skip_code)
@@ -493,15 +493,15 @@ const int int_base = math_code_base + 256; // beginning of region 5
 #define every_job equiv(every_job_loc)
 #define every_cr equiv(every_cr_loc)
 #define err_help equiv(err_help_loc)
-#define toks(s) equiv(toks_base+s)
+#define toks(s) equiv(toks_base + s)
 #define box(s) equiv(box_base + s)
 #define cur_font equiv(cur_font_loc)
-#define fam_fnt(s) equiv(math_font_base+s)
-#define cat_code(s) equiv(cat_code_base+s)
-#define lc_code(s) equiv(lc_code_base+s)
-#define uc_code(s) equiv(uc_code_base+s)
-#define sf_code(s) equiv(sf_code_base+s)
-#define math_code(s) equiv(math_code_base+s)
+#define fam_fnt(s) equiv(math_font_base + s)
+#define cat_code(s) equiv(cat_code_base + s)
+#define lc_code(s) equiv(lc_code_base + s)
+#define uc_code(s) equiv(uc_code_base + s)
+#define sf_code(s) equiv(sf_code_base + s)
+#define math_code(s) equiv(math_code_base + s)
 
 // 232
 #define null_font font_base
@@ -535,8 +535,8 @@ enum equiv_region6_code : halfword
 
 const int dimen_pars = 21; // total number of dimension parameters
 
-#define dimen(s) (eqtb[scaled_base+s].sc)
-#define dimen_par(s) (eqtb[dimen_base+s].sc)
+#define dimen(s) (eqtb[scaled_base + s].sc)
+#define dimen_par(s) (eqtb[dimen_base + s].sc)
 #define par_indent dimen_par(par_indent_code)
 #define math_surround dimen_par(math_surround_code)
 #define line_skip_limit dimen_par(line_skip_limit_code)
@@ -853,7 +853,7 @@ const int normal = 0; // the most common case when several cases are named
 const int stretching = 1; // glue setting applies to the stretch components
 const int shrinking = 2; // glue setting applies to the shrink components
 const int glue_offset = 6; // position of glue_set in a box node
-#define glue_set(n) mem[n+glue_offset].gr // a word of type glue_ratio for glue setting
+#define glue_set(n) mem[n + glue_offset].gr // a word of type glue_ratio for glue setting
 
 // 137
 
@@ -923,10 +923,10 @@ const int acc_kern = 2; // subtype of kern nodes from accents
 // 157
 const int inf_penalty = inf_bad; // ``infinite'' penalty value
 const int eject_penalty = -inf_penalty; // ``negatively infinite'' penalty value
-#define penalty(s) mem[s+1].an_int // the added cost of breaking a list here
+#define penalty(s) mem[s + 1].an_int // the added cost of breaking a list here
 
 // 159
-#define glue_stretch(s) mem[s+glue_offset].sc // total stretch in an unset node
+#define glue_stretch(s) mem[s + glue_offset].sc // total stretch in an unset node
 #define glue_shrink shift_amount // total shrink in an unset node
 #define span_count subtype // indicates the number of spanned columns
 
@@ -971,11 +971,11 @@ bool panicking; // do we want to check memory constantly?
 int font_in_short_display; // an internal font number
 
 // 180
-#define node_list_display(s) do{\
+#define node_list_display(s) do {\
   append_char(TEX_STRING("."));\
   show_node_list(s);\
   flush_char;\
-} while(0)
+} while (0)
 
 // 181
 int depth_threshold; // maximum nesting depth in box displays
@@ -985,12 +985,12 @@ int breadth_max; // maximum number of items shown at the same list level
 #define token_ref_count(n) info(n) // reference count preceding a token list
 
 // 201
-#define fast_delete_glue_ref(s) do{\
+#define fast_delete_glue_ref(s) do {\
   if(glue_ref_count(s) == null)\
     free_node(s, glue_spec_size);\
   else\
     decr(glue_ref_count(s));\
-} while(0)
+} while (0)
 
 // 203
 #define add_token_ref(n) incr(token_ref_count(n)) // new reference to a token list
@@ -1192,10 +1192,10 @@ list_state_record cur_list; // the ``top'' semantic state
 short shown_mode; // -mmode..mmode, most recent mode shown by \tracingcommands
 
 // 214
-#define tail_append(s) do{\
+#define tail_append(s) do {\
   link(tail) = s;\
   tail = link(tail);\
-}while(0)
+} while (0)
 
 // 246
 int old_setting; // 0..max_selector
@@ -1206,7 +1206,7 @@ int sys_time, sys_day, sys_month, sys_year; // {date and time supplied by extern
 #define next(n) (hash[n].lh) // link for coalesced lists
 #define text(n) (hash[n].rh) // string number for control sequence name
 #define hash_is_full (hash_used == hash_base) // test if all positions are occupied
-#define font_id_text(n) text(font_id_base+n) // a frozen font identifier's name
+#define font_id_text(n) text(font_id_base + n) // a frozen font identifier's name
 
 Array<two_halves, hash_base, undefined_control_sequence - 1> hash; // the hash table
 pointer hash_used; // allocation pointer for hash
@@ -1262,14 +1262,14 @@ int cur_boundary; // where the current level begins
 {\
   if(save_ptr > max_save_stack)\
   {\
-    max_save_stack=save_ptr;\
+    max_save_stack = save_ptr;\
     if(max_save_stack > save_size-6)\
-    overflow(TEX_STRING("save size"),save_size);\
+    overflow(TEX_STRING("save size"), save_size);\
   }\
-}while(0)
+} while (0)
 
 // 274
-#define saved(s) save_stack[save_ptr+s].an_int
+#define saved(s) save_stack[save_ptr + s].an_int
 
 // 286
 int mag_set; // if nonzero, this magnification should be used henceforth
@@ -1297,7 +1297,10 @@ pointer cur_cs; // control sequence found here, zero if none found
 halfword cur_tok; // packed representative of cur_cmd and cur_chr
 
 // 298
-#define chr_cmd(s) do{ print(s); print_ASCII(chr_code); } while(0)
+#define chr_cmd(s) do {\
+  print(s);\
+  print_ASCII(chr_code);\
+} while (0)
 
 // 303
 enum input_state_var : quarterword
@@ -1388,12 +1391,23 @@ int align_state; // group level with respect to current alignment
 int base_ptr; // 0..stack_size, shallowest level shown by show_context
 
 // 316
-#define begin_pseudoprint do {l = tally;tally=0;selector=pseudo;trick_count=1000000;}while(0)
-#define set_trick_count do {first_count = tally;trick_count=tally+1+error_line-half_error_line;if(trick_count<error_line)trick_count=error_line;}while(0)
+#define begin_pseudoprint do {\
+  l = tally;\
+  tally = 0;\
+  selector = pseudo;\
+  trick_count = 1000000;\
+} while (0)
+
+#define set_trick_count do {\
+  first_count = tally;\
+  trick_count = tally + 1 + error_line - half_error_line;\
+  if(trick_count < error_line)\
+    trick_count = error_line;\
+} while (0)
 
 // 321
 // enter a new input level, save the old
-#define push_input do{\
+#define push_input do {\
   if(input_ptr > max_in_stack){\
     max_in_stack = input_ptr;\
   if(input_ptr == stack_size)\
@@ -1401,18 +1415,18 @@ int base_ptr; // 0..stack_size, shallowest level shown by show_context
   }\
   input_stack[input_ptr] = cur_input;\
   incr(input_ptr);\
-} while(0)
+} while (0)
 
 // 322
 // leave an input level, re-enter the old
-#define pop_input do{\
+#define pop_input do {\
   decr(input_ptr);\
   cur_input = input_stack[input_ptr];\
-} while(0)
+} while (0)
 
 // 323
-#define back_list(s) begin_token_list(s,backed_up) // backs up a simple token list
-#define ins_list(s) begin_token_list(s,inserted) // inserts a simple token list
+#define back_list(s) begin_token_list(s, backed_up) // backs up a simple token list
+#define ins_list(s) begin_token_list(s, inserted) // inserts a simple token list
 
 // 333
 pointer par_loc; // location of `\par' in eqtb
@@ -1420,30 +1434,30 @@ halfword par_token; // token representing `\par'
 
 // 344
 #define any_state_plus(s) \
-  mid_line+s:\
-  case skip_blanks+s:\
-  case new_line+s
+  mid_line + s:\
+  case skip_blanks + s:\
+  case new_line + s
 
 // 347
 #define add_delims_to(s) \
-  s+math_shift:\
-  case s+tab_mark:\
-  case s+mac_param:\
-  case s+sub_mark:\
-  case s+letter:\
-  case s+other_char
+  s + math_shift:\
+  case s + tab_mark:\
+  case s + mac_param:\
+  case s + sub_mark:\
+  case s + letter:\
+  case s + other_char
 
 // 352
 #define is_hex(s) ((s >= TEX_STRING("0") && s <= TEX_STRING("9")) || (s >= TEX_STRING("a") && s <= TEX_STRING("f")))
 
-#define hex_to_cur_chr do{\
+#define hex_to_cur_chr do {\
   if(c <= TEX_STRING("9")) \
     cur_chr = c-TEX_STRING("0");\
   else \
-    cur_chr=c-TEX_STRING("a") + 10;\
+    cur_chr = c - TEX_STRING("a") + 10;\
   if(cc <= TEX_STRING("9")) cur_chr = 16 * cur_chr + cc - TEX_STRING("0");\
   else cur_chr = 16 * cur_chr + cc - TEX_STRING("a") + 10;\
-} while(0)
+} while (0)
 
 // 358
 const int no_expand_flag = 257; // this characterizes a special variant of relax
@@ -1459,15 +1473,15 @@ bool force_eof; // should the next \input be aborted early
 // #define fast_get_avail(s) ...
 
 // 371
-#define store_new_token(s) do{\
+#define store_new_token(s) do {\
   q = get_avail();\
   link(p) = q;\
   info(q) = s;\
   p = q;\
-} while(0)
+} while (0)
 
 // NOTE: I use store_new_token instead of fast_store_new_token
-//#define fast_store_new_token(s) do{fast_get_avail(q);link(p)=q;info(q) = s;p=q;}while(0)
+//#define fast_store_new_token(s) do{fast_get_avail(q);link(p)=q;info(q) = s;p=q;}while (0)
 
 // 382
 const int top_mark_code = 0; // the mark in effect at the previous page break
@@ -1501,10 +1515,10 @@ int cur_val; // value returned by numeric scanners
 int cur_val_level; // int_val..tok_val, the ``level'' of this value
 
 // 413
-#define scanned_result(s,t) do{\
+#define scanned_result(s, t) do {\
   cur_val = s;\
   cur_val_level = t;\
-} while(0)
+} while (0)
 
 // 416
 const int input_line_no_code = glue_val + 1; // code for \inputlineno
@@ -1537,7 +1551,7 @@ const int attach_sign = 89; // go here when cur_val is correct except perhaps fo
 #define scan_normal_dimen scan_dimen(false, false, false)
 
 //458
-#define set_conversion(s, t) do{ num = s; denom = t; } while(0)
+#define set_conversion(s, t) do { num = s; denom = t; } while (0)
 
 // 463
 const int default_rule = 26214; // 0.4pt
@@ -1578,7 +1592,7 @@ const int if_case_code = 16; // `\ifcase'
 
 // 489
 const int if_node_size = 2; // number of words in stack entry for conditionals
-#define if_line_field(s) mem[s+1].an_int
+#define if_line_field(s) mem[s + 1].an_int
 const int if_code = 1; // code for \if... being evaluated
 const int fi_code = 2; // code for \fi
 const int else_code = 3; // code for \else
@@ -1593,13 +1607,13 @@ int if_line; // line where that conditional began
 int skip_line; // skipping began here
 
 // 506
-#define get_x_token_or_active_char do{\
+#define get_x_token_or_active_char do {\
   get_x_token();\
   if(cur_cmd == relax)\
     if(cur_chr == no_expand_flag){\
       cur_cmd = active_char; cur_chr = cur_tok - cs_token_flag - active_base;\
     }\
-} while(0)
+} while (0)
 
 // 512
 str_number cur_name; // name of file just scanned
@@ -1620,27 +1634,27 @@ str_number job_name; // principal file name
 bool log_opened; // has the transcript file been opened?
 
 // 519
-#define append_to_name(s) do{\
+#define append_to_name(s) do {\
   c = s;\
   incr(k);\
   if(k <= file_name_size)\
     name_of_file[k] = xchr[c];\
-} while(0)
+} while (0)
 
 // 529
 #define pack_cur_name pack_file_name(cur_name, cur_area, cur_ext)
 
 // 532
-#define ensure_dvi_open do{\
+#define ensure_dvi_open do {\
   if(output_file_name == 0) {\
     if(job_name == 0)\
       open_log_file();\
     pack_job_name(TEX_STRING(".dvi"));\
-    while(!b_open_out(&dvi_file))\
+    while (!b_open_out(&dvi_file))\
       prompt_file_name(TEX_STRING("file name for output"), TEX_STRING(".dvi"));\
     output_file_name = b_make_name_string(dvi_file);\
   }\
-} while(0)
+} while (0)
 
 byte_file dvi_file; // the device-independent output goes here
 str_number output_file_name; // full name of the output file
@@ -1718,32 +1732,32 @@ Array<int, font_base, font_max> exten_base; // base addresses for extensible rec
 Array<int, font_base, font_max> param_base; // base addresses for font parameters
 
 // 554
-#define char_info(s,t) font_info[char_base[s] + t].qqqq
-#define char_width(s,t) font_info[width_base[s] + t.b0].sc
+#define char_info(s, t) font_info[char_base[s] + t].qqqq
+#define char_width(s, t) font_info[width_base[s] + t.b0].sc
 #define char_exists(s) (s.b0 > min_quarterword)
-#define char_italic(s,t) font_info[italic_base[s]+(qo(t.b2)) / 4].sc
+#define char_italic(s, t) font_info[italic_base[s] + (qo(t.b2)) / 4].sc
 #define height_depth(s) qo(s.b1)
-#define char_height(s,t) font_info[height_base[s] + (t) / 16].sc
-#define char_depth(s,t) font_info[depth_base[s] + (t) % 16].sc
+#define char_height(s, t) font_info[height_base[s] + (t) / 16].sc
+#define char_depth(s, t) font_info[depth_base[s] + (t) % 16].sc
 #define char_tag(s) ((qo(s.b2)) % 4)
 
 // 555
 four_quarters null_character; // nonexistent character information
 
 // 557
-#define char_kern(s,t) font_info[kern_base[s] + 256*op_byte(t)+rem_byte(t)].sc
-#define kern_base_offset 256*(128+min_quarterword)
-#define lig_kern_start(s,t) lig_kern_base[s]+rem_byte(t) // beginning of lig/kern program
-#define lig_kern_restart(s,t) lig_kern_base[s]+256*op_byte(t)+rem_byte(t)+32768-kern_base_offset
+#define char_kern(s, t) font_info[kern_base[s] + 256*op_byte(t) + rem_byte(t)].sc
+#define kern_base_offset 256*(128 + min_quarterword)
+#define lig_kern_start(s, t) lig_kern_base[s] + rem_byte(t) // beginning of lig/kern program
+#define lig_kern_restart(s, t) lig_kern_base[s] + 256*op_byte(t) + rem_byte(t) + 32768-kern_base_offset
 
 // 558
-#define slant(s) font_info[slant_code+param_base[s]].sc // slant to the right, per unit distance upward
-#define space(s) font_info[space_code+param_base[s]].sc // normal space between words
-#define space_stretch(s) font_info[space_stretch_code+param_base[s]].sc // stretch between words
-#define space_shrink(s) font_info[space_shrink_code+param_base[s]].sc // shrink between words
-#define x_height(s) font_info[x_height_code+param_base[s]].sc // one ex
-#define quad(s) font_info[quad_code+param_base[s]].sc // one em
-#define extra_space(s) font_info[extra_space_code+param_base[s]].sc // additional space at end of sentence
+#define slant(s) font_info[slant_code + param_base[s]].sc // slant to the right, per unit distance upward
+#define space(s) font_info[space_code + param_base[s]].sc // normal space between words
+#define space_stretch(s) font_info[space_stretch_code + param_base[s]].sc // stretch between words
+#define space_shrink(s) font_info[space_shrink_code + param_base[s]].sc // shrink between words
+#define x_height(s) font_info[x_height_code + param_base[s]].sc // one ex
+#define quad(s) font_info[quad_code + param_base[s]].sc // one em
+#define extra_space(s) font_info[extra_space_code + param_base[s]].sc // additional space at end of sentence
 
 // 587
 const int id_byte = 2; // identifies the kind of DVI files described here
@@ -1752,33 +1766,33 @@ const int id_byte = 2; // identifies the kind of DVI files described here
 #define _abort goto bad_tfm // do this when the TFM data is wrong
 
 // 561
-#define start_font_error_message do{\
+#define start_font_error_message do {\
   print_err(TEX_STRING("Font "));\
   sprint_cs(u);\
   print_char(TEX_STRING("="));\
-  print_file_name(nom,aire,TEX_STRING(""));\
-  if(s>=0) {\
+  print_file_name(nom, aire, TEX_STRING(""));\
+  if (s >= 0) {\
     print(TEX_STRING(" at "));\
     print_scaled(s);\
     print(TEX_STRING("pt"));\
   }\
-  else if(s!=-1000) {\
+  else if (s != -1000) {\
     print(TEX_STRING(" scaled "));\
     print_int(-s);\
   }\
-}while(0)
+} while (0)
 
 // 564
-#define read_sixteen(s) do{\
+#define read_sixteen(s) do {\
   unsigned char s1;\
   unsigned char s2;\
   s1 = fgetc(tfm_file);\
   s2 = fgetc(tfm_file);\
   if(s1>127) _abort;\
   s = s1 * 0400 + s2;\
-} while(0)
+} while (0)
 
-#define store_four_quarters(s) do{\
+#define store_four_quarters(s) do {\
   a = fgetc(tfm_file);\
   b = fgetc(tfm_file);\
   c = fgetc(tfm_file);\
@@ -1787,31 +1801,31 @@ const int id_byte = 2; // identifies the kind of DVI files described here
   qw.b1 = qi(b);\
   qw.b2 = qi(c);\
   qw.b3 = qi(d);\
-  s=qw;\
-} while(0)
+  s = qw;\
+} while (0)
 
 // 570
-#define check_byte_range(s) do{ if(s < bc || s > ec) _abort; } while(0)
-#define current_character_being_worked_on k+bc-fmem_ptr
+#define check_byte_range(s) do { if(s < bc || s > ec) _abort; } while (0)
+#define current_character_being_worked_on k + bc - fmem_ptr
 
 // 571
-#define store_scaled(s) do{\
-  a=fgetc(tfm_file);\
-  b=fgetc(tfm_file);\
-  c=fgetc(tfm_file);\
-  d=fgetc(tfm_file);\
-  sw = (((((d*z)/0400)+(c*z)) / 0400)+(b*z)) / beta;\
-  if(a==0) s=sw;\
-  else if(a==255) s = sw - alpha;\
+#define store_scaled(s) do {\
+  a = fgetc(tfm_file);\
+  b = fgetc(tfm_file);\
+  c = fgetc(tfm_file);\
+  d = fgetc(tfm_file);\
+  sw = (((((d*z)/0400) + (c*z)) / 0400) + (b*z)) / beta;\
+  if(a == 0) s = sw;\
+  else if (a == 255) s = sw - alpha;\
   else _abort;\
-} while(0)
+} while (0)
 
 // 573
-#define check_existence(s) do{\
+#define check_existence(s) do {\
   check_byte_range(s);\
-  qw = char_info(f,s);\
+  qw = char_info(f, s);\
   if(!char_exists(qw)) _abort;\
-} while(0)
+} while (0)
 
 // 576
 #define adjust(s) s[f] = qo(s[f]) // correct for the excess min_quarterword that was added
@@ -1857,7 +1871,7 @@ const int format_default_length = 9; // length of TEX_format_default string ; NO
 const int format_area_length = 0; // length of its area part NOTE: used to be 11
 const int format_ext_length = 4; // length of its `.fmt' part
 #define format_extension TEX_STRING(".fmt") // the extension as a WEB constant
-Array<char, 1, format_default_length+1> TEX_format_default;
+Array<char, 1, format_default_length + 1> TEX_format_default;
 
 // 586
 namespace dvi_op {
@@ -1925,11 +1939,11 @@ int dvi_gone; // the number of bytes already output to dvi_file
   incr(dvi_ptr);\
   if (dvi_ptr == dvi_limit)\
     dvi_swap();\
-} while(0)
+} while (0)
 
 // 605
 const int movement_node_size = 3; // number of words per entry in the down and right stacks
-#define location(s) mem[s+2].an_int // DVI byte number for a movement command
+#define location(s) mem[s + 2].an_int // DVI byte number for a movement command
 
 pointer down_ptr;
 pointer right_ptr; // heads of down and right stacks
@@ -1948,19 +1962,19 @@ const int y_seen = 6; // we have seen y_here but not z_here
 const int z_seen = 12; // we have seen z_here but not y_here
 
 // 616
-#define synch_h do{\
+#define synch_h do {\
   if(cur_h != dvi_h) {\
     movement(cur_h-dvi_h, dvi_op::right1);\
-    dvi_h=cur_h;\
+    dvi_h = cur_h;\
   }\
-} while(0)
+} while (0)
 
-#define synch_v do{\
+#define synch_v do {\
   if(cur_v != dvi_v) {\
     movement(cur_v-dvi_v, dvi_op::down1);\
-    dvi_v=cur_v;\
+    dvi_v = cur_v;\
   }\
-} while(0)
+} while (0)
 
 scaled dvi_h;
 scaled dvi_v; // a DVI reader program thinks we are here
@@ -1971,19 +1985,19 @@ int cur_s; // current depth of output box nesting, initially -1
 
 // 625
 #define billion 1000000000.0f
-#define vet_glue(s) do{\
+#define vet_glue(s) do {\
   glue_temp = s;\
   if(glue_temp > billion)\
     glue_temp = billion;\
   else if(glue_temp < -billion)\
     glue_temp = -billion;\
-} while(0)
+} while (0)
 
 // 644
 const int exactly = 0; // a box dimension is pre-specified
 const int additional = 1; // a box dimension is increased from the natural one
 
-#define natural 0,additional // shorthand for parameters to hpack and vpack
+#define natural 0, additional // shorthand for parameters to hpack and vpack
 
 // 646
 Array<scaled, normal, filll> total_stretch;
@@ -2038,7 +2052,7 @@ four_quarters null_delimiter;
 
 // 687
 const int accent_noad_size = 5; // number of mem words in an accent noad
-#define accent_chr(s) (s+4) // the accent_chr field of an accent noad
+#define accent_chr(s) (s + 4) // the accent_chr field of an accent noad
 
 #define delimiter nucleus // delimiter field in left and right noads
 #define scripts_allowed(s) (type(s) >= ord_noad && type(s) < left_noad)
@@ -2057,10 +2071,10 @@ enum math_style : small_number
 const int cramped = 1; // add this to an uncramped style if you want to cramp it
 
 // 689
-#define display_mlist(s) info(s+1) // mlist to be used in display style
-#define text_mlist(s) link(s+1) // mlist to be used in text style
-#define script_mlist(s) info(s+2) // mlist to be used in script style
-#define script_script_mlist(s) link(s+2) // mlist to be used in scriptscript style
+#define display_mlist(s) info(s + 1) // mlist to be used in display style
+#define text_mlist(s) link(s + 1) // mlist to be used in text style
+#define script_mlist(s) info(s + 2) // mlist to be used in script style
+#define script_script_mlist(s) link(s + 2) // mlist to be used in scriptscript style
 
 // 699
 enum math_size : small_number {
@@ -2070,33 +2084,33 @@ enum math_size : small_number {
 };
 
 // 700
-#define math_x_height(s) font_info[5+param_base[fam_fnt(2+s)]].sc
-#define math_quad(s) font_info[6+param_base[fam_fnt(2+s)]].sc
-#define num1(s) font_info[8+param_base[fam_fnt(2+s)]].sc // numerator shift-up in display styles
-#define num2(s) font_info[9+param_base[fam_fnt(2+s)]].sc // numerator shift-up in non-display, non-\atop
-#define num3(s) font_info[10+param_base[fam_fnt(2+s)]].sc // numerator shift-up in non-display \atop
-#define denom1(s) font_info[11+param_base[fam_fnt(2+s)]].sc // denominator shift-down in display styles
-#define denom2(s) font_info[12+param_base[fam_fnt(2+s)]].sc // denominator shift-down in non-display styles
-#define sup1(s) font_info[13+param_base[fam_fnt(2+s)]].sc // superscript shift-up in uncramped display style
-#define sup2(s) font_info[14+param_base[fam_fnt(2+s)]].sc // superscript shift-up in uncramped non-display
-#define sup3(s) font_info[15+param_base[fam_fnt(2+s)]].sc // superscript shift-up in cramped styles
-#define sub1(s) font_info[16+param_base[fam_fnt(2+s)]].sc // subscript shift-down if superscript is absent
-#define sub2(s) font_info[17+param_base[fam_fnt(2+s)]].sc // subscript shift-down if superscript is present
-#define sup_drop(s) font_info[18+param_base[fam_fnt(2+s)]].sc // superscript baseline below top of large box
-#define sub_drop(s) font_info[19+param_base[fam_fnt(2+s)]].sc // subscript baseline below bottom of large box
-#define delim1(s) font_info[20+param_base[fam_fnt(2+s)]].sc // size of \atopwithdelims delimiters in display styles
-#define delim2(s) font_info[21+param_base[fam_fnt(2+s)]].sc // size of \atopwithdelims delimiters in non-displays
-#define axis_height(s) font_info[22+param_base[fam_fnt(2+s)]].sc // height of fraction lines above the baseline
+#define math_x_height(s) font_info[5 + param_base[fam_fnt(2 + s)]].sc
+#define math_quad(s) font_info[6 + param_base[fam_fnt(2 + s)]].sc
+#define num1(s) font_info[8 + param_base[fam_fnt(2 + s)]].sc // numerator shift-up in display styles
+#define num2(s) font_info[9 + param_base[fam_fnt(2 + s)]].sc // numerator shift-up in non-display, non-\atop
+#define num3(s) font_info[10 + param_base[fam_fnt(2 + s)]].sc // numerator shift-up in non-display \atop
+#define denom1(s) font_info[11 + param_base[fam_fnt(2 + s)]].sc // denominator shift-down in display styles
+#define denom2(s) font_info[12 + param_base[fam_fnt(2 + s)]].sc // denominator shift-down in non-display styles
+#define sup1(s) font_info[13 + param_base[fam_fnt(2 + s)]].sc // superscript shift-up in uncramped display style
+#define sup2(s) font_info[14 + param_base[fam_fnt(2 + s)]].sc // superscript shift-up in uncramped non-display
+#define sup3(s) font_info[15 + param_base[fam_fnt(2 + s)]].sc // superscript shift-up in cramped styles
+#define sub1(s) font_info[16 + param_base[fam_fnt(2 + s)]].sc // subscript shift-down if superscript is absent
+#define sub2(s) font_info[17 + param_base[fam_fnt(2 + s)]].sc // subscript shift-down if superscript is present
+#define sup_drop(s) font_info[18 + param_base[fam_fnt(2 + s)]].sc // superscript baseline below top of large box
+#define sub_drop(s) font_info[19 + param_base[fam_fnt(2 + s)]].sc // subscript baseline below bottom of large box
+#define delim1(s) font_info[20 + param_base[fam_fnt(2 + s)]].sc // size of \atopwithdelims delimiters in display styles
+#define delim2(s) font_info[21 + param_base[fam_fnt(2 + s)]].sc // size of \atopwithdelims delimiters in non-displays
+#define axis_height(s) font_info[22 + param_base[fam_fnt(2 + s)]].sc // height of fraction lines above the baseline
 
 const int total_mathsy_params = 22;
 
 // 701
-#define default_rule_thickness font_info[8+param_base[fam_fnt(3+cur_size)]].sc // thickness of \over bars
-#define big_op_spacing1 font_info[9+param_base[fam_fnt(3+cur_size)]].sc // minimum clearance above a displayed op
-#define big_op_spacing2 font_info[10+param_base[fam_fnt(3+cur_size)]].sc // minimum clearance below a displayed op
-#define big_op_spacing3 font_info[11+param_base[fam_fnt(3+cur_size)]].sc // minimum baselineskip above displayed op
-#define big_op_spacing4 font_info[12+param_base[fam_fnt(3+cur_size)]].sc // minimum baselineskip below displayed op
-#define big_op_spacing5 font_info[13+param_base[fam_fnt(3+cur_size)]].sc // padding above and below displayed limits
+#define default_rule_thickness font_info[8 + param_base[fam_fnt(3 + cur_size)]].sc // thickness of \over bars
+#define big_op_spacing1 font_info[9 + param_base[fam_fnt(3 + cur_size)]].sc // minimum clearance above a displayed op
+#define big_op_spacing2 font_info[10 + param_base[fam_fnt(3 + cur_size)]].sc // minimum clearance below a displayed op
+#define big_op_spacing3 font_info[11 + param_base[fam_fnt(3 + cur_size)]].sc // minimum baselineskip above displayed op
+#define big_op_spacing4 font_info[12 + param_base[fam_fnt(3 + cur_size)]].sc // minimum baselineskip below displayed op
+#define big_op_spacing5 font_info[13 + param_base[fam_fnt(3 + cur_size)]].sc // padding above and below displayed limits
 const int total_mathex_params = 13;
 
 //702
@@ -2125,16 +2139,16 @@ four_quarters cur_i; // the char_info of a math_char, or a lig/kern instruction
 #define new_hlist(s) mem[nucleus(s)].an_int // the translation of an mlist
 
 // 731
-#define choose_mlist(s) do { p = s(q); s(q) = null; } while(0)
+#define choose_mlist(s) do { p = s(q); s(q) = null; } while (0)
 
 // 764
 #define math_spacing TEX_STRING("0234000122*4000133**3**344*0400400*000000234000111*1111112341011")
 int magic_offset; // used to find inter-element spacing
 
 // 769
-#define u_part(s) mem[s+height_offset].an_int // pointer to <u_j> token list
-#define v_part(s) mem[s+depth_offset].an_int // pointer to <v_j> token list
-#define extra_info(s) info(s+list_offset) // info to remember during template
+#define u_part(s) mem[s + height_offset].an_int // pointer to <u_j> token list
+#define v_part(s) mem[s + depth_offset].an_int // pointer to <v_j> token list
+#define extra_info(s) info(s + list_offset) // info to remember during template
 
 // 770
 #define preamble link(align_head) // the current preamble list
@@ -2170,7 +2184,7 @@ const int active_node_size = 3; // number of words in active nodes
 #define fitness subtype // very_loose_fit..tight_fit on final line for this break
 #define break_node rlink // pointer to the corresponding passive node
 #define line_number llink // line that begins at this breakpoint
-#define total_demerits(s) mem[s+2].an_int // the quantity that rsTeX minimizes
+#define total_demerits(s) mem[s + 2].an_int // the quantity that rsTeX minimizes
 const int unhyphenated = 0; // the type of a normal active break node
 const int hyphenated = 1; // the type of an active node that breaks at a disc_node
 #define last_active active // the active list ends where it begins
@@ -2190,7 +2204,7 @@ const int delta_node_size = 7; // number of words in a delta node
 const int delta_node = 2; // type field in a delta node
 
 // 823
-#define do_all_six(s) do{s(1); s(2); s(3); s(4); s(5); s(6);} while(0)
+#define do_all_six(s) do { s(1); s(2); s(3); s(4); s(5); s(6);} while (0)
 
 Array<scaled, 1, 6> active_width; // distance from first active node to cur_p
 Array<scaled, 1, 6> cur_active_width; // distance from current active node
@@ -2198,10 +2212,10 @@ Array<scaled, 1, 6> background; // length of an ``empty'' line
 Array<scaled, 1, 6> break_width; // length being computed after current break
 
 // 825
-#define check_shrinkage(s) do{\
+#define check_shrinkage(s) do {\
   if (shrink_order(s) != normal && shrink(s) != 0)\
     s = finite_shrink(s);\
-} while(0)
+} while (0)
 
 bool no_shrink_error_yet; // have we complained about infinite shrinkage?
 
@@ -2216,7 +2230,7 @@ int threshold; // maximum badness on feasible lines
 const int deactivate = 60; // go here when node r should be deactivated
 
 //832
-#define update_width(s) cur_active_width[s] += mem[r+s].sc
+#define update_width(s) cur_active_width[s] += mem[r + s].sc
 
 // 833
 const int awful_bad = 07777777777; // more than a billion demerits
@@ -2234,22 +2248,22 @@ Array<halfword, very_loose_fit, tight_fit> best_pl_line; // corresponding line n
 scaled disc_width; // the length of discretionary material preceding a break
 
 // 843
-#define convert_to_break_width(s) do{\
-  mem[prev_r+s].sc = mem[prev_r+s].sc - cur_active_width[s] + break_width[s];\
-} while(0)
+#define convert_to_break_width(s) do {\
+  mem[prev_r + s].sc = mem[prev_r + s].sc - cur_active_width[s] + break_width[s];\
+} while (0)
 
-#define store_break_width(s) do{\
+#define store_break_width(s) do {\
   active_width[s] = break_width[s];\
-} while(0)
+} while (0)
 
-#define new_delta_to_break_width(s) do{\
-  mem[q+s].sc = break_width[s] - cur_active_width[s];\
-} while(0)
+#define new_delta_to_break_width(s) do {\
+  mem[q + s].sc = break_width[s] - cur_active_width[s];\
+} while (0)
 
 // 844
-#define new_delta_from_break_width(s) do{\
-  mem[q+s].sc = cur_active_width[s] - break_width[s];\
-} while(0)
+#define new_delta_from_break_width(s) do {\
+  mem[q + s].sc = cur_active_width[s] - break_width[s];\
+} while (0)
 
 // 847
 halfword easy_line; // line numbers > easy_line are equivalent in break nodes
@@ -2260,23 +2274,23 @@ scaled first_indent; // left margin to go with first_width
 scaled second_indent; // left margin to go with second_width
 
 // 860
-#define combine_two_deltas(s) mem[prev_r+s].sc += mem[r+s].sc
-#define downdate_width(s) cur_active_width[s] -= mem[prev_r+s].sc
+#define combine_two_deltas(s) mem[prev_r + s].sc += mem[r + s].sc
+#define downdate_width(s) cur_active_width[s] -= mem[prev_r + s].sc
 
 // 861
-#define update_active(s) active_width[s] += mem[r+s].sc
+#define update_active(s) active_width[s] += mem[r + s].sc
 
 //864
 #define store_background(s) active_width[s] = background[s]
 
 //866
 #define act_width active_width[1]
-#define kern_break do{\
+#define kern_break do {\
   if(!is_char_node(link(cur_p)) && auto_breaking)\
     if(type(link(cur_p)) == glue_node)\
       try_break(0, unhyphenated);\
   act_width += width(cur_p);\
-} while(0)
+} while (0)
 
 // 872
 pointer best_bet; // use this passive node and its predecessors
@@ -2324,14 +2338,14 @@ bool lft_hit;
 bool rt_hit; // did we hit a ligature with a boundary character?
 
 // 908
-#define append_charnode_to_t(s) do{\
+#define append_charnode_to_t(s) do {\
   link(t) = get_avail();\
   t = link(t);\
   font(t) = hf;\
   character(t) = s;\
-} while(0)
+} while (0)
 
-#define set_cur_r do{\
+#define set_cur_r do {\
   if(j < n)\
     cur_r = qi(hu[j + 1]);\
   else\
@@ -2340,12 +2354,12 @@ bool rt_hit; // did we hit a ligature with a boundary character?
     cur_rh = hchar;\
   else\
     cur_rh = non_char;\
-} while(0)
+} while (0)
 
 //910
-#define wrap_lig(s) do{\
+#define wrap_lig(s) do {\
   if(ligature_present) {\
-    p = new_ligature((quarterword)hf,(quarterword)cur_l,link(cur_q));\
+    p = new_ligature((quarterword)hf, (quarterword)cur_l, link(cur_q));\
   if(lft_hit) {\
     subtype(p) = 2;\
     lft_hit = false;\
@@ -2359,9 +2373,9 @@ bool rt_hit; // did we hit a ligature with a boundary character?
   t = p;\
   ligature_present = false;\
   }\
-} while(0)
+} while (0)
 
-#define pop_lig_stack do{\
+#define pop_lig_stack do {\
   if(lig_ptr(lig_stack) > null) {\
     link(t) = lig_ptr(lig_stack);\
     t = link(t); incr(j);\
@@ -2373,13 +2387,13 @@ bool rt_hit; // did we hit a ligature with a boundary character?
     set_cur_r;\
   else\
     cur_r = character(lig_stack);\
-} while(0)
+} while (0)
 
 //914
-#define advance_major_tail do{\
+#define advance_major_tail do {\
   major_tail = link(major_tail);\
   incr(r_count);\
-} while(0)
+} while (0)
 
 // 920
 typedef int trie_pointer; // 0..trie_size, an index into trie
@@ -2404,11 +2418,11 @@ Array<pointer, 0, hyph_size> hyph_list; // lists of hyphen positions
 hyph_pointer hyph_count; // the number of words in the exception dictionary
 
 // 934
-#define set_cur_lang do{\
+#define set_cur_lang do {\
   if (language <= 0) cur_lang = 0;\
   else if(language > 255) cur_lang = 0;\
   else cur_lang = language;\
-} while(0)
+} while (0)
 
 // 943
 //init
@@ -2492,13 +2506,13 @@ scaled last_kern; // used to implement \lastkern
 int insert_penalties; // sum of the penalties for held-over insertions
 
 // 985
-#define print_plus(s,t) do {\
+#define print_plus(s, t) do {\
   if(page_so_far[s] != 0) {\
     print(TEX_STRING(" plus "));\
     print_scaled(page_so_far[s]);\
     print(t);\
   }\
-} while(0)
+} while (0)
 
 // 987
 #define set_page_so_far_zero(s) page_so_far[s] = 0
@@ -2522,7 +2536,7 @@ bool cancel_boundary; // should the left boundary character be ignored?
 bool ins_disc; // should we insert a discretionary node?
 
 // 1034
-#define adjust_space_factor do{\
+#define adjust_space_factor do {\
   main_s = sf_code(cur_chr);\
   if(main_s == 1000)\
     space_factor = 1000;\
@@ -2533,11 +2547,11 @@ bool ins_disc; // should we insert a discretionary node?
   else if(space_factor < 1000)\
     space_factor = 1000;\
   else space_factor = main_s;\
-} while(0)
+} while (0)
 
 // 1035
 #define pack_lig(s) \
-do{\
+do {\
   main_p = new_ligature((quarterword)main_f, (quarterword)cur_l, link(cur_q));\
   if(lft_hit) {\
     subtype(main_p) = 2;\
@@ -2553,7 +2567,7 @@ do{\
   ligature_present = false;\
 } while (0)
 
-#define wrapup(s) do{\
+#define wrapup(s) do {\
   if(cur_l < non_char) {\
     if(link(cur_q) > null)\
       if(character(tail) == qi(hyphen_char[main_f]))\
@@ -2565,13 +2579,13 @@ do{\
       if(mode > 0) tail_append(new_disc());\
     }\
   }\
-} while(0)
+} while (0)
 
 // 1045
-#define any_mode(s) vmode+s:case hmode+s:case mmode+s // for mode-independent commands
+#define any_mode(s) vmode + s: case hmode + s: case mmode + s // for mode-independent commands
 
 // 1046
-#define non_math(s) vmode+s:case hmode+s
+#define non_math(s) vmode + s: case hmode + s
 
 // 1058
 const int fil_code = 0; // identifies \hfil and \vfil
@@ -2612,8 +2626,8 @@ const int delimited_code = 3; // `\abovewithdelims', etc.
 
 // 1214
 #define global (a >= 4)
-#define define(s,t,u) if(global) geq_define(s,t,u); else eq_define(s,t,u)
-#define word_define(s,t) if(global) geq_word_define(s,t); else eq_word_define(s,t)
+#define define(s, t, u) if(global) geq_define(s, t, u); else eq_define(s, t, u)
+#define word_define(s, t) if(global) geq_word_define(s, t); else eq_word_define(s, t)
 
 // 1222
 enum enum_def_code : halfword
@@ -2643,46 +2657,46 @@ const int show_lists_code = 3; // \showlists
 str_number format_ident;
 
 // 1303
-#define too_small(s) do{\
+#define too_small(s) do {\
   wake_up_terminal();\
   wterm_s("---! Must increase the ");\
   wterm_ln_s(s);\
   goto bad_fmt;\
-} while(0)
+} while (0)
 
 // 1306
-#define undump(a,b,c) do{\
+#define undump(a, b, c) do {\
   undump_int(&x);\
   if(x<a||x>b) goto bad_fmt;\
   else c = x;\
-} while(0)
+} while (0)
 
-#define undump_size(a,b,c,d) do{\
+#define undump_size(a, b, c, d) do {\
   undump_int(&x);\
   if(x<a) goto bad_fmt;\
   if(x>b) too_small(c);\
   else d = x;\
-} while(0)
+} while (0)
 
 // 1309
 #define dump_four_ASCII do {\
   w.b0 = qi(so(str_pool[k]));\
-  w.b1 = qi(so(str_pool[k+1]));\
-  w.b2 = qi(so(str_pool[k+2]));\
-  w.b3 = qi(so(str_pool[k+3]));\
+  w.b1 = qi(so(str_pool[k + 1]));\
+  w.b2 = qi(so(str_pool[k + 2]));\
+  w.b3 = qi(so(str_pool[k + 3]));\
   dump_qqqq(w);\
-} while(0)
+} while (0)
 
 word_file fmt_file;
 
 // 1310
-#define undump_four_ASCII do{\
+#define undump_four_ASCII do {\
   undump_qqqq(&w);\
   str_pool[k] = si(qo(w.b0));\
-  str_pool[k+1] = si(qo(w.b1));\
-  str_pool[k+2] = si(qo(w.b2));\
-  str_pool[k+3] = si(qo(w.b3));\
-} while(0)
+  str_pool[k + 1] = si(qo(w.b1));\
+  str_pool[k + 2] = si(qo(w.b2));\
+  str_pool[k + 3] = si(qo(w.b3));\
+} while (0)
 
 // 1331
 // NOTE: this is not used in any meaningful way now, could be removed (and the code that uses it)
@@ -2692,14 +2706,14 @@ word_file fmt_file;
 const int write_node_size = 2; // number of words in a write/whatsit node
 const int open_node_size = 3; // number of words in an open/whatsit node
 
-#define what_lang(s) link(s+1) // language number, in the range 0..255
-#define what_lhm(s) type(s+1) // minimum left fragment, in the range 1..63
-#define what_rhm(s) subtype(s+1) // minimum right fragment, in the range 1..63
-#define write_tokens(s) link(s+1) // reference count of token list to write
-#define write_stream(s) info(s+1) // stream number (0 to 17)
-#define open_name(s) link(s+1) // string number of file name to open
-#define open_area(s) info(s+2) // string number of file area for open_name
-#define open_ext(s) link(s+2) // string number of file extension for open_name
+#define what_lang(s) link(s + 1) // language number, in the range 0..255
+#define what_lhm(s) type(s + 1) // minimum left fragment, in the range 1..63
+#define what_rhm(s) subtype(s + 1) // minimum right fragment, in the range 1..63
+#define write_tokens(s) link(s + 1) // reference count of token list to write
+#define write_stream(s) info(s + 1) // stream number (0 to 17)
+#define open_name(s) link(s + 1) // string number of file name to open
+#define open_area(s) info(s + 2) // string number of file area for open_name
+#define open_ext(s) link(s + 2) // string number of file extension for open_name
 
 // 1342
 Array<alpha_file, 0, 15> write_file;
@@ -2713,13 +2727,13 @@ const int set_language_code = 5; // command modifier for \setlanguage
 pointer write_loc; // eqtb address of \write
 
 //1362
-#define adv_past(s) do{\
+#define adv_past(s) do {\
   if(subtype(s) == language_node) {\
     cur_lang = (ASCII_code)what_lang(s);\
     l_hyf = what_lhm(s);\
     r_hyf = what_rhm(s);\
   }\
-} while(0)
+} while (0)
 
 // 1371
 #define end_write_token cs_token_flag + end_write

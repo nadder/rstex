@@ -542,7 +542,7 @@ done2:
         print_char(TEX_STRING(" ")); print_int(p);
       }
     for(p = hi_mem_min; p <= mem_end; p++)
-      if (!_free[p] && (p<was_hi_min || p> was_mem_end || was_free[p]))
+      if (!_free[p] && (p < was_hi_min || p> was_mem_end || was_free[p]))
       {
         print_char(TEX_STRING(" ")); print_int(p);
       }
@@ -1299,12 +1299,12 @@ void print_cmd_chr(quarterword cmd, halfword chr_code)
     break;
   case make_box:
     switch (chr_code) {
-    case box_code:print_esc(TEX_STRING("box")); break;
-    case copy_code:print_esc(TEX_STRING("copy")); break;
-    case last_box_code:print_esc(TEX_STRING("lastbox")); break;
-    case vsplit_code:print_esc(TEX_STRING("vsplit")); break;
-    case vtop_code:print_esc(TEX_STRING("vtop")); break;
-    case vtop_code+vmode:print_esc(TEX_STRING("vbox")); break;
+    case box_code: print_esc(TEX_STRING("box")); break;
+    case copy_code: print_esc(TEX_STRING("copy")); break;
+    case last_box_code: print_esc(TEX_STRING("lastbox")); break;
+    case vsplit_code: print_esc(TEX_STRING("vsplit")); break;
+    case vtop_code: print_esc(TEX_STRING("vtop")); break;
+    case vtop_code + vmode:print_esc(TEX_STRING("vbox")); break;
     default:print_esc(TEX_STRING("hbox")); break;
     }
     break;
@@ -1379,9 +1379,9 @@ void print_cmd_chr(quarterword cmd, halfword chr_code)
     switch (chr_code) {
     case over_code: print_esc(TEX_STRING("over")); break;
     case atop_code: print_esc(TEX_STRING("atop")); break;
-    case delimited_code+above_code: print_esc(TEX_STRING("abovewithdelims")); break;
-    case delimited_code+over_code: print_esc(TEX_STRING("overwithdelims")); break;
-    case delimited_code+atop_code: print_esc(TEX_STRING("atopwithdelims")); break;
+    case delimited_code + above_code: print_esc(TEX_STRING("abovewithdelims")); break;
+    case delimited_code + over_code: print_esc(TEX_STRING("overwithdelims")); break;
+    case delimited_code + atop_code: print_esc(TEX_STRING("atopwithdelims")); break;
     default: print_esc(TEX_STRING("above")); break;
     }
     break;
@@ -1687,7 +1687,7 @@ restart:
 
         break;
 
-      case mid_line+spacer:
+      case mid_line + spacer:
         //<Enter skip_blanks state, emit a space 349>
         state = skip_blanks; cur_chr = TEX_STRING(" ");
         break;
@@ -1695,30 +1695,30 @@ restart:
         //<Finish line, emit a spcae 348>
         loc = limit + 1; cur_cmd = spacer; cur_chr = TEX_STRING(" ");
         break;
-      case skip_blanks+car_ret:
+      case skip_blanks + car_ret:
       case any_state_plus(comment):
         //<Finish line, goto switch 350>
         loc = limit + 1;
         goto _switch;
         break;
-      case new_line+car_ret:
+      case new_line + car_ret:
         //<Finish line, emit a \par 351>
         loc = limit + 1; cur_cs = par_loc; cur_cmd = eq_type(cur_cs); cur_chr = equiv(cur_cs);
         if (cur_cmd >= outer_call)
           check_outer_validity();
         break;
-      case mid_line+left_brace:
+      case mid_line + left_brace:
         incr(align_state);
         break;
-      case skip_blanks+left_brace:
-      case new_line+left_brace:
+      case skip_blanks + left_brace:
+      case new_line + left_brace:
         state = mid_line; incr(align_state);
         break;
-      case mid_line+right_brace:
+      case mid_line + right_brace:
         decr(align_state);
         break;
-      case skip_blanks+right_brace:
-      case new_line+right_brace:
+      case skip_blanks + right_brace:
+      case new_line + right_brace:
         state = mid_line; decr(align_state);
         break;
       case add_delims_to(skip_blanks):
@@ -2491,7 +2491,7 @@ void show_node_list(int p)
         {
           if (span_count(p) != min_quarterword) {
             print(TEX_STRING(" ("));
-            print_int(qo(span_count(p))+1);
+            print_int(qo(span_count(p)) + 1);
             print(TEX_STRING(" columns)"));
           }
           if (glue_stretch(p) != 0) {
@@ -3627,7 +3627,7 @@ void pack_file_name(str_number n, str_number a, str_number e)
   //for (k = name_length + 1; k <= file_name_size; k++) name_of_file[k] = ' ';
 
   // addition for C, add zero terminator
-  name_of_file[name_length+1] = 0;
+  name_of_file[name_length + 1] = 0;
 
 }
 
@@ -3684,11 +3684,11 @@ void movement(scaled w, eight_bits o)
   p = link(q); mstate = none_seen;
   while (p != null) {
     if (width(p) == w)
-      switch(mstate+info(p)){
-      case none_seen+yz_OK:
-      case none_seen+y_OK:
-      case z_seen+yz_OK:
-      case z_seen+y_OK:
+      switch(mstate + info(p)){
+      case none_seen + yz_OK:
+      case none_seen + y_OK:
+      case z_seen + yz_OK:
+      case z_seen + y_OK:
         if (location(p) < dvi_gone) goto not_found;
         else
         {
@@ -3698,9 +3698,9 @@ void movement(scaled w, eight_bits o)
           info(p) = y_here; goto found;
         }
         break;
-      case none_seen+z_OK:
-      case y_seen+yz_OK:
-      case y_seen+z_OK:
+      case none_seen + z_OK:
+      case y_seen + yz_OK:
+      case y_seen + z_OK:
         if (location(p) < dvi_gone) goto not_found;
         else
         {
@@ -3710,10 +3710,10 @@ void movement(scaled w, eight_bits o)
           info(p) = z_here; goto found;
         }
         break;
-      case none_seen+y_here:
-      case none_seen+z_here:
-      case y_seen+z_here:
-      case z_seen+y_here:
+      case none_seen + y_here:
+      case none_seen + z_here:
+      case y_seen + z_here:
+      case z_seen + y_here:
         goto found;
         break;
       default:
@@ -3723,8 +3723,8 @@ void movement(scaled w, eight_bits o)
     else switch (mstate + info(p)) {
     case none_seen + y_here: mstate = y_seen; break;
     case none_seen + z_here: mstate = z_seen; break;
-    case y_seen+z_here:
-    case z_seen+y_here:
+    case y_seen + z_here:
+    case z_seen + y_here:
       goto not_found;
       break;
     default:
@@ -4406,7 +4406,7 @@ void mlist_to_hlist()
       } while (link(p) != null);
     }
     if (penalties)
-      if (link(q)!=null)
+      if (link(q) != null)
         if (pen < inf_penalty) {
           r_type = type(link(q));
           if (r_type != penalty_node)
@@ -5787,7 +5787,7 @@ void open_log_file()
   print_int(sys_day); print_char(TEX_STRING(" "));
   strcpy(months, "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC");
   months[36] = 0;
-  for (k = 3 * sys_month - 2; k <= 3 * sys_month; k++) wlog_c(months[k-1]);
+  for (k = 3 * sys_month - 2; k <= 3 * sys_month; k++) wlog_c(months[k - 1]);
   print_char(TEX_STRING(" "));
   print_int(sys_year); print_char(TEX_STRING(" "));
   print_two(sys_time / 60); print_char(TEX_STRING(":"));
@@ -5926,7 +5926,7 @@ void initialize()
   if_limit = normal; cur_if = 0; if_line = 0;
 
   // 521
-  strcpy(TEX_format_default.get_c_str(),"plain.fmt");
+  strcpy(TEX_format_default.get_c_str(), "plain.fmt");
 
   // 551
   for (k = font_base; k <= font_max; k++)
@@ -7995,7 +7995,7 @@ void read_toks(int n, pointer r)
   token_ref_count(def_ref) = null;
   p = def_ref;
   store_new_token(end_match_token);
-  if (n < 0 || n>15)
+  if (n < 0 || n > 15)
     m = 16;
   else
     m = n;
@@ -8229,7 +8229,7 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
 
   bch_label = 077777; bchar = 256;
   if (nl > 0) {
-    for (k = lig_kern_base[f]; k <= kern_base[f] + kern_base_offset - 1;k++) {
+    for (k = lig_kern_base[f]; k <= kern_base[f] + kern_base_offset - 1; k++) {
       store_four_quarters(font_info[k].qqqq);
       if (a > 128) {
         if (256 * c + d >= nl) _abort;
@@ -9479,7 +9479,7 @@ void package(small_number c)
 void write_dvi(dvi_index a, dvi_index b)
 {
   dvi_index k;
-  for (k = a; k <= b;k++)
+  for (k = a; k <= b; k++)
     fputc(dvi_buf[k], dvi_file);
 }
 
@@ -10733,7 +10733,7 @@ void after_math()
     if (w + q > z)
     {
       if (e != 0 && (w - total_shrink[normal] + q <= z || total_shrink[fil] != 0 ||
-        total_shrink[fill] != 0 || total_shrink[filll]!=0)) {
+        total_shrink[fill] != 0 || total_shrink[filll] != 0)) {
         free_node(b, box_node_size); b = hpack(p, z - q, exactly);
       }
       else {
@@ -12221,10 +12221,10 @@ bool load_fmt_file()
   k = active_base;
   do {
     undump_int(&x);
-    if (x<1 || k + x > eqtb_size + 1) goto bad_fmt;
+    if (x < 1 || k + x > eqtb_size + 1) goto bad_fmt;
     for (j = k; j <= k + x - 1; j++) undump_wd(&eqtb[j]);
     k += x; undump_int(&x);
-    if (x<0 || k + x > eqtb_size + 1) goto bad_fmt;
+    if (x < 0 || k + x > eqtb_size + 1) goto bad_fmt;
     for (j = k; j <= k + x - 1; j++) eqtb[j] = eqtb[k - 1];
     k += x;
   } while (k <= eqtb_size);
@@ -12673,7 +12673,7 @@ bool fin_col()
       link(q) = null; v_part(p) = link(hold_head);
 
       cur_loop = link(cur_loop); link(p) = new_glue(glue_ptr(cur_loop));
-      subtype(link(p)) = tab_skip_code+1;
+      subtype(link(p)) = tab_skip_code + 1;
     }
     else {
       print_err(TEX_STRING("Extra alignment tab has been changed to ")); print_esc(TEX_STRING("cr"));
@@ -12821,9 +12821,9 @@ reswitch:
     break;
 
   case any_mode(relax):
-  case vmode+spacer:
-  case mmode+spacer:
-  case mmode+no_boundary:
+  case vmode + spacer:
+  case mmode + spacer:
+  case mmode + no_boundary:
     break;
   case any_mode(ignore_spaces):
     do {
@@ -12831,19 +12831,19 @@ reswitch:
     } while (cur_cmd == spacer);
     goto reswitch;
     break;
-  case vmode+stop:
+  case vmode + stop:
     if (its_all_over())
       return;
     break;
 
-  case vmode+vmove:
-  case hmode+hmove:
-  case mmode+hmove:
+  case vmode + vmove:
+  case hmode + hmove:
+  case mmode + hmove:
   case any_mode(last_item):
     // 1098
-  case vmode+vadjust:
+  case vmode + vadjust:
     //1111
-  case vmode+ital_corr:
+  case vmode + ital_corr:
     //1144
   case non_math(eq_no):
 
@@ -12868,19 +12868,19 @@ reswitch:
   case non_math(limit_switch):
   case non_math(mskip):
   case non_math(math_accent):
-  case mmode+endv:
-  case mmode+par_end:
-  case mmode+stop:
-  case mmode+vskip:
-  case mmode+un_vbox:
-  case mmode+valign:
-  case mmode+hrule:
+  case mmode + endv:
+  case mmode + par_end:
+  case mmode + stop:
+  case mmode + vskip:
+  case mmode + un_vbox:
+  case mmode + valign:
+  case mmode + hrule:
     insert_dollar_sign();
     break;
 
-  case vmode+hrule:
-  case hmode+vrule:
-  case mmode+vrule:
+  case vmode + hrule:
+  case hmode + vrule:
+  case mmode + vrule:
     tail_append(scan_rule_spec());
     if (myabs(mode) == vmode)
       prev_depth = ignore_depth;
@@ -12888,14 +12888,14 @@ reswitch:
       space_factor = 1000;
     break;
   // 1057
-  case vmode+vskip:
-  case hmode+hskip:
-  case mmode+hskip:
-  case mmode+mskip:
+  case vmode + vskip:
+  case hmode + hskip:
+  case mmode + hskip:
+  case mmode + mskip:
     append_glue();
     break;
   case any_mode(kern):
-  case mmode+mkern:
+  case mmode + mkern:
     append_kern();
     break;
 
@@ -12918,9 +12918,9 @@ reswitch:
     break;
 
     // 1073
-  case vmode+hmove:
-  case hmode+vmove:
-  case mmode+vmove:
+  case vmode + hmove:
+  case hmode + vmove:
+  case mmode + vmove:
     t = cur_chr; scan_normal_dimen;
     if (t == 0)
       scan_box(cur_val);
@@ -12935,57 +12935,57 @@ reswitch:
     break;
 
     // 1090
-  case vmode+start_par:
+  case vmode + start_par:
     new_graf(cur_chr > 0);
     break;
-  case vmode+letter:
-  case vmode+other_char:
-  case vmode+char_num:
-  case vmode+char_given:
-  case vmode+math_shift:
-  case vmode+un_hbox:
-  case vmode+vrule:
-  case vmode+accent:
-  case vmode+discretionary:
-  case vmode+hskip:
-  case vmode+valign:
-  case vmode+ex_space:
-  case vmode+no_boundary:
+  case vmode + letter:
+  case vmode + other_char:
+  case vmode + char_num:
+  case vmode + char_given:
+  case vmode + math_shift:
+  case vmode + un_hbox:
+  case vmode + vrule:
+  case vmode + accent:
+  case vmode + discretionary:
+  case vmode + hskip:
+  case vmode + valign:
+  case vmode + ex_space:
+  case vmode + no_boundary:
     back_input();
     new_graf(true);
     break;
 
     // 1092
-  case hmode+start_par:
-  case mmode+start_par:
+  case hmode + start_par:
+  case mmode + start_par:
     indent_in_hmode();
     break;
 
     // 1094
-  case vmode+par_end:
+  case vmode + par_end:
     normal_paragraph();
     if (mode > 0)
       build_page();
     break;
-  case hmode+par_end:
+  case hmode + par_end:
     if (align_state < 0)
       off_save();
     end_graf();
     if (mode == vmode)
       build_page();
     break;
-  case hmode+stop:
-  case hmode+vskip:
-  case hmode+hrule:
-  case hmode+un_vbox:
-  case hmode+halign:
+  case hmode + stop:
+  case hmode + vskip:
+  case hmode + hrule:
+  case hmode + un_vbox:
+  case hmode + halign:
     head_for_vmode();
     break;
 
     //1097
   case any_mode(insert):
-  case hmode+vadjust:
-  case mmode+vadjust:
+  case hmode + vadjust:
+  case mmode + vadjust:
     begin_insert_or_adjust();
     break;
   case any_mode(mark):
@@ -13002,27 +13002,27 @@ reswitch:
     break;
 
     // 1109
-  case vmode+un_vbox:
-  case hmode+un_hbox:
-  case mmode+un_hbox:
+  case vmode + un_vbox:
+  case hmode + un_hbox:
+  case mmode + un_hbox:
     unpackage();
     break;
 
     //1112
-  case hmode+ital_corr:
+  case hmode + ital_corr:
     append_italic_correction();
     break;
-  case mmode+ital_corr:
+  case mmode + ital_corr:
     tail_append(new_kern(0));
     break;
 
     //1116
-  case hmode+discretionary:
-  case mmode+discretionary:
+  case hmode + discretionary:
+  case mmode + discretionary:
     append_discretionary();
     break;
 
-  case hmode+accent:
+  case hmode + accent:
     make_accent();
     break;
 
@@ -13039,11 +13039,11 @@ reswitch:
     break;
 
     //1130
-  case vmode+halign:
-  case hmode+valign:
+  case vmode + halign:
+  case hmode + valign:
     init_align();
     break;
-  case mmode+halign:
+  case mmode + halign:
     if (privileged()) {
       if (cur_group == math_shift_group)
         init_align();
@@ -13051,8 +13051,8 @@ reswitch:
         off_save();
     }
     break;
-  case vmode+endv:
-  case hmode+endv:
+  case vmode + endv:
+  case hmode + endv:
     do_endv();
     break;
 
@@ -13062,12 +13062,12 @@ reswitch:
     break;
 
     // 1137
-  case hmode+math_shift:
+  case hmode + math_shift:
     init_math();
     break;
 
     // 1140
-  case mmode+eq_no:
+  case mmode + eq_no:
     if (privileged()) {
       if (cur_group == math_shift_group)
         start_eq_no();
@@ -13076,37 +13076,37 @@ reswitch:
     break;
 
     // 1150
-  case mmode+left_brace:
+  case mmode + left_brace:
     tail_append(new_noad());
     back_input();
     scan_math(nucleus(tail));
     break;
 
     // 1154
-  case mmode+letter:
-  case mmode+other_char:
-  case mmode+char_given:
+  case mmode + letter:
+  case mmode + other_char:
+  case mmode + char_given:
     set_math_char(ho(math_code(cur_chr)));
     break;
-  case mmode+char_num:
+  case mmode + char_num:
     scan_char_num();
     cur_chr = cur_val;
     set_math_char(ho(math_code(cur_chr)));
     break;
-  case mmode+math_char_num:
+  case mmode + math_char_num:
     scan_fifteen_bit_int();
     set_math_char(cur_val);
     break;
-  case mmode+math_given:
+  case mmode + math_given:
     set_math_char(cur_chr);
     break;
-  case mmode+delim_num:
+  case mmode + delim_num:
     scan_twenty_seven_bit_int();
     set_math_char(cur_val / 010000);
     break;
 
     // 1158
-  case mmode+math_comp:
+  case mmode + math_comp:
     // overflow check
     if (cur_chr > 255) {
       printf("Overflow assignment 1158\n");
@@ -13117,23 +13117,23 @@ reswitch:
     tail_append(new_noad()); type(tail) = (quarterword)cur_chr;
     scan_math(nucleus(tail));
     break;
-  case mmode+limit_switch:
+  case mmode + limit_switch:
     math_limit_switch();
     break;
 
     // 1162
-  case mmode+radical:
+  case mmode + radical:
     math_radical();
     break;
 
     // 1164
-  case mmode+accent:
-  case mmode+math_accent:
+  case mmode + accent:
+  case mmode + math_accent:
     math_ac();
     break;
 
     // 1167
-  case mmode+vcenter:
+  case mmode + vcenter:
     scan_spec(vcenter_group, false);
     normal_paragraph();
     push_nest();
@@ -13144,34 +13144,34 @@ reswitch:
     break;
 
     // 1171
-  case mmode+math_style:
+  case mmode + math_style:
     tail_append(new_style(cur_chr));
     break;
-  case mmode+non_script:
+  case mmode + non_script:
     tail_append(new_glue(zero_glue)); subtype(tail) = cond_math_glue;
     break;
-  case mmode+math_choice:
+  case mmode + math_choice:
     append_choices();
     break;
 
     // 1175
-  case mmode+sub_mark:
-  case mmode+sup_mark:
+  case mmode + sub_mark:
+  case mmode + sup_mark:
     sub_sup();
     break;
 
     // 1180
-  case mmode+above:
+  case mmode + above:
     math_fraction();
     break;
 
     // 1190
-  case mmode+left_right:
+  case mmode + left_right:
     math_left_right();
     break;
 
     // 1193
-  case mmode+math_shift:
+  case mmode + math_shift:
     if (cur_group == math_shift_group)
       after_math();
     else
@@ -13938,7 +13938,7 @@ pointer prune_page_top(pointer p)
   pointer q;
 
   prev_p = temp_head; link(temp_head) = p;
-  while(p!=null)
+  while(p != null)
     switch (type(p)) {
     case hlist_node:
     case vlist_node:
@@ -15445,7 +15445,7 @@ void init_prim()
   primitive(TEX_STRING("lccode"), def_code, lc_code_base);
   primitive(TEX_STRING("sfcode"), def_code, sf_code_base);
   primitive(TEX_STRING("textfont"), def_family, math_font_base);
-  primitive(TEX_STRING("scriptfont"), def_family, math_font_base+script_size);
+  primitive(TEX_STRING("scriptfont"), def_family, math_font_base + script_size);
   primitive(TEX_STRING("scriptscriptfont"), def_family, math_font_base + script_script_size);
   primitive(TEX_STRING("mathcode"), def_code, math_code_base);
   primitive(TEX_STRING("uccode"), def_code, uc_code_base);
@@ -15673,7 +15673,7 @@ void store_fmt_file()
   dump_int(par_loc); dump_int(write_loc);
 
   dump_int(hash_used); cs_count = frozen_control_sequence - 1 - hash_used;
-  for(p = hash_base; p<=hash_used;p++)
+  for(p = hash_base; p <= hash_used;p++)
     if (text(p) != 0) {
       dump_int(p); dump_hh(hash[p]); incr(cs_count);
     }
@@ -15712,7 +15712,7 @@ void store_fmt_file()
   if (font_ptr != font_base + 1) print_char(TEX_STRING("s"));
 
   dump_int(hyph_count);
-  for(k = 0;k <= hyph_size;k++)
+  for(k = 0; k <= hyph_size; k++)
     if (hyph_word[k] != 0) {
       dump_int(k); dump_int(hyph_word[k]); dump_int(hyph_list[k]);
     }
@@ -15757,7 +15757,7 @@ int main(int argc, char **argv)
     goto start_of_TEX;
   }
   bad = 0;
-  if (half_error_line<30 || half_error_line > error_line - 15) bad = 1;
+  if (half_error_line < 30 || half_error_line > error_line - 15) bad = 1;
   if (max_print_line < 60) bad = 2;
   if (dvi_buf_size % 8 != 0) bad = 3;
   if (mem_bot + 1100 > mem_top) bad = 4;

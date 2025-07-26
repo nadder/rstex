@@ -1,5 +1,6 @@
 #!/bin/bash
 # After running cpf on the .pre files you can run this script to make changes suitable for metafont trap test.
+# Note: Don't use the "build.bat" script when building because it will overwrite the .cpp/.h file.
 # See https://ctan.org/tex-archive/systems/knuth/dist/mf for instructions on how to run the test.
 # The capsule numbers will show up wrong in the test but this also happens with texlive and MikTeX
 # which is curious. Update: Someone hinted that Knuth's trap test may not have been updated in a long time.
