@@ -14535,7 +14535,7 @@ void do_open_window()
   return;
 not_found:
   print_err(TEX_STRING("Improper `openwindow'"));
-  help2(TEX_STRING("Say `openwindow k from (r0,c0) to (r1,c1) at (x, y)',"),
+  help2(TEX_STRING("Say `openwindow k from (r0,c0) to (r1,c1) at (x,y)',"),
   TEX_STRING("where all quantities are known and k is between 0 and 15."));
   put_get_error();
 }
