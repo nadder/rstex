@@ -7201,7 +7201,6 @@ void cubic_intersection(pointer p, pointer pp)
 // 562
 void path_intersection(pointer h, pointer hh)
 {
-
   pointer p, pp; // {link registers that traverse the given paths}
   int n, nn; // {integer parts of intersection times, minus unity }
 
@@ -15053,7 +15052,6 @@ void fix_check_sum()
     if (header_byte[2] < 0)
       if (header_byte[3] < 0)
         if (header_byte[4] < 0) {
-
           b1 = bc; b2 = ec; b3 = bc; b4 = ec;
           tfm_changed = 0;
 
@@ -15889,7 +15887,6 @@ void close_files_and_terminate()
   wake_up_terminal();
 
   if (gf_prev_ptr > 0 || internal[fontmaking] > 0) {
-
     rover = lo_mem_stat_max + 1; link(rover)  = empty_flag; lo_mem_max = hi_mem_min - 1;
     if (lo_mem_max - rover > max_halfword) lo_mem_max = max_halfword + rover;
     node_size(rover) = lo_mem_max - rover; llink(rover) = rover; rlink(rover) = rover;
@@ -15904,7 +15901,6 @@ void close_files_and_terminate()
 
     fix_design_size(); fix_check_sum();
     if (internal[fontmaking] > 0) {
-
       clear_the_list;
       PASCAL_FOR_BEGIN(k, bc, ec)
         if (char_exists[k]) {

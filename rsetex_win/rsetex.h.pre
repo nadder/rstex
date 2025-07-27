@@ -25,7 +25,7 @@ struct Array
     return &_array[0];
   }
   static const int _minindex = minindex;
-  static const int _maxindex = maxindex;  
+  static const int _maxindex = maxindex;
   std::array<T, array_size> _array;
 };
 
@@ -439,7 +439,7 @@ const int mark_class_node_size = 4; // {size of an element for a mark class}
   help_line[2] = s1;\
   help_line[1] = s2;\
   help_line[0] = s3;\
-} while(0) 
+} while(0)
 
 // use this with four help lines
 #define help4(s1,s2,s3,s4) do{\
@@ -469,7 +469,7 @@ const int mark_class_node_size = 4; // {size of an element for a mark class}
   help_line[2] = s4;\
   help_line[1] = s5;\
   help_line[0] = s6;\
-} while(0) 
+} while(0)
 
 Array<str_number, 0, 5> help_line; // helps for the next error
 char help_ptr; // 0..6, the number of help lines present
@@ -1857,7 +1857,6 @@ const int max_dimen = 07777777777; // 2^30 - 1
 } while (0)
 
 #define find_effective_tail find_effective_tail_eTeX
-  
 
 const int expr_node_size = 4; // {number of words in stack entry for subexpressions}
 #define expr_e_field(s) mem[s + 1].an_int //{ saved expression so far }

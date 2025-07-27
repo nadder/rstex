@@ -5737,8 +5737,7 @@ void diag_round()
   } while (p != cur_spec);
   if (cur_rounding_ptr > 0)
   {
-
-     p = node_to_round[0]; first_x = x_coord(p); first_y = y_coord(p);
+    p = node_to_round[0]; first_x = x_coord(p); first_y = y_coord(p);
 
     before[cur_rounding_ptr] = before[0]; // {cf. make safe }
     node_to_round[cur_rounding_ptr] = node_to_round[0];
@@ -7033,7 +7032,6 @@ void cubic_intersection(pointer p, pointer pp)
 // 562
 void path_intersection(pointer h, pointer hh)
 {
-
   pointer p, pp; // {link registers that traverse the given paths}
   int n, nn; // {integer parts of intersection times, minus unity }
 
@@ -8017,7 +8015,6 @@ void show_context()
       tally = 0; // get ready to count characters
       old_setting = selector;
       if (file_state) {
-
         if (name <= 1)
           if (terminal_input && file_ptr == 0) print_nl(TEX_STRING("<*>"));
           else print_nl(TEX_STRING("<insert>"));
@@ -14800,7 +14797,6 @@ void close_files_and_terminate()
   wake_up_terminal();
 
   if (gf_prev_ptr > 0 || internal[fontmaking] > 0) {
-
     rover = lo_mem_stat_max + 1; link(rover)  = empty_flag; lo_mem_max = hi_mem_min - 1;
     if (lo_mem_max - rover > max_halfword) lo_mem_max = max_halfword + rover;
     node_size(rover) = lo_mem_max - rover; llink(rover) = rover; rlink(rover) = rover;
@@ -14815,7 +14811,6 @@ void close_files_and_terminate()
 
     fix_design_size(); fix_check_sum();
     if (internal[fontmaking] > 0) {
-
       clear_the_list;
       PASCAL_FOR_BEGIN(k, bc, ec)
         if (char_exists[k]) {

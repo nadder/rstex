@@ -337,7 +337,6 @@ void print_roman_int(int n)
       j += 2; v = v / (so(str_pool[j - 1]) - TEX_STRING("0"));
     }
   }
-
 }
 
 void print_esc(str_number s)
@@ -822,7 +821,6 @@ bool get_strings_started()
   }
   else
     bad_pool("! I cannot read tex.pool.", false);
-
 }
 #endif
 //tini
@@ -1612,7 +1610,6 @@ restart:
           }
           else
           {
-
             if (buffer[k] == cur_chr)
               if (cat == sup_mark)
                 if (k < limit) {
@@ -1823,7 +1820,6 @@ restart:
         align_state = 1000000;
         goto restart;
       }
-
 }
 
 // 365
@@ -1889,7 +1885,6 @@ void free_node(pointer p, halfword s)
   var_used -= s;
 #endif
   //tats
-
 }
 
 // 154
@@ -2395,7 +2390,6 @@ pointer new_param_glue(small_number n)
   glue_ptr(p) = q;
   incr(glue_ref_count(q));
   return p;
-
 }
 
 // 153
@@ -3628,7 +3622,6 @@ void pack_file_name(str_number n, str_number a, str_number e)
 
   // addition for C, add zero terminator
   name_of_file[name_length + 1] = 0;
-
 }
 
 // 530
@@ -4419,7 +4412,6 @@ void mlist_to_hlist()
     r = q; q = link(q); free_node(r, s);
   done:;
   }
-
 }
 
 // 734
@@ -4497,7 +4489,7 @@ void make_math_accent(pointer q)
         if (skip_byte(cur_i) > stop_flag) {
           a = lig_kern_restart(cur_f, cur_i); cur_i = font_info[a].qqqq;
         }
-        while(1) {
+        while (1) {
           if (qo(next_char(cur_i)) == skew_char[cur_f]) {
             if (op_byte(cur_i) >= kern_flag)
               if (skip_byte(cur_i) <= stop_flag) s = char_kern(cur_f, cur_i);
@@ -4600,7 +4592,6 @@ void make_fraction(pointer q)
   x = var_delimiter(left_delimiter(q), cur_size, delta); link(x) = v;
   z = var_delimiter(right_delimiter(q), cur_size, delta); link(v) = z;
   new_hlist(q) = hpack(x, natural);
-
 }
 
 // 749
@@ -6128,7 +6119,6 @@ void initialize()
 
 #endif
 //tini
-
 }
 
 // 694
@@ -6308,7 +6298,6 @@ mycontinue:
   print_ln();
   if (interaction > batch_mode) incr(selector);
   print_ln();
-
 }
 
 // 91
@@ -6812,7 +6801,6 @@ void scan_glue(small_number level)
     scan_dimen(mu, true, false); shrink(q) = cur_val; shrink_order(q) = cur_order;
   }
   cur_val = q;
-
 }
 
 //1229
@@ -7360,7 +7348,6 @@ void macro_call()
       if (cur_tok < right_brace_limit)
         if (cur_tok < left_brace_limit)
         {
-
           unbalance = 1;
           while (1) {
             store_new_token(cur_tok); get_token();
@@ -8005,7 +7992,6 @@ void read_toks(int n, pointer r)
     name = m + 1;
     if (read_open[m] == closed)
     {
-
       if (interaction > nonstop_mode) {
         if (n < 0)
           prompt_input(TEX_STRING(""));
@@ -8022,7 +8008,6 @@ void read_toks(int n, pointer r)
     }
     else if (read_open[m] == just_open)
     {
-
       if (input_ln(read_file[m], false)) read_open[m] = normal;
       else {
         a_close(read_file[m]); read_open[m] = closed;
@@ -8695,7 +8680,6 @@ done:
   }
 #endif
   //tats
-
 }
 
 // 1069
@@ -9002,7 +8986,6 @@ pointer hpack(pointer p, scaled w, small_number m)
     if (o == normal)
       if (list_ptr(r) != null)
       {
-
         last_badness = badness(x, total_stretch[normal]);
         if (last_badness > hbadness) {
           print_ln();
@@ -10056,7 +10039,6 @@ void build_page()
     }
 
     if (pi < inf_penalty) {
-
       if (page_total < page_goal) {
         if (page_so_far[3] != 0 || page_so_far[4] != 0 || page_so_far[5] != 0)
           b = 0;
@@ -10417,7 +10399,6 @@ void final_cleanup()
     print_nl(TEX_STRING("(\dump is performed only by INITEX)"));
     return;
   }
-
 }
 
 // 440
@@ -13288,7 +13269,6 @@ main_loop_move_plus1:
 
 main_loop_move_plus2:
   if (cur_chr < font_bc[main_f] || cur_chr > font_ec[main_f]) {
-
     // Overflow check
     if (cur_chr > 255) {
       printf("overflow char_warning1 1036\n");
@@ -13649,7 +13629,6 @@ reswitch:
   if (c >= var_code && fam_in_range) fam(p) = cur_fam;
   else
     fam(p) = (c / 256) % 16;
-
 }
 
 // 1155
@@ -13938,7 +13917,7 @@ pointer prune_page_top(pointer p)
   pointer q;
 
   prev_p = temp_head; link(temp_head) = p;
-  while(p != null)
+  while (p != null)
     switch (type(p)) {
     case hlist_node:
     case vlist_node:
@@ -14382,7 +14361,6 @@ done:
   }
 
   pack_begin_line = 0;
-
 }
 
 // 826
@@ -14427,7 +14405,6 @@ void post_line_break(int final_widow_penalty)
   } while (q != null);
   cur_line = prev_graf + 1;
   do {
-
     q = cur_break(cur_p); disc_break = false; post_disc_break = false;
     if (q != null)
       if (type(q) == glue_node) {
@@ -14900,7 +14877,6 @@ void delete_last()
   quarterword m;
   if (mode == vmode && tail == head)
   {
-
     if (cur_chr != glue_node || last_glue != max_halfword) {
       you_cant();
       help2(TEX_STRING("Sorry...I usually can't take things from the current page."),
@@ -15741,7 +15717,6 @@ void store_fmt_file()
   tracing_stats = 0;
 
   w_close(fmt_file);
-
 }
 #endif
 //tini

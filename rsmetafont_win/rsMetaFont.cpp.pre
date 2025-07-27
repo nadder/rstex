@@ -229,7 +229,6 @@ HWND CreateStatusBar(HWND hwndParent, int idStatus, HINSTANCE hinst)
 
 void draw_grid(HDC hdc, int x_offset, int y_offset, int win_left, int win_top, int win_right, int win_bot)
 {
-
   HPEN hPenOld = (HPEN)SelectObject(hdc, GetStockObject(DC_PEN));
   SetDCPenColor(hdc, grid_color);
 
@@ -324,7 +323,6 @@ void ReplaceColor(HDC hDC, RECT *rcReplaceArea, COLORREF clrColorReplace, COLORR
 
 INT_PTR CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-
   switch(msg) {
     case WM_INITDIALOG:
       // initialize dialog controls
@@ -393,7 +391,6 @@ INT_PTR CALLBACK MyDialogProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
     case WM_COMMAND:
       switch(LOWORD(wParam)) {
-
         case IDC_BTN_BLACK_COLOR:
         case IDC_BTN_WHITE_COLOR:
         case IDC_BTN_GRID_COLOR:
@@ -485,7 +482,6 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
   static HWND hwndStatus;
   WaitForSingleObject(hMutex, INFINITE);
   switch(msg) {
-
     case WM_CREATE:
       ghMenu = GetMenu(hwnd);
       hwndStatus = CreateStatusBar(hwnd, ID_STATUS_BAR, ghInst);
@@ -531,7 +527,6 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
           {
             if (DialogBox(ghInst, MAKEINTRESOURCE(IDD_SETTINGS),
                 hwnd, MyDialogProc) == IDOK) {
-
                 RECT rc = {0};
                 rc.right = screen_width;
                 rc.bottom = screen_depth;
@@ -6705,8 +6700,7 @@ void diag_round()
   if (cur_rounding_ptr > 0)
     #pragma region <Transform the skewed coordinates 444>
   {
-
-     p = node_to_round[0]; first_x = x_coord(p); first_y = y_coord(p);
+    p = node_to_round[0]; first_x = x_coord(p); first_y = y_coord(p);
     #pragma region <Make sure that all the diagonal roundings are safe 446>
 
     before[cur_rounding_ptr] = before[0]; // {cf. make safe }
@@ -8143,7 +8137,6 @@ void cubic_intersection(pointer p, pointer pp)
 // 562
 void path_intersection(pointer h, pointer hh)
 {
-
   pointer p, pp; // {link registers that traverse the given paths}
   int n, nn; // {integer parts of intersection times, minus unity }
 
@@ -8395,9 +8388,10 @@ void disp_edges(window_number k)
             #pragma region <Wind up the |paint_row| parameter calculation by inserting the final transition; |goto done| if no painting is needed>
             if (already_there || ww > 0)
             {
-              if (n == 0)
+              if (n == 0) {
                 if (ww > 0) b = black;
                 else b = white;
+              }
               n++; row_transition[n] = right_col[k];
             }
             else if (n == 0) goto done;
@@ -9207,7 +9201,6 @@ void show_context()
       tally = 0; // get ready to count characters
       old_setting = selector;
       if (file_state) {
-
         #pragma region <Print location of current line 637>
         if (name <= 1)
           if (terminal_input && file_ptr == 0) print_nl(TEX_STRING("<*>"));
@@ -9907,7 +9900,6 @@ void scan_def()
   if (cur_cmd == left_delimiter)
     #pragma region  <Absorb delimited parameters, putting them into lists q and r 703>
   {
-
     do {
       l_delim = cur_sym; r_delim = cur_mod; get_next();
       if (cur_cmd == param_type && cur_mod >= expr_base) base = cur_mod;
@@ -15700,7 +15692,6 @@ void fix_check_sum()
     if (header_byte[2] < 0)
       if (header_byte[3] < 0)
         if (header_byte[4] < 0) {
-
           #pragma region <Compute a check sum in (b1, b2, b3, b4) 1132>
           b1 = bc; b2 = ec; b3 = bc; b4 = ec; tfm_changed = 0;
 
@@ -15857,7 +15848,7 @@ void init_gf()
   if (internal[hppp] <= 0) gf_ext = TEX_STRING(".gf");
   else {
     old_setting = selector; selector = new_string; print_char(TEX_STRING("."));
-    print_int(make_scaled(internal[hppp],59429463));
+    print_int(make_scaled(internal[hppp], 59429463));
     // {$2^{32}/72.27\approx59429463.07$}
     print(TEX_STRING("gf")); gf_ext = make_string(); selector = old_setting;
   }
@@ -16138,7 +16129,7 @@ void init_prim()
   primitive(TEX_STRING("year"), internal_quantity, year);
   primitive(TEX_STRING("month"), internal_quantity, month);
   primitive(TEX_STRING("day"), internal_quantity, day);
-  primitive(TEX_STRING("time"), internal_quantity,_time);
+  primitive(TEX_STRING("time"), internal_quantity, _time);
   primitive(TEX_STRING("charcode"), internal_quantity, char_code);
   primitive(TEX_STRING("charext"), internal_quantity, char_ext);
   primitive(TEX_STRING("charwd"), internal_quantity, char_wd);
@@ -16526,7 +16517,6 @@ void close_files_and_terminate()
   #pragma region <Finish the TFM and GF files 1206>
 
   if (gf_prev_ptr > 0 || internal[fontmaking] > 0) {
-
     #pragma region <Make the dynamic memory into one big available node 1207>
     rover = lo_mem_stat_max + 1; link(rover)  = empty_flag; lo_mem_max = hi_mem_min - 1;
     if (lo_mem_max - rover > max_halfword) lo_mem_max = max_halfword + rover;
@@ -16545,7 +16535,6 @@ void close_files_and_terminate()
 
     fix_design_size(); fix_check_sum();
     if (internal[fontmaking] > 0) {
-
       #pragma region <Massage the TFM heights, depths, and italic corrections 1126>
       clear_the_list;
       PASCAL_FOR_BEGIN(k, bc, ec)
@@ -16828,7 +16817,6 @@ void final_cleanup()
 #ifndef NO_DEBUG
 void debug_help() //{routine to display various things}
 {
-
   int k, l, m, n;
   clear_terminal();
   while (true)

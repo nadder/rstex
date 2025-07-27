@@ -27,7 +27,7 @@ int myabs(int x)
     exit(1);
   }
   ///////////////////////
-  
+
   return x >= 0 ? x : -x;
 }
 
@@ -64,7 +64,7 @@ void setup_char_arrays()
   xchr[112] = 'p'; xchr[113] = 'q'; xchr[114] = 'r'; xchr[115] = 's'; xchr[116] = 't';
   xchr[117] = 'u'; xchr[118] = 'v'; xchr[119] = 'w'; xchr[120] = 'x'; xchr[121] = 'y';
   xchr[122] = 'z'; xchr[123] = '{'; xchr[124] = '|'; xchr[125] = '}'; xchr[126] = '~';
-  
+
   for (int i = 0; i < 256; i++) {
     xord[i] = 127;
   }
@@ -151,12 +151,12 @@ void print_char(ASCII_code s)
     case no_print:
       // do_nothing
       break;
-      
+
     case pseudo:
       if (tally < trick_count)
         trick_buf[tally % error_line] = s;
       break;
-      
+
     case new_string:
       if (pool_ptr < pool_size)
         append_char(s);
@@ -337,7 +337,6 @@ void print_roman_int(int n)
       j += 2; v = v / (so(str_pool[j - 1]) - TEX_STRING("0"));
     }
   }
-
 }
 
 void print_esc(str_number s)
@@ -358,7 +357,7 @@ void print_esc(str_number s)
 void print_sa_num(pointer q)// {print register number}
 {
   halfword n; //{the register number}
-  
+
   if (sa_index(q) < dimen_val_limit) n = sa_num(q); // { the easy case }
   else {
     n = hex_dig4(sa_index(q)); q = link(q); n = n + 16 * sa_index(q);
@@ -476,7 +475,7 @@ scaled mult_and_add(int n, scaled x, scaled y, scaled max_answer)
 }
 
 // 114
-#ifndef NO_DEBUG 
+#ifndef NO_DEBUG
 void print_word(memory_word w) // {prints w in all ways}
 {
   print_int(w.an_int); print_char(TEX_STRING(" "));
@@ -553,7 +552,7 @@ done2:
   }
   #pragma endregion
 
-  if (print_locs) 
+  if (print_locs)
     #pragma region <Print newly busy locations 171>
   {
     print_nl(TEX_STRING("New busy locs:"));
@@ -719,7 +718,7 @@ void build_discretionary()
 
   #pragma region <Prune the current list, if necessary, until it contains onlychar_node, kern_node, hlist_node.. 1121>
   q = head; p = link(q); n = 0;
-  while (p != null) { 
+  while (p != null) {
     if (!is_char_node(p))
       if (type(p) > rule_node)
         if (type(p) != kern_node)
@@ -740,10 +739,10 @@ done:
   switch (saved(-1)) {
   case 0: pre_break(tail) = p; break;
   case 1: post_break(tail) = p; break;
-  case 2: 
+  case 2:
     #pragma region <Attach list p to the current list, and record its length; then finish up and return 1120>
     if (n > 0 && myabs(mode) == mmode) {
-      print_err(TEX_STRING("Illegal math ")); 
+      print_err(TEX_STRING("Illegal math "));
       print_esc(TEX_STRING("discretionary"));
       help2(TEX_STRING("Sorry: The third part of a discretionary break must be"),
         TEX_STRING("empty, in math formulas. I had to delete your third part."));
@@ -787,9 +786,9 @@ bool get_strings_started()
 
   #pragma region <Make the first 256 strings 48>
   for (k = 0; k <= 255; k++) {
-    if ( k < TEX_STRING(" ") || 
+    if ( k < TEX_STRING(" ") ||
        k > TEX_STRING("~")) {
-      append_char(TEX_STRING("^")); 
+      append_char(TEX_STRING("^"));
       append_char(TEX_STRING("^"));
       if (k < 0100)
         append_char(k + 0100);
@@ -817,7 +816,7 @@ bool get_strings_started()
           bad_pool("! tex.pool has no checksum.", true);
         m = fgetc(pool_file);
         n = fgetc(pool_file);
-        if (m == '*') 
+        if (m == '*')
           #pragma region <check the pool checksum 53>
         {
           a = 0;
@@ -852,7 +851,6 @@ bool get_strings_started()
           }
           fgetc(pool_file); // read and discard new line
           make_string();
-      
         }
       }
       #pragma endregion
@@ -864,7 +862,6 @@ bool get_strings_started()
   else
     bad_pool("! I cannot read tex.pool.", false);
   #pragma endregion
-
 }
 #endif
 //tini
@@ -905,7 +902,7 @@ bool a_open_in(FILE **f, int path_specifier)
 {
   if (test_access(path_specifier))
     *f = fopen(real_name_of_file.get_c_str(), "r");
-  else 
+  else
     return false;
 
   return *f;
@@ -980,7 +977,7 @@ void print_font_and_char(int p)
   else {
     if (font(p) < font_base || font(p) > font_max)
       print_char(TEX_STRING("*"));
-    else 
+    else
       #pragma region <Print the font identifier for font(p) 267>
       print_esc(font_id_text(font(p)));
       #pragma endregion
@@ -1028,7 +1025,7 @@ scaled x_over_n(scaled x, int n)
   scaled ret;
   negative = false;
   if (n == 0) {
-    arith_error = true;    
+    arith_error = true;
     ret = 0;
     _remainder = x;
   }
@@ -1215,12 +1212,12 @@ void print_cmd_chr(quarterword cmd, halfword chr_code)
         break;
     }
     break;
-  case the: 
+  case the:
     if (chr_code == 0) print_esc(TEX_STRING("the"));
     else if (chr_code == 1) print_esc(TEX_STRING("unexpanded"));
     else print_esc(TEX_STRING("detokenize"));
     break;
-  case toks_register: 
+  case toks_register:
     print_esc(TEX_STRING("toks"));
     if (chr_code != mem_bot) print_sa_num(chr_code);
     break;
@@ -1568,7 +1565,7 @@ void print_cmd_chr(quarterword cmd, halfword chr_code)
     #pragma endregion
     else print_esc(TEX_STRING("global"));
     break;
-  case def: 
+  case def:
     if (chr_code == 0) print_esc(TEX_STRING("def"));
     else if (chr_code == 1) print_esc(TEX_STRING("gdef"));
     else if (chr_code == 2) print_esc(TEX_STRING("edef"));
@@ -1680,9 +1677,9 @@ void print_cmd_chr(quarterword cmd, halfword chr_code)
 
     //1295
   case undefined_cs: print(TEX_STRING("undefined")); break;
-  case call: 
-  case long_call: 
-  case outer_call: 
+  case call:
+  case long_call:
+  case outer_call:
   case long_outer_call:
     n = cmd - call;
     if (info(link(chr_code)) == protected_token) n = n + 4;
@@ -1756,7 +1753,7 @@ restart:
             state = skip_blanks;
           else
             state = mid_line;
-          if (cat == letter && k <= limit) 
+          if (cat == letter && k <= limit)
             #pragma region <Scan ahead in the buffer until finding a nonletter; .. 356>
           {
             do {
@@ -1765,18 +1762,18 @@ restart:
 
             #pragma region <If an expanded code is present, reduce it and goto start_cs 355>
             if (buffer[k] == cur_chr)
-              if (cat == sup_mark) 
+              if (cat == sup_mark)
                 if (k < limit) {
                   c = buffer[k + 1];
                   if (c < 0200) {
                     d = 2;
-                    if (is_hex(c)) 
+                    if (is_hex(c))
                       if (k + 2 <= limit) {
                         cc = buffer[k + 2];
                         if (is_hex(cc))
                           incr(d);
                       }
-                    
+
                     if (d > 2) {
                       hex_to_cur_chr;
                       buffer[k - 1] = (unsigned char)cur_chr;
@@ -1802,10 +1799,9 @@ restart:
             }
           }
             #pragma endregion
-          else 
+          else
             #pragma region <If an expanded code is present, reduce it and goto start_cs 355>
           {
-
             if (buffer[k] == cur_chr)
               if (cat == sup_mark)
                 if (k < limit) {
@@ -1858,7 +1854,7 @@ restart:
         #pragma region <If this sup_mark starts an expanded character like ^^A or ^^df then goto reswitch, otherwwise set state to mid line 352>
         if (cur_chr == buffer[loc])
           if (loc < limit) {
-            c = buffer[loc + 1]; 
+            c = buffer[loc + 1];
             if (c < 0200) {
               loc += 2;
               if (is_hex(c))
@@ -1867,7 +1863,7 @@ restart:
                   if (is_hex(cc)) {
                     incr(loc); hex_to_cur_chr;
                     goto reswitch;
-                  }                  
+                  }
                 }
               if (c < 0100) cur_chr = c + 0100;
               else cur_chr = c - 0100;
@@ -2012,7 +2008,6 @@ restart:
   else
     #pragma region <Input from token list, goto restart if end of list or if a parameter needs to be expanded 357>
   {
-    
     if (loc != null) {
       t = info(loc); loc = link(loc);
       if (t >= cs_token_flag) {
@@ -2020,7 +2015,7 @@ restart:
         if (cur_cmd >= outer_call) {
           if (cur_cmd == dont_expand)
             #pragma region <Get the next token, suppressing expansion 358>
-          {            
+          {
             cur_cs = info(loc) - cs_token_flag; loc = null;
             cur_cmd = eq_type(cur_cs); cur_chr = equiv(cur_cs);
             if (cur_cmd > max_command) {
@@ -2054,14 +2049,13 @@ restart:
     }
   }
     #pragma endregion
-  
+
   #pragma region <If an alignment entry has just ended take appropriate action 342>
   if (cur_cmd <= car_ret)
     if (cur_cmd >= tab_mark)
-      if (align_state == 0) 
+      if (align_state == 0)
         #pragma region <Insert the <v_j> template and goto restart 789>
       {
-        
         if (scanner_status == aligning || cur_align == null)
           fatal_error(TEX_STRING("(interwoven alignment preambles are not allowed)"));
         cur_cmd = (eight_bits)extra_info(cur_align); extra_info(cur_align) = cur_chr;
@@ -2072,7 +2066,6 @@ restart:
       }
         #pragma endregion
   #pragma endregion
-
 }
 
 // 365
@@ -2093,7 +2086,7 @@ void confusion(str_number s)
   normalize_selector();
   if (history < error_message_issued)
   {
-    print_err(TEX_STRING("This can't happen (")); print(s); 
+    print_err(TEX_STRING("This can't happen (")); print(s);
     print_char(TEX_STRING(")"));
     help1(TEX_STRING("I'm broken. Please show this to someone who can fix can fix"));
   }
@@ -2138,7 +2131,6 @@ void free_node(pointer p, halfword s)
   var_used -= s;
 #endif
   //tats
-
 }
 
 // 154
@@ -2323,13 +2315,13 @@ pointer get_avail()
 // 121
 void free_avail(pointer s)
 {
-  link(s) = avail; 
+  link(s) = avail;
   avail = s;
   /*stat*/
 #ifndef NO_STAT
   decr(dyn_used);
 #endif
-  /*tats*/ 
+  /*tats*/
 }
 // 93
 void succumb()
@@ -2464,7 +2456,7 @@ void check_outer_validity()
     }
     #pragma endregion
 
-    if (scanner_status > skipping) 
+    if (scanner_status > skipping)
       #pragma region <Tell the user what has run away and try to recover 338>
     {
       runaway();
@@ -2476,7 +2468,7 @@ void check_outer_validity()
       #pragma region <Print either definition or use or preamble or text, and insert tokens that should lead to recovery 339>
       p = get_avail();
       switch (scanner_status) {
-      case defining: 
+      case defining:
         print(TEX_STRING("definition"));
         info(p) = right_brace_token + TEX_STRING("}");
         break;
@@ -2491,7 +2483,7 @@ void check_outer_validity()
         link(p) = q; info(p) = cs_token_flag + frozen_cr; align_state = -1000000;
         break;
       case absorbing:
-        print(TEX_STRING("text")); 
+        print(TEX_STRING("text"));
         info(p) = right_brace_token + TEX_STRING("}");
         break;
       }
@@ -2586,7 +2578,7 @@ restart:
       q = q + node_size(q);
     }
     r = q - s;
-    if (r > p + 1) 
+    if (r > p + 1)
       #pragma region <Allocate from the top of node p and goto found 128>
     {
       node_size(p) = r - p;
@@ -2596,7 +2588,7 @@ restart:
       #pragma endregion
 
     if (r == p)
-      if (rlink(p) != p) 
+      if (rlink(p) != p)
         #pragma region <Allocate entire node p and goto found 129>
       {
         rover = rlink(p); t = llink(p); llink(rover) = t; rlink(t) = rover;
@@ -2613,7 +2605,7 @@ restart:
   }
 
   if (lo_mem_max + 2 < hi_mem_min)
-    if (lo_mem_max + 2 <= mem_bot + max_halfword) 
+    if (lo_mem_max + 2 <= mem_bot + max_halfword)
       #pragma region <Grow more variable-size memory and goto restart 126>
     {
       if (hi_mem_min - lo_mem_max >= 1998)
@@ -2647,7 +2639,7 @@ pointer new_spec(pointer p)
   pointer q;
   q = get_node(glue_spec_size);
   mem[q] = mem[p]; glue_ref_count(q) = null;
-  width(q) = width(p); stretch(q) = stretch(p); shrink(q) = shrink(p); 
+  width(q) = width(p); stretch(q) = stretch(p); shrink(q) = shrink(p);
   return q;
 }
 
@@ -2658,7 +2650,7 @@ pointer new_param_glue(small_number n)
   pointer q;
   p = get_node(small_node_size); type(p) = glue_node;
   subtype(p) = n + 1; leader_ptr(p) = null;
-  q = 
+  q =
     #pragma region <Current mem quivalent of glue parameter n 224>
     glue_par(n);
     #pragma endregion
@@ -2666,7 +2658,6 @@ pointer new_param_glue(small_number n)
   glue_ptr(p) = q;
   incr(glue_ref_count(q));
   return p;
-
 }
 
 // 153
@@ -2718,7 +2709,7 @@ void begin_file_reading()
   incr(in_open); push_input; index = (enum_token_type)in_open;
   eof_seen[index] = false;
   grp_stack[index] = cur_boundary; if_stack[index] = cond_ptr;
-  
+
   line_stack[index] = line;
   start = first; state = mid_line;
   name = 0;
@@ -2764,7 +2755,7 @@ void show_node_list(int p)
         print_scaled(depth(p));
         print(TEX_STRING(")x"));
         print_scaled(width(p));
-        if (type(p) == unset_node) 
+        if (type(p) == unset_node)
           #pragma region <Display special fields of the unset node p 185>
         {
           if (span_count(p) != min_quarterword) {
@@ -2801,7 +2792,7 @@ void show_node_list(int p)
                 exit(1);
               }
               /////////////////////////
-              
+
               print_glue((scaled)ftemp, glue_order(p), 0);
             }
           }
@@ -2875,7 +2866,7 @@ void show_node_list(int p)
         break;
       case glue_node:
         #pragma region <Display glue p 189>
-        if (subtype(p) >= a_leaders) 
+        if (subtype(p) >= a_leaders)
           #pragma region <Display leaders p 190>
         {
           print_esc(TEX_STRING(""));
@@ -3035,7 +3026,6 @@ void show_node_list(int p)
           print_subsidiary_data(nucleus(p), TEX_STRING("."));
         }
         print_subsidiary_data(supscr(p), TEX_STRING("^")); print_subsidiary_data(subscr(p), TEX_STRING("_"));
-
         #pragma endregion
         break;
 
@@ -3092,7 +3082,7 @@ void short_display(int p)
       if (p <= mem_end) {
         if (font(p) != font_in_short_display) {
           if (font(p) < font_base || font(p) > font_max) print_char(TEX_STRING("*"));
-          else 
+          else
             #pragma region <Print the font identifier for font(p) 267>
           {
             print_esc(font_id_text(font(p)));
@@ -3364,7 +3354,7 @@ bool input_ln(FILE *fp, bool bypass_eoln)
   while ((c = fgetc(fp)) != '\n' && c != EOF) {
     if (last >= max_buf_stack) {
       max_buf_stack = last + 1;
-      if (max_buf_stack == buf_size) 
+      if (max_buf_stack == buf_size)
         #pragma region <Report overflow of the input buffer, and abort 35>
       {
         if (format_ident == 0) {
@@ -3379,7 +3369,7 @@ bool input_ln(FILE *fp, bool bypass_eoln)
       }
         #pragma endregion
     }
-    buffer[last] = xord[c]; incr(last);    
+    buffer[last] = xord[c]; incr(last);
     if (buffer[last - 1] != TEX_STRING(" "))
       last_nonblank = last;
   }
@@ -3416,7 +3406,7 @@ void eq_destroy(memory_word w)
   case _register:
     if (equiv_field(w) < mem_bot || equiv_field(w) > lo_mem_stat_max)
       delete_sa_ref(equiv_field(w));
-    break;    
+    break;
   #pragma endregion
 
   default:
@@ -3559,7 +3549,7 @@ bool init_terminal(int argc, char **argv)
     last = first;
     for (int i = 1; i < argc; i++) {
       if (argv[i][0] == '-') // skip
-        continue;    
+        continue;
       int j = 0;
       int k = (int)strlen(argv[i]) - 1;
       while (k > 0 && argv[i][k] == ' ')
@@ -3582,8 +3572,7 @@ bool init_terminal(int argc, char **argv)
     }
   }
   //////////////////////////////////////////////////////////
-  
-  
+
   while (1) {
     fputs("**", term_out);
     if (!input_ln(term_in, true)) {
@@ -3650,7 +3639,7 @@ bool open_fmt_file()
     while (buffer[j] != TEX_STRING(" ")) incr(j);
     pack_buffered_name(0, loc, j - 1);
     if (w_open_in(&fmt_file)) goto found;
-    wake_up_terminal(); 
+    wake_up_terminal();
     wterm_ln_s("Sorry, I can't find that format; will try PLAIN.");
     update_terminal();
   }
@@ -3922,7 +3911,7 @@ void scan_something_internal(small_number level, bool negative)
     break;
   case _register:
     #pragma region <Fetch a register 427>
-    
+
     if (m < mem_bot || m > lo_mem_stat_max)
     {
       cur_val_level = sa_type(m);
@@ -4113,9 +4102,9 @@ void scan_something_internal(small_number level, bool negative)
         cur_val = zero_glue;
       else
         cur_val = 0;
-      
+
       find_effective_tail;
-      
+
       if (cur_chr == last_node_type_code)
       {
         cur_val_level = int_val;
@@ -4139,7 +4128,7 @@ void scan_something_internal(small_number level, bool negative)
             else cur_val = unset_node + 2;
             break;
         } // { there are no other cases }
-      else if (mode == vmode && tx == head) 
+      else if (mode == vmode && tx == head)
         switch (cur_chr) {
           case int_val:
             cur_val = last_penalty;
@@ -4176,7 +4165,7 @@ void scan_something_internal(small_number level, bool negative)
     break;
   }
 
-  while (cur_val_level > level) 
+  while (cur_val_level > level)
     #pragma region <Convert cur_val to a lower level 429>
   {
     if (cur_val_level == glue_val)
@@ -4347,7 +4336,7 @@ found:
       }
       break;
 
-    case expr_div: 
+    case expr_div:
       if (l < glue_val) expr_d(t);
       else {
         expr_d(width(t)); expr_d(stretch(t)); expr_d(shrink(t));
@@ -4464,7 +4453,7 @@ int fract(int x, int n, int d, int max_answer)
   int h; // {smallest integer such that |2*h>=d|}
   int r; //{intermediate remainder}
   int t; //{temp variable}
-  
+
   if (d == 0) goto too_big;
   a = 0;
   if (d > 0) negative = false;
@@ -4733,15 +4722,15 @@ found:
      while (link(q) != p) {
        q = link(q);
        switch (info(q)) {
-       
+
        case yz_OK:
         info(q) = y_OK;
         break;
-        
+
        case z_OK:
         info(q) = d_fixed;
         break;
-        
+
        default:
          //do_nothing
          break;
@@ -5446,7 +5435,6 @@ done:;
   }
 
   #pragma endregion
-
 }
 
 // 734
@@ -5539,7 +5527,7 @@ void make_math_accent(pointer q)
   done1:
 
     #pragma endregion
-  
+
     x = clean_box(nucleus(q), cramped_style(cur_style)); w = width(x); h = height(x);
 
     #pragma region <Switch to a larger accent if available and appropriate 740>
@@ -5549,7 +5537,6 @@ void make_math_accent(pointer q)
       if (!char_exists(i)) goto done;
       if (char_width(f, i) > w) goto done;
       c = (quarterword)y;
-      
     }
   done:
 
@@ -5648,7 +5635,6 @@ void make_fraction(pointer q)
   z = var_delimiter(right_delimiter(q), cur_size, delta); link(v) = z;
   new_hlist(q) = hpack(x, natural);
   #pragma endregion
-
 }
 
 // 749
@@ -6032,7 +6018,7 @@ void fin_align()
     }
       #pragma endregion
 
-    if (info(q) != end_span) 
+    if (info(q) != end_span)
       #pragma region <Merge the widths in the span nodes of q with those of p, destroying the span nodes of q 803>
     {
       t = width(q) + width(glue_ptr(link(q))); r = info(q); s = end_span; info(s) = p;
@@ -6105,7 +6091,7 @@ void fin_align()
             t += width(v);
             if (glue_sign(p) == stretching) {
               if (stretch_order(v) == glue_order(p)) {
-              
+
                 // Check for overflow
                 float ftemp = round(_float(glue_set(p)) * stretch(v));
                 if (ftemp > 2147483583 || ftemp < -2147483583) {
@@ -6113,13 +6099,13 @@ void fin_align()
                   exit(1);
                 }
                 /////////////////////////
-                
+
                 t += (scaled)ftemp;
               }
             }
             else if (glue_sign(p) == shrinking) {
               if (shrink_order(v) == glue_order(p)) {
-              
+
                 // Check for overflow
                 float ftemp = round(_float(glue_set(p)) * shrink(v));
                 if (ftemp > 2147483583 || ftemp < -2147483583) {
@@ -6127,7 +6113,7 @@ void fin_align()
                   exit(1);
                 }
                 /////////////////////////
-                
+
                 t -= (scaled)ftemp;
               }
             }
@@ -6258,7 +6244,7 @@ void fin_align()
 pointer fin_mlist(pointer p)
 {
   pointer q;
-  if (incompleat_noad != null) 
+  if (incompleat_noad != null)
     #pragma region <Compleat the incompleat noad 1185>
   {
     math_type(denominator(incompleat_noad)) = sub_mlist;
@@ -6305,7 +6291,7 @@ pointer id_lookup(int j, int l)
     if (next(p) == 0) {
       if (no_new_control_sequence)
         p = undefined_control_sequence;
-      else 
+      else
         #pragma region <Insert a new control sequence after p, then make p point to it 260>
       {
         if (text(p) > 0) {
@@ -6375,7 +6361,7 @@ void unsave()
       p = save_index(save_ptr);
       if (save_type(save_ptr) == insert_token)
         #pragma region <Insert token p into TeXs input 326>
-      { 
+      {
         t = cur_tok; cur_tok = p;
         if (a)
         {
@@ -6395,7 +6381,7 @@ void unsave()
       {
         sa_restore(); sa_chain = p; sa_level = save_level(save_ptr);
       }
-      else  { 
+      else {
         if (save_type(save_ptr) == restore_old_value) {
           l = save_level(save_ptr); decr(save_ptr);
         }
@@ -6438,7 +6424,7 @@ void unsave()
         #pragma endregion
       }
     }
-done: 
+done:
 #ifndef NO_STAT
     if (tracing_groups > 0) group_trace(true);
 #endif
@@ -6585,7 +6571,7 @@ void show_eqtb(pointer n)
     else if (n < mu_skip_base) {
       print_esc(TEX_STRING("skip"));
       print_int(n - skip_base);
-      print_char(TEX_STRING("=")); 
+      print_char(TEX_STRING("="));
       print_spec(equiv(n), TEX_STRING("pt"));
     }
     else {
@@ -6626,7 +6612,7 @@ void show_eqtb(pointer n)
         depth_threshold = 0; breadth_max = 1; show_node_list(equiv(n));
       }
     }
-    else if (n < cat_code_base) 
+    else if (n < cat_code_base)
       #pragma region <Show the font identifier in eqtb[n] 234>
     {
       if (n == cur_font_loc) print(TEX_STRING("current font"));
@@ -6643,7 +6629,7 @@ void show_eqtb(pointer n)
       print_esc(hash[font_id_base + equiv(n)].rh);
     }
       #pragma endregion
-    else 
+    else
       #pragma region <Show the halfword code in eqtb[n] 235>
       if (n < math_code_base) {
         if (n < lc_code_base) {
@@ -6817,7 +6803,7 @@ void handle_right_brace()
     end_graf(); unsave(); output_active = false; insert_penalties = 0;
     #pragma region <Ensure that box 255 is empty after output 1028>
     if (box(255) != null) {
-      print_err(TEX_STRING("Output routine didn't use all of ")); 
+      print_err(TEX_STRING("Output routine didn't use all of "));
       print_esc(TEX_STRING("box")); print_int(255);
       help3(TEX_STRING("Your \output commands should empty \box255,"),
         TEX_STRING("e.g., by saying `\shipout\box255'."),
@@ -6847,7 +6833,7 @@ void handle_right_brace()
     //1132
   case align_group:
     back_input(); cur_tok = cs_token_flag + frozen_cr; print_err(TEX_STRING("Missing "));
-    print_esc(TEX_STRING("cr")); 
+    print_esc(TEX_STRING("cr"));
     print(TEX_STRING(" inserted"));
     help1(TEX_STRING("I'm guessing that you meant to end an alignment here."));
     ins_error();
@@ -6885,7 +6871,7 @@ void handle_right_brace()
         }
         else if (type(p) == accent_noad)
           if (saved(0) == nucleus(tail))
-            if (type(tail) == ord_noad) 
+            if (type(tail) == ord_noad)
               #pragma region <Replace the tail of the list by p 1187>
             {
               q = head;
@@ -6912,7 +6898,7 @@ void sort_avail()
 
   p = get_node(010000000000);
   p = rlink(rover); rlink(rover) = max_halfword; old_rover = rover;
-  while (p != old_rover) 
+  while (p != old_rover)
     #pragma region <Sort p into the list starting at rover and advance p to rlink(p) 132>
   {
     if (p < rover) {
@@ -6921,7 +6907,6 @@ void sort_avail()
     else {
       q = rover;
       while (rlink(q) < p) q = rlink(q);
-      
       r = rlink(p); rlink(p) = rlink(q); rlink(q) = p; p = r;
     }
   }
@@ -6971,10 +6956,9 @@ void open_log_file()
   old_setting = selector;
   if (job_name == 0) job_name = TEX_STRING("texput");
   pack_job_name(TEX_STRING(".log"));
-  while (!a_open_out(&log_file)) 
+  while (!a_open_out(&log_file))
     #pragma region <Try to get a different log file name 535>
   {
-    
     selector = term_only; prompt_file_name(TEX_STRING("transcript file name"),
       TEX_STRING(".log"));
 
@@ -7007,7 +6991,6 @@ void open_log_file()
     print(buffer[k]);
   print_ln();
   selector = old_setting + 2;
-  
 }
 
 // 525
@@ -7070,7 +7053,7 @@ void initialize()
   setup_char_arrays();
   //74
   interaction = error_stop_mode;
-  
+
   // 77
   deletions_allowed = true;
   set_box_allowed = true;
@@ -7088,12 +7071,12 @@ void initialize()
 
   // 166
   //debug
-#ifndef NO_DEBUG  
+#ifndef NO_DEBUG
   was_mem_end = mem_min;
   was_lo_max = mem_min;
   was_hi_min = mem_max;
   panicking = false;
-#endif  
+#endif
   //gubed
 
   // 215
@@ -7290,23 +7273,14 @@ void initialize()
   cat_code(null_code) = ignore;
   for (k = TEX_STRING("0");
     k <= TEX_STRING("9"); k++) math_code(k) = hi(k + var_code);
-  for (k = TEX_STRING("A");
-    k <= TEX_STRING("Z"); k++) {
-    cat_code(k) = letter; 
+  for (k = TEX_STRING("A"); k <= TEX_STRING("Z"); k++) {
+    cat_code(k) = letter;
     cat_code(k + TEX_STRING("a") - TEX_STRING("A")) = letter;
     math_code(k) = hi(k + var_code + 0x100);
-    math_code(k + TEX_STRING("a") -
-      TEX_STRING("A")) = 
-      hi(k + TEX_STRING("a") -
-        TEX_STRING("A") + var_code + 0x100);
-    lc_code(k) = k + TEX_STRING("a") - 
-      TEX_STRING("A");
-    lc_code(k + TEX_STRING("a") - 
-      TEX_STRING("A")) = k + 
-      TEX_STRING("a") - 
-      TEX_STRING("A");
-    uc_code(k) = k; uc_code(k + TEX_STRING("a") - 
-      TEX_STRING("A")) = k;
+    math_code(k + TEX_STRING("a") - TEX_STRING("A")) = hi(k + TEX_STRING("a") - TEX_STRING("A") + var_code + 0x100);
+    lc_code(k) = k + TEX_STRING("a") - TEX_STRING("A");
+    lc_code(k + TEX_STRING("a") - TEX_STRING("A")) = k + TEX_STRING("a") - TEX_STRING("A");
+    uc_code(k) = k; uc_code(k + TEX_STRING("a") - TEX_STRING("A")) = k;
     sf_code(k) = 999;
   }
 
@@ -7373,7 +7347,6 @@ void initialize()
 #endif
 //tini
   #pragma endregion
-
 }
 
 // 694
@@ -7398,7 +7371,7 @@ void error()
     history = error_message_issued;
   print_char(TEX_STRING("."));
   show_context();
-  if (interaction == error_stop_mode) 
+  if (interaction == error_stop_mode)
     #pragma region <get users advise and return 83>
     while (1) {
 mycontinue:
@@ -7424,7 +7397,6 @@ mycontinue:
           if (deletions_allowed)
             #pragma region <Delete c - character 0 tokens and goto continue 88>
           {
-            
             s1 = cur_tok; s2 = cur_cmd; s3 = cur_chr; s4 = align_state; align_state = 1000000;
             OK_to_interrupt = false;
             if (last > first + 1 && buffer[first + 1] >= TEX_STRING("0") && buffer[first + 1] <=
@@ -7446,12 +7418,12 @@ mycontinue:
           break;
 
           //debug
-#ifndef NO_DEBUG          
+#ifndef NO_DEBUG
         case TEX_STRING("D"):
           debug_help();
           goto mycontinue;
           break;
-#endif          
+#endif
           //gubed
 
         case TEX_STRING("E"):
@@ -7464,7 +7436,7 @@ mycontinue:
               jump_out();
             }
           break;
-          
+
         case TEX_STRING("H"):
           #pragma region <Print help information and continue 89>
           if (use_err_help) {
@@ -7570,7 +7542,6 @@ mycontinue:
   if (interaction > batch_mode) incr(selector);
   print_ln();
   #pragma endregion
-
 }
 
 // 91
@@ -7595,7 +7566,7 @@ pointer copy_node_list(pointer p)
     #pragma region <Make a copy of node p in node r 205>
     words = 1;
     if (is_char_node(p)) r = get_avail();
-    else 
+    else
       #pragma region <Case statement to copy different types and set words to the number of initial words not yet copied 206>
       switch (type(p)) {
       case hlist_node:
@@ -7672,7 +7643,7 @@ pointer copy_node_list(pointer p)
     #pragma endregion
     link(q) = r; q = r; p = link(p);
   }
-  link(q) = null; q = link(h); free_avail(h); 
+  link(q) = null; q = link(h); free_avail(h);
   return q;
 }
 
@@ -7824,7 +7795,6 @@ void new_index(quarterword i, pointer q)
   sa_used(cur_ptr) = 0; link(cur_ptr) = q;
   for (k = 1; k <= index_node_size - 1; k++) // clear all 16 points
     mem[cur_ptr + k] = sa_null;
-
 }
 
 void find_sa_element(small_number t, halfword n, bool w)
@@ -7901,7 +7871,7 @@ pointer str_toks(pool_pointer b)
     else t = other_token + t;
     store_new_token(t); incr(k);
   }
-  pool_ptr = b; 
+  pool_ptr = b;
   return p;
 }
 
@@ -7947,7 +7917,7 @@ void scan_dimen(bool mu, bool inf, bool shortcut)
       }
     } while (cur_tok == other_token + TEX_STRING("+"));
     #pragma endregion
-    if (cur_cmd >= min_internal && cur_cmd <= max_internal) 
+    if (cur_cmd >= min_internal && cur_cmd <= max_internal)
       #pragma region <Fetch an internal dimension and goto attach_sign, or fetch an internal integer 449>
     {
       if (mu) {
@@ -7978,7 +7948,7 @@ void scan_dimen(bool mu, bool inf, bool shortcut)
       }
       if (cur_tok == continental_point_token)
         cur_tok = point_token;
-      if (radix == 10 && cur_tok == point_token) 
+      if (radix == 10 && cur_tok == point_token)
         #pragma region <Scan decimal fraction 452>
       {
         k = 0; p = null; get_token();
@@ -7991,21 +7961,20 @@ void scan_dimen(bool mu, bool inf, bool shortcut)
         }
       done1:
         for (kk = k; kk >= 1; kk--) {
-          
+
           // overflow check
           if (info(p) > 255) {
             fprintf(stderr, "! Overflow in 452\n");
             exit(1);
           }
           //////////////////
-          
+
           dig[kk - 1] = (unsigned char)info(p); q = p; p = link(p); free_avail(q);
         }
         f = round_decimals(k);
         if (cur_cmd != spacer) back_input();
       }
         #pragma endregion
-      
     }
   }
   if (cur_val < 0) {
@@ -8110,11 +8079,11 @@ not_found:
     print_err(TEX_STRING("Illegal unit of measure ("));
     print(TEX_STRING("pt inserted)"));
     help6(TEX_STRING("Dimensions can be in units of em, ex, in, pt, pc,"),
-      TEX_STRING("cm, mm, dd, cc, bp, or sp; but yours is a new one!"), 
-      TEX_STRING("I'll assume that you meant to say pt, for printer's points."), 
-      TEX_STRING("To recover gracefully from this error, it's best to"), 
-      TEX_STRING("delete the erroneous units; e.g., type `2' to delete"), 
-      TEX_STRING("two letters. (See Chapter 27 of The TeXbook.)"));    
+      TEX_STRING("cm, mm, dd, cc, bp, or sp; but yours is a new one!"),
+      TEX_STRING("I'll assume that you meant to say pt, for printer's points."),
+      TEX_STRING("To recover gracefully from this error, it's best to"),
+      TEX_STRING("delete the erroneous units; e.g., type `2' to delete"),
+      TEX_STRING("two letters. (See Chapter 27 of The TeXbook.)"));
     error();
     goto done2;
   }
@@ -8198,7 +8167,6 @@ void scan_glue(small_number level)
   }
   cur_val = q;
   #pragma endregion
-
 }
 
 void scan_normal_glue()
@@ -8244,7 +8212,7 @@ pointer the_toks()
 #pragma endregion
   get_x_token();
   scan_something_internal(tok_val, false);
-  if (cur_val_level >= ident_val) 
+  if (cur_val_level >= ident_val)
     #pragma region <Copy the token list 466>
   {
     p = temp_head; link(p) = null;
@@ -8509,10 +8477,10 @@ void conditional()
     scan_four_bit_int(); b = (read_open[cur_val] == closed);
     break;
 
-  case if_true_code: 
+  case if_true_code:
     b = true;
     break;
-  case if_false_code: 
+  case if_false_code:
     b = false;
     break;
   #pragma region <Cases for |conditional|>
@@ -8606,7 +8574,7 @@ void conditional()
 
   #pragma endregion
   if (is_unless) b = !b;
-  if (tracing_commands > 1) 
+  if (tracing_commands > 1)
     #pragma region <Display the value of b 502>
   {
     begin_diagnostic();
@@ -8615,7 +8583,6 @@ void conditional()
     end_diagnostic(false);
   }
     #pragma endregion
-  
   if (b) {
     change_if_limit(else_code, save_cond_ptr);
     return;
@@ -8626,7 +8593,7 @@ void conditional()
     pass_text();
     if (cond_ptr == save_cond_ptr) {
       if (cur_chr != or_code) goto common_ending;
-      print_err(TEX_STRING("Extra ")); 
+      print_err(TEX_STRING("Extra "));
       print_esc(TEX_STRING("or"));
       help1(TEX_STRING("I'm ignoring this; it doesn't match any \if."));
       error();
@@ -8671,7 +8638,7 @@ void expand()
   co_backup = cur_order;
   backup_backup = link(backup_head);
 reswitch:
-  if (cur_cmd < call) 
+  if (cur_cmd < call)
     #pragma region <Expand a nonmacro 367>
   {
     if (tracing_commands > 1) show_cur_cmd_chr();
@@ -8742,7 +8709,7 @@ reswitch:
         get_x_token();
         if (cur_cs == 0) store_new_token(cur_tok);
       } while (cur_cs == 0);
-      if (cur_cmd != end_cs_name) 
+      if (cur_cmd != end_cs_name)
         #pragma region <Complain about missing endcsname 373>
       {
         print_err(TEX_STRING("Missing "));
@@ -8832,7 +8799,7 @@ reswitch:
   }
     #pragma endregion
   else if (cur_cmd < end_template) macro_call();
-  else 
+  else
     #pragma region <Insert a token containing frozen_endv 375>
   {
     cur_tok = cs_token_flag + frozen_endv;
@@ -8858,8 +8825,8 @@ void macro_call()
 
   save_scanner_status = scanner_status; save_warning_index = warning_index;
   warning_index = cur_cs; ref_count = cur_chr; r = link(ref_count); n = 0;
-  if (tracing_macros > 0) 
-    #pragma region <Show the text of the macro being expanded 401>  
+  if (tracing_macros > 0)
+    #pragma region <Show the text of the macro being expanded 401>
   {
     begin_diagnostic();
     print_ln();
@@ -8870,7 +8837,7 @@ void macro_call()
     #pragma endregion
 
   if (info(r) == protected_token) r = link(r);
-  if (info(r) != end_match_token) 
+  if (info(r) != end_match_token)
     #pragma region <Scan the parameters and make link(r) pont to the macro body;.. 391>
   {
     scanner_status = matching; unbalance = 0; long_state = eq_type(cur_cs);
@@ -8890,7 +8857,7 @@ void macro_call()
       #pragma region <Scan a parameter until its delimiter string has been found; or if s = null.. 392>
     mycontinue:
       get_token();
-      if (cur_tok == info(r)) 
+      if (cur_tok == info(r))
         #pragma region <Advance r; goto found if the parameter delimiter has been fully matched.. 394>
       {
         r = link(r);
@@ -8902,7 +8869,7 @@ void macro_call()
       }
         #pragma endregion
 
-      #pragma region <Contribute the recently matched tokens to the current paramter, and goto continue if a partial match... 397>      
+      #pragma region <Contribute the recently matched tokens to the current paramter, and goto continue if a partial match... 397>
       if (s != r) {
         if (s == null)
           #pragma region <Report an improper use of the macro and abort 398>
@@ -8939,7 +8906,7 @@ void macro_call()
       }
       #pragma endregion
       if (cur_tok == par_token)
-        if (long_state != long_call) 
+        if (long_state != long_call)
           #pragma region <Report a runaway argument and abort 396>
         {
           if (long_state == call) {
@@ -8957,7 +8924,7 @@ void macro_call()
         }
           #pragma endregion
       if (cur_tok < right_brace_limit) {
-        if (cur_tok < left_brace_limit) 
+        if (cur_tok < left_brace_limit)
           #pragma region <Contribute an entire group to the current paramter 399>
         {
           unbalance = 1;
@@ -9012,7 +8979,7 @@ void macro_call()
         }
           #pragma endregion
       }
-      else 
+      else
         #pragma region <Store the current token but goto continue if it is a blank sapce that woudl become an undelmited paramter 393>
       {
         if (cur_tok == space_token)
@@ -9022,14 +8989,14 @@ void macro_call()
         store_new_token(cur_tok);
       }
         #pragma endregion
-      
+
       incr(m);
       if (info(r) > end_match_token)
         goto mycontinue;
       if (info(r) < match_token)
         goto mycontinue;
     found:
-      if (s != null) 
+      if (s != null)
         #pragma region <Tidy up the parameter just scanned and tuck it away 400>
       {
         if (m == 1 && info(p) < right_brace_limit) {
@@ -9255,8 +9222,7 @@ void new_patterns()
       case letter:
       case other_char:
         #pragma region <Append a new letter of a hyphen level 962>
-        if (digit_sensed || cur_chr < TEX_STRING("0") || 
-          cur_chr > TEX_STRING("9")) {
+        if (digit_sensed || cur_chr < TEX_STRING("0") || cur_chr > TEX_STRING("9")) {
           if (cur_chr == TEX_STRING(".")) cur_chr = 0;
           else {
             cur_chr = lc_code(cur_chr);
@@ -9535,7 +9501,7 @@ void x_token()
 void scan_left_brace()
 {
   #pragma region <Get the next non-blank non relax non-call token 404>
-  do 
+  do
   {
     get_x_token();
   } while (cur_cmd == spacer || cur_cmd == relax);
@@ -9660,7 +9626,7 @@ pointer scan_toks(bool macro_def, bool xpand)
       }
     }
     else if (cur_cmd == mac_param)
-      if (macro_def) 
+      if (macro_def)
         #pragma region <Look for parameter number or .. 479>
       {
         s = cur_tok;
@@ -9717,7 +9683,6 @@ void read_toks(int n, pointer r, halfword j)
     if (read_open[m] == closed)
       #pragma region <Input for read from the terminal 484>
     {
-
       if (interaction > nonstop_mode) {
         if (n < 0)
           prompt_input(TEX_STRING(""));
@@ -9733,15 +9698,13 @@ void read_toks(int n, pointer r, halfword j)
         fatal_error(TEX_STRING("*** (cannot \read from terminal in nonstop modes)"));
     }
       #pragma endregion
-    else if (read_open[m] == just_open) 
+    else if (read_open[m] == just_open)
       #pragma region <Input the first line of read_file[m] 485>
-    {      
-
+    {
       if (input_ln(read_file[m], false)) read_open[m] = normal;
       else {
         a_close(read_file[m]); read_open[m] = closed;
       }
-
     }
       #pragma endregion
     else
@@ -9813,7 +9776,7 @@ void char_warning(internal_font_number f, eight_bits c)
     print_nl(TEX_STRING("Missing character: There is no "));
     print_ASCII(c);
     print(TEX_STRING(" in font "));
-    slow_print(font_name[f]); 
+    slow_print(font_name[f]);
     print_char(TEX_STRING("!"));
     end_diagnostic(false);
     tracing_online = old_setting;
@@ -9901,7 +9864,7 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
   #pragma region <Use size fields to allocate font information 566>
   lf = lf - 6 - lh;
   if (np < 7) lf = lf + 7 - np;
-  if (font_ptr == font_max || fmem_ptr + lf > font_mem_size) 
+  if (font_ptr == font_max || fmem_ptr + lf > font_mem_size)
     #pragma region <Apologize for not loading the font, goto done 567>
   {
     start_font_error_message; print(TEX_STRING(" not loaded: Not enough room left"));
@@ -9924,7 +9887,7 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
   if (lh < 2) _abort;
   store_four_quarters(font_check[f]);
   read_sixteen(z);
-  
+
   z = z * 0400 + fgetc(tfm_file); z = (z * 020) + (fgetc(tfm_file) / 020);
   if (z < unity) _abort;
   while (lh > 2) {
@@ -10015,7 +9978,6 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
     if (b != 0) check_existence(a);
     if (c != 0) check_existence(a);
     check_existence(d);
-    
   }
   #pragma endregion
 
@@ -10053,7 +10015,7 @@ internal_font_number read_font_info(pointer u, str_number nom, str_number aire, 
     exit(1);
   }
   /////////////////
-  
+
   font_name[f] = nom; font_area[f] = aire; font_bc[f] = (eight_bits)bc; font_ec[f] = (eight_bits)ec;
   font_glue[f] = null; adjust(char_base); adjust(width_base); adjust(lig_kern_base);
   adjust(kern_base); adjust(exten_base);
@@ -10146,7 +10108,7 @@ void hlist_out()
       #pragma endregion
   }
   #pragma endregion
-  
+
   left_edge = cur_h;
   while (p != null)
     #pragma region <Output node p for hlist_out and move to the next node.. 620>
@@ -10172,7 +10134,7 @@ void hlist_out()
           #pragma endregion
         if (c >= qi(128)) dvi_out(dvi_op::set1);
         dvi_out(qo(c));
-        cur_h += char_width(f, char_info(f, c)); 
+        cur_h += char_width(f, char_info(f, c));
         prev_p = link(prev_p); // {N.B.: not |prev_p:=p|, |p| might be |lig_trick|}
         p = link(p);
       } while (is_char_node(p));
@@ -10191,7 +10153,7 @@ void hlist_out()
           temp_ptr = p; edge = cur_h + width(p);
           if (cur_dir == right_to_left) cur_h = edge;
           if (type(p) == vlist_node) vlist_out(); else hlist_out();
-          dvi_h = save_h; dvi_v = save_v; 
+          dvi_h = save_h; dvi_v = save_v;
           cur_h = edge; cur_v = base_line;
         }
         #pragma endregion
@@ -10265,7 +10227,7 @@ void hlist_out()
               #pragma endregion
             if (cur_dir == right_to_left) cur_h = edge;
             else
-              cur_h = edge - 10; 
+              cur_h = edge - 10;
             goto next_p;
           }
         }
@@ -10282,7 +10244,7 @@ void hlist_out()
         #pragma region <Handle a math node in |hlist_out|>
         if (eTeX_ex)
           #pragma region <Adjust (t)the LR stack for the |hlist_out| routine; if necessary reverse an hlist segment and |goto reswitch|>
-        { 
+        {
           if (end_LR(p))
             if (info(LR_ptr) == end_LR_type(p)) pop_LR;
           else {
@@ -10292,7 +10254,7 @@ void hlist_out()
             push_LR(p);
             if (LR_dir(p)!=cur_dir)
               #pragma region <Reverse an hlist segment and |goto reswitch|>
-            { 
+            {
               save_h = cur_h; temp_ptr = link(p); rule_wd = width(p);
               free_node(p,small_node_size);
               cur_dir = reflected; p = new_edge(cur_dir,rule_wd); link(prev_p)=p;
@@ -10317,7 +10279,7 @@ void hlist_out()
         break;
 
       #pragma region <Cases of |hlist_out| that arise in mixed direction text only>
-      case edge_node: 
+      case edge_node:
         cur_h = cur_h+width(p);
         left_edge = cur_h+edge_dist(p); cur_dir = subtype(p);
         break;
@@ -10354,7 +10316,7 @@ next_p:
   if (eTeX_ex)
   {
     #pragma region <Check for LR anomalies at the end of |hlist_out|>
-    { 
+    {
       while (info(LR_ptr)!=before)
       {
         if (info(LR_ptr) > L_code) LR_problems = LR_problems + 10000;
@@ -10399,7 +10361,7 @@ void vlist_out()
   while (p != null)
     #pragma region <Output node p for vlist_out and move to the next node, maintaining.. 630>
   {
-    if (is_char_node(p)) 
+    if (is_char_node(p))
       confusion(TEX_STRING("vlistout"));
     else
       #pragma region <Output the non-char node p for vlist_out 631>
@@ -10505,7 +10467,7 @@ void vlist_out()
 
           #pragma endregion
         goto move_past;
-        #pragma endregion        
+        #pragma endregion
         break;
       case kern_node:
         cur_v += width(p);
@@ -10533,7 +10495,7 @@ void vlist_out()
       cur_v += rule_ht;
     }
       #pragma endregion
-  
+
     next_p:
         p = link(p);
   }
@@ -10549,7 +10511,7 @@ pointer new_edge(small_number s, scaled w)
   //{create an edge node}
 {
   pointer p; //{the new node}
-  
+
   p = get_node(edge_node_size); type(p) = edge_node; subtype(p) = s;
   width(p)=w; edge_dist(p)=0; //{the |edge_dist| field will be set later}
   return p;
@@ -10624,7 +10586,7 @@ done:
 
   if (eTeX_ex)
     #pragma region <Check for LR anomalies at the end of |ship_out|>
-  { 
+  {
     if (LR_problems > 0)
     {
       #pragma region <Report LR problems>
@@ -10661,7 +10623,6 @@ done:
 #endif
   //tats
   #pragma endregion
-
 }
 
 // 1069
@@ -10708,7 +10669,7 @@ pointer vpackage(pointer p, scaled h, small_number m, scaled l)
   total_shrink[filll] = 0;
   #pragma endregion
 
-  while (p != 0) 
+  while (p != 0)
     #pragma region <Examine node p in the vlist, taking account of its effect on the dimensions of the new box; then advance p to the next node 669>
   {
     if (is_char_node(p)) confusion(TEX_STRING("vpack"));
@@ -10770,7 +10731,7 @@ pointer vpackage(pointer p, scaled h, small_number m, scaled l)
     glue_sign(r) = normal; glue_order(r) = normal; set_glue_ratio_zero(glue_set(r));
     goto _exit;
   }
-  else if (x > 0) 
+  else if (x > 0)
     #pragma region <Determine vertical glue stretch setting, then return or goto commond_ending 673>
   {
     #pragma region <Determine the stretch order 659>
@@ -10785,7 +10746,7 @@ pointer vpackage(pointer p, scaled h, small_number m, scaled l)
       glue_sign(r) = normal; set_glue_ratio_zero(glue_set(r));
     }
     if (o == normal)
-      if (list_ptr(r) != null) 
+      if (list_ptr(r) != null)
         #pragma region <Report an underfull vbox and goto common_ending, if this box is sufficiently bad 674>
       {
         last_badness = badness(x, total_stretch[normal]);
@@ -10798,11 +10759,11 @@ pointer vpackage(pointer p, scaled h, small_number m, scaled l)
         }
       }
         #pragma endregion
-      
+
     goto _exit;
   }
     #pragma endregion
-  else 
+  else
     #pragma region <Determine vertical glue shrink setting then return or goto common_ending 676>
   {
     #pragma region <Determine the shrink order 665>
@@ -10827,7 +10788,7 @@ pointer vpackage(pointer p, scaled h, small_number m, scaled l)
       #pragma endregion
     }
     else if (o == normal)
-      if (list_ptr(r) != null) 
+      if (list_ptr(r) != null)
         #pragma region <Report a tight vbox and goto common_ending if this box is sufficienlty bad 678>
       {
         last_badness = badness(-x, total_shrink[normal]);
@@ -10838,7 +10799,7 @@ pointer vpackage(pointer p, scaled h, small_number m, scaled l)
         }
       }
         #pragma endregion
-      
+
     goto _exit;
   }
     #pragma endregion
@@ -10914,11 +10875,11 @@ pointer hpack(pointer p, scaled w, small_number m)
     #pragma region <Initialize the LR stack>
     put_LR(before); // {this will never match}
     #pragma endregion
-  while (p != null) 
+  while (p != null)
     #pragma region <Examine node p in the hlist, taking account of its effect on the dimensions of the .. to the next node 651>
   {
   reswitch:
-    while (is_char_node(p)) 
+    while (is_char_node(p))
       #pragma region <Incorporate character dimensions into the dimensions of the hbox that will contain it, then move to the next node 654>
     {
       f = font(p); i = char_info(f, character(p)); hd = height_depth(i); x += char_width(f, i);
@@ -10928,7 +10889,6 @@ pointer hpack(pointer p, scaled w, small_number m)
     }
       #pragma endregion
 
-    
     if (p != null) {
       switch (type(p)) {
       case hlist_node:
@@ -10945,7 +10905,7 @@ pointer hpack(pointer p, scaled w, small_number m)
       case ins_node:
       case mark_node:
       case adjust_node:
-        if (adjust_tail != null) 
+        if (adjust_tail != null)
           #pragma region <transfer node p to the adjustment list 655>
         {
           while (link(q) != p) q = link(q);
@@ -11015,7 +10975,7 @@ pointer hpack(pointer p, scaled w, small_number m)
     glue_sign(r) = normal; glue_order(r) = normal; set_glue_ratio_zero(glue_set(r));
     goto _exit;
   }
-  else if (x > 0) 
+  else if (x > 0)
     #pragma region <Determine horizontal glue stretch setting, then return or goto common_ending 658>
   {
     #pragma region <Determine the stretch order 659>
@@ -11033,11 +10993,10 @@ pointer hpack(pointer p, scaled w, small_number m)
       if (list_ptr(r) != null)
         #pragma region <Report an underfull hbox and goto common_ending, if this box is sufficiently bad 660>
       {
-
         last_badness = badness(x, total_stretch[normal]);
         if (last_badness > hbadness) {
           print_ln();
-          if (last_badness > 100) print_nl(TEX_STRING("Underfull")); 
+          if (last_badness > 100) print_nl(TEX_STRING("Underfull"));
           else print_nl(TEX_STRING("Loose"));
           print(TEX_STRING(" \hbox (badness ")); print_int(last_badness);
           goto common_ending;
@@ -11047,8 +11006,8 @@ pointer hpack(pointer p, scaled w, small_number m)
     goto _exit;
   }
     #pragma endregion
-  else 
-    #pragma region <Determine horizontal glue shrink setting, then return or goto common_ending 664>  
+  else
+    #pragma region <Determine horizontal glue shrink setting, then return or goto common_ending 664>
   {
     #pragma region <Determine the shrink order 665>
     if (total_shrink[filll] != 0) o = filll;
@@ -11076,7 +11035,7 @@ pointer hpack(pointer p, scaled w, small_number m)
       #pragma endregion
     }
     else if (o == normal)
-      if (list_ptr(r) != null) 
+      if (list_ptr(r) != null)
         #pragma region <Report a tight hbox and goto common_ending, if this box is suffiently bad 667>
       {
         last_badness = badness(-x, total_shrink[normal]);
@@ -11187,7 +11146,7 @@ void try_break(int pi, small_number break_type)
       do_all_six(update_width); prev_prev_r = prev_r; prev_r = r; goto mycontinue;
     }
     #pragma endregion
-    
+
     #pragma region <If a line number class has ended, create new active nodes for the best feasible breaks in that class... 835>
     {
       l = line_number(r);
@@ -11324,7 +11283,7 @@ void try_break(int pi, small_number break_type)
                 #pragma endregion
               link(q) = r; link(prev_r) = q; prev_r = q;
               //stat
-#ifndef NO_STAT              
+#ifndef NO_STAT
               if (tracing_paragraphs > 0)
                 #pragma region <Print symbolic description of the new break node 846>
               {
@@ -11534,7 +11493,7 @@ found:
         else print_int(serial(break_node(r)));
         print(TEX_STRING(" b="));
         if (b > inf_bad) print_char(TEX_STRING("*")); else print_int(b);
-        print(TEX_STRING(" p=")); print_int(pi); 
+        print(TEX_STRING(" p=")); print_int(pi);
         print(TEX_STRING(" d="));
         if (artificial_demerits) print_char(TEX_STRING("*")); else print_int(d);
       }
@@ -11543,7 +11502,7 @@ found:
       //tats
       d += total_demerits(r);
       if (d <= minimal_demerits[fit_class]) {
-        minimal_demerits[fit_class] = d; 
+        minimal_demerits[fit_class] = d;
         best_place[fit_class] = break_node(r); best_pl_line[fit_class] = l;
         if (do_last_line_fit)
           #pragma region <Store additional data for this feasible break>
@@ -11607,7 +11566,7 @@ void box_end(int box_context)
 {
   pointer p;
   small_number a; // {global prefix}
-  if (box_context < box_flag) 
+  if (box_context < box_flag)
     #pragma region <Append box cur_box to the current list, shifted by box_context 1076>
   {
     if (cur_box != null) {
@@ -11633,7 +11592,7 @@ void box_end(int box_context)
     }
   }
     #pragma endregion
-  else if (box_context < ship_out_flag) 
+  else if (box_context < ship_out_flag)
     #pragma region <Store cur_box in a box register 1077>
   {
     if (box_context < global_box_flag)
@@ -11648,7 +11607,7 @@ void box_end(int box_context)
   }
     #pragma endregion
   else if (cur_box != null) {
-    if (box_context > ship_out_flag) 
+    if (box_context > ship_out_flag)
       #pragma region <Append a new leader node that uses cur_box 1078>
     {
       #pragma region <Get the next non-blank non-relax non-call token 404>
@@ -11687,7 +11646,7 @@ void package(small_number c)
   if (mode == -hmode) cur_box = hpack(link(head), saved(2), saved(1));
   else {
     cur_box = vpackage(link(head), saved(2), saved(1), d);
-    if (c == vtop_code) 
+    if (c == vtop_code)
       #pragma region <Readjust the height and depth of cur_box for vtop 1087>
     {
       h = 0; p = list_ptr(cur_box);
@@ -11843,7 +11802,7 @@ void close_files_and_terminate()
 #endif
 
   wake_up_terminal();
-  
+
   #pragma region <Finish the DVI file 642>
   while (cur_s > -1) {
     if (cur_s > 0)
@@ -11923,14 +11882,14 @@ void call_edit(packed_ASCII_code *filename, int fnlength, int linenumber)
   int sdone;
   int ddone;
   int i;
-  
+
   char dvalue[] = "start \"\" \"C:\\Program Files (x86)\\Notepad++\\notepad++\" -n%d %s";
   char *texeditvalue = dvalue;
   sdone = ddone = 0;
-  
+
   if (NULL != (temp = getenv("TEXEDIT")))
     texeditvalue = temp;
-  
+
   if (NULL == (command = (char*)malloc(strlen(texeditvalue) + fnlength + 25))) {
     fprintf(stderr, "! Not enough memory to issue editor command\n");
     exit(1);
@@ -11966,18 +11925,17 @@ void call_edit(packed_ASCII_code *filename, int fnlength, int linenumber)
         default:
           *temp++ = '%';
           *temp++ = c;
-          break;          
+          break;
       }
     }
     else
       *temp++ = c;
   }
   *temp = 0;
-  
+
   if (0 != system(command))
     fprintf(stderr, "! Trouble executing command %s\n", command);
-  
-  
+
   exit(1);
 }
 
@@ -12267,7 +12225,7 @@ void build_page()
     case hlist_node:
     case vlist_node:
     case rule_node:
-      if (page_contents < box_there) 
+      if (page_contents < box_there)
         #pragma region <Initialize the current page, insert the topskip glue ahead of p and goto continue 1001>
       {
         if (page_contents == empty)
@@ -12330,7 +12288,7 @@ void build_page()
       while (n >= subtype(link(r))) r = link(r);
 
       n = qo(n);
-      if (subtype(r) != qi(n)) 
+      if (subtype(r) != qi(n))
         #pragma region <Create a page insertion node with subtype(r) = qi(n), and include the correction for box n in the current page state 1009>
       {
         q = get_node(page_ins_node_size);
@@ -12387,7 +12345,6 @@ void build_page()
           if (tracing_pages > 0)
             #pragma region <Display the insertion split cost 1011>
           {
-            
             begin_diagnostic(); print_nl(TEX_STRING("% split"));
             print_int(n); print(TEX_STRING(" to ")); print_scaled(w);
             print_char(TEX_STRING(",")); print_scaled(best_height_plus_depth);
@@ -12452,7 +12409,7 @@ void build_page()
         c = awful_bad;
       //stat
 #ifndef NO_STAT
-      if (tracing_pages > 0) 
+      if (tracing_pages > 0)
         #pragma region <Display the page break cost 1006>
       {
         begin_diagnostic();
@@ -12560,14 +12517,14 @@ done:
 void new_interaction()
 {
   print_ln();
-  
+
   // Overflow check
   if (cur_chr > 255) {
     fprintf(stderr, "! Overflow in 1265\n");
     exit(1);
   }
   ///////////////////
-  
+
   interaction = (unsigned char)cur_chr;
   #pragma region <Initialize the print selector based on interaction 75>
   if (interaction == batch_mode) selector = no_print; else selector = term_only;
@@ -12613,7 +12570,7 @@ void fix_date_and_time()
   time_t unixtime;
   time(&unixtime);
   struct tm *tm_struct = localtime(&unixtime);
-  
+
   _time = sys_time = tm_struct->tm_hour*60 + tm_struct->tm_min;
   day = sys_day = tm_struct->tm_mday;
   month = sys_month = tm_struct->tm_mon + 1;
@@ -12636,12 +12593,12 @@ void new_font(small_number a)
   u = cur_cs;
   if (u >= hash_base)
     t = text(u);
-  else if (u >= single_base) 
+  else if (u >= single_base)
     if (u == null_cs)
       t = TEX_STRING("FONT");
     else
       t = u - single_base;
-  
+
   else {
     old_setting = selector; selector = new_string; print(TEX_STRING("FONT"));
     print(u - active_base);
@@ -12677,7 +12634,7 @@ void new_font(small_number a)
   name_in_progress = false;
 
   #pragma endregion
-  
+
   #pragma region <If this font has already been loaded set f to the internal font number and goto common_ending 1260>
   flushable_string = str_ptr - 1;
   for (f = font_base + 1; f <= font_ptr; f++)
@@ -12706,7 +12663,7 @@ common_ending:
 void debug_help()
 {
   int k, l, m, n;
-  
+
   clear_terminal();
   while (true)
   {
@@ -12819,12 +12776,11 @@ void final_cleanup()
     store_fmt_file();
 
     return;
-#endif    
+#endif
     // tini
     print_nl(TEX_STRING("(\dump is performed only by INITEX)"));
     return;
   }
-
 }
 
 // 440
@@ -12856,7 +12812,7 @@ void scan_int()
 
   if (cur_tok == alpha_token)
     #pragma region <Scan an alphabetic character code into cur_val 442>
-  {    
+  {
     get_token();
     if (cur_tok < cs_token_flag) {
       cur_val = cur_chr;
@@ -12877,7 +12833,7 @@ void scan_int()
       cur_val = TEX_STRING("0");
       back_error();
     }
-    else 
+    else
       #pragma region <Scan an optional space 443>
     {
       get_x_token();
@@ -12885,15 +12841,13 @@ void scan_int()
         back_input();
     }
       #pragma endregion
-    
   }
     #pragma endregion
   else if (cur_cmd >= min_internal && cur_cmd <= max_internal)
     scan_something_internal(int_val, false);
-  else 
+  else
     #pragma region <Scan a numeric constant 444>
   {
-    
     radix = 10; m = 214748364;
     if (cur_tok == octal_token) {
       radix = 8; m = 02000000000;
@@ -12932,7 +12886,7 @@ void scan_int()
 done:
     #pragma endregion
 
-    if (vacuous) 
+    if (vacuous)
       #pragma region <Express astonishment that no number was here 446>
     {
       print_err(TEX_STRING("Missing number, treated as zero"));
@@ -13054,7 +13008,7 @@ void pack_real_name_of_file(char **cpp)
     *real_name++ = '\\';
   }
   p = name_of_file.get_c_str();
-  
+
   while (*p != 0) {
     if (real_name >= &real_name_of_file[file_name_size]) {
       fprintf(stderr, "! Full file name is too long\n");
@@ -13063,7 +13017,6 @@ void pack_real_name_of_file(char **cpp)
     *real_name++ = *p++;
   }
   *real_name = 0;
-  
 }
 
 bool test_access(int filepath)
@@ -13073,7 +13026,7 @@ bool test_access(int filepath)
 
   switch (filepath) {
   case no_file_path: cur_path_place = NULL; break;
-  case input_file_path: 
+  case input_file_path:
   case read_file_path:
     cur_path_place = input_path; break;
   case font_file_path: cur_path_place = font_path; break;
@@ -13125,14 +13078,14 @@ done:
   if (term_offset + length(name) > max_print_line - 2) print_ln();
   else if (term_offset > 0 || file_offset > 0) print_char(TEX_STRING(" "));
   print_char(TEX_STRING("(")); incr(open_parens); slow_print(name); update_terminal(); state = new_line;
-  
+
   /*
   if (name == str_ptr - 1) {
     flush_string;
     name = cur_name;
   }
   */
-  
+
   #pragma region <Read the first line of the new file 538>
   line = 1;
 
@@ -13225,7 +13178,7 @@ void after_math()
     }
     #pragma endregion
 
-    cur_mlist = p; cur_style = text_style; mlist_penalties = false; 
+    cur_mlist = p; cur_style = text_style; mlist_penalties = false;
     mlist_to_hlist(); a = hpack(link(temp_head), 0, additional);
     set_box_lr(a, dlist);
     unsave(); decr(save_ptr);
@@ -13262,7 +13215,7 @@ void after_math()
     m = mode; p = fin_mlist(null);
   }
   else a = null;
-  if (m < 0) 
+  if (m < 0)
     #pragma region <Finish math in text 1196>
   {
     tail_append(new_math(math_surround, before)); cur_mlist = p; cur_style = text_style;
@@ -13272,7 +13225,7 @@ void after_math()
   }
     #pragma endregion
   else {
-    if (a == null) 
+    if (a == null)
       #pragma region <Check that another $ follows 1197>
     {
       get_x_token();
@@ -13295,7 +13248,7 @@ void after_math()
     else {
       e = width(a); q = e + math_quad(text_size);
     }
-    if (w + q > z) 
+    if (w + q > z)
       #pragma region <Squeeze the equation as much as possible if ther is an equaton number that should go on a separate line by itself, set e = 0 1201>
     {
       if (e != 0 && (w - total_shrink[normal] + q <= z || total_shrink[fil] != 0 ||
@@ -13838,7 +13791,7 @@ void fire_up(pointer c)
   }
   else geq_word_define(int_base + output_penalty_code, inf_penalty);
   #pragma endregion
-  
+
   if (sa_mark!=null)
     if (do_marks(fire_up_init, 0, sa_mark)) sa_mark = null;
   if (bot_mark!=null) {
@@ -13862,7 +13815,7 @@ void fire_up(pointer c)
 
   insert_penalties = 0;
   save_split_top_skip = split_top_skip;
-  if (holding_inserts <= 0) 
+  if (holding_inserts <= 0)
     #pragma region <Prepare all the boxes involved in insertions to act as queues 1018>
   {
     r = link(page_ins_head);
@@ -13881,7 +13834,7 @@ void fire_up(pointer c)
   q = hold_head; link(q) = null; prev_p = page_head; p = link(prev_p);
   while (p != best_page_break) {
     if (type(p) == ins_node) {
-      if (holding_inserts <= 0) 
+      if (holding_inserts <= 0)
         #pragma region <Either insert the material specified by node p into the appropriate box, or hold it for the next page; also delete node p from the current page 1020>
       {
         r = link(page_ins_head);
@@ -13889,10 +13842,9 @@ void fire_up(pointer c)
         if (best_ins_ptr(r) == null) wait = true;
         else {
           wait = false; s = last_ins_ptr(r); link(s) = ins_ptr(p);
-          if (best_ins_ptr(r) == p) 
+          if (best_ins_ptr(r) == p)
             #pragma region <Wrap up the box specified by node r, splitting node p if called for set wait = true if node p holds a remainder after splitting 1021>
           {
-            
             if (type(r) == split_up)
               if (broken_ins(r) == p && broken_ptr(r) != null) {
                 while (link(s) != broken_ptr(r)) s = link(s);
@@ -13926,7 +13878,7 @@ void fire_up(pointer c)
         #pragma endregion
     }
     else if (type(p) == mark_node) {
-      if (mark_class(p) != 0) 
+      if (mark_class(p) != 0)
         #pragma region <Update the current marks for |fire_up|>
       {
         find_sa_element(mark_val, mark_class(p), true);
@@ -13971,7 +13923,7 @@ void fire_up(pointer c)
   last_node_type = -1;
   page_depth = 0; page_max_depth = 0;
   #pragma endregion
-  
+
   if (q != hold_head) {
     link(page_head) = link(hold_head); page_tail = q;
   }
@@ -13992,7 +13944,7 @@ void fire_up(pointer c)
     first_mark = top_mark; add_token_ref(top_mark);
   }
   if (output_routine != null) {
-    if (dead_cycles >= max_dead_cycles) 
+    if (dead_cycles >= max_dead_cycles)
       #pragma region <Explain that too many dead cycles have occurred in a row 1024>
     {
       //
@@ -14005,10 +13957,9 @@ void fire_up(pointer c)
       error();
     }
       #pragma endregion
-    else 
+    else
       #pragma region <Fire up the users output routine and return 1025>
     {
-      
       output_active = true; incr(dead_cycles); push_nest(); mode = (mode_type)-vmode;
       prev_depth = ignore_depth; mode_line = -line;
       begin_token_list(output_routine, output_text);
@@ -14073,14 +14024,14 @@ void append_glue()
 void append_kern()
 {
   quarterword s;
-  
+
   // overflow check
   if (cur_chr > 255) {
     fprintf(stderr, "! Overflow assignment append_kern\n");
     exit(1);
   }
   //--------
-  
+
   s = (quarterword)cur_chr;
   scan_dimen(s == mu_glue, false, false); tail_append(new_kern(cur_val));
   subtype(tail) = s;
@@ -14152,11 +14103,11 @@ pointer vert_break(pointer p, scaled h, scaled d)
         b = badness(cur_height - h, active_height[6]);
       #pragma endregion
       if (b < awful_bad) {
-        if (pi <= eject_penalty) 
+        if (pi <= eject_penalty)
           b = pi;
-        else if (b < inf_bad) 
+        else if (b < inf_bad)
           b += pi;
-        else 
+        else
           b = deplorable;
       }
       if (b <= least_cost) {
@@ -14177,8 +14128,8 @@ update_heights:
       if (shrink_order(q) != normal && shrink(q) != 0) {
         print_err(TEX_STRING("Infinite glue shrinkage found in box being split"));
         help4(TEX_STRING("The box you are \vsplitting contains some infinitely"),
-          TEX_STRING("shrinkable glue, e.g., `\vss' or `\vskip 0pt minus 1fil'."), 
-          TEX_STRING("Such glue doesn't belong there; but you can safely proceed,"), 
+          TEX_STRING("shrinkable glue, e.g., `\vss' or `\vskip 0pt minus 1fil'."),
+          TEX_STRING("Such glue doesn't belong there; but you can safely proceed,"),
           TEX_STRING("since the offensive shrinkability has been made finite."));
         error();
         r = new_spec(q);
@@ -14188,7 +14139,7 @@ update_heights:
     cur_height += prev_dp + width(q); prev_dp = 0;
     #pragma endregion
 
-    not_found: 
+    not_found:
     if (prev_dp > d) {
       cur_height = cur_height + prev_dp - d; prev_dp = d;
     }
@@ -14312,7 +14263,7 @@ void do_register_command(small_number a)
   int p; // int_val..mu_val
   bool e; //{does | l | refer to a sparse array element ? }
   int w; //{integer or dimen value of | l | }
-  
+
   q = cur_cmd;
   e = false; // {just in case, will be set | true | for sparse array elements}
   #pragma region <Compute the register location l and its type p; but return if invalid 1237>
@@ -14398,7 +14349,7 @@ found:
         if (p == int_val)  cur_val = mult_integers(w, cur_val);
         else cur_val = nx_plus_y(w, cur_val, 0);
       else cur_val = x_over_n(w, cur_val);
-    else { 
+    else {
       r = new_spec(s);
       if (q == multiply) {
         width(r) = nx_plus_y(width(s), cur_val, 0); stretch(r) = nx_plus_y(stretch(s), cur_val, 0);
@@ -14430,14 +14381,14 @@ void open_or_close_in()
 {
   unsigned char c;
   unsigned char n;
-  
+
   // overflow check
   if (cur_chr > 255) {
     fprintf(stderr, "! Overflow assignment open_or_close_in\n");
     exit(1);
   }
   // ----
-  
+
   c = (unsigned char)cur_chr; scan_four_bit_int(); n = cur_val;
   if (read_open[n] != closed) {
     a_close(read_file[n]); read_open[n] = closed;
@@ -14465,12 +14416,12 @@ void issue_message()
     exit(1);
   }
   //////////////////
-  
+
   c = (unsigned char)cur_chr; link(garbage) = scan_toks(false, true); old_setting = selector;
   selector = new_string; token_show(def_ref); selector = old_setting;
   flush_list(def_ref); str_room(1);
   s = make_string();
-  if (c == 0) 
+  if (c == 0)
     #pragma region <Print string s on the terminal 1280>
   {
     if (term_offset + length(s) > max_print_line - 2)
@@ -14480,7 +14431,7 @@ void issue_message()
     slow_print(s); update_terminal();
   }
     #pragma endregion
-  else 
+  else
     #pragma region <Print string s as an error message 1283>
   {
     print_err(TEX_STRING(""));
@@ -14606,7 +14557,7 @@ void scan_delimiter(pointer p, bool r)
       break;
     }
   }
-  if (cur_val < 0) 
+  if (cur_val < 0)
     #pragma region <Report that an invalid delimiter code is beign changed to null set cur_val = 0 1161>
   {
     print_err(TEX_STRING("Missing delimiter (. inserted)"));
@@ -14624,7 +14575,6 @@ void scan_delimiter(pointer p, bool r)
   small_fam(p) = (cur_val / 04000000) % 16;
   small_char(p) = qi((cur_val / 010000) % 256);
   large_fam(p) = (cur_val / 256) % 16; large_char(p) = qi(cur_val % 256);
-  
 }
 
 //1288
@@ -14677,7 +14627,7 @@ void math_limit_switch()
     exit(1);
   }
   ////////////////
-  
+
   if (head != tail)
     if (type(tail) == op_noad) {
       subtype(tail) = (quarterword)cur_chr;
@@ -14739,7 +14689,7 @@ void sub_sup()
       p = supscr(tail) + cur_cmd - sup_mark;
       t = math_type(p);
     }
-  if (p == null || t != empty) 
+  if (p == null || t != empty)
     #pragma region <Insert a dummy noad to be sub/superscripted 1177>
   {
     tail_append(new_noad()); p = supscr(tail) + cur_cmd - sup_mark;
@@ -14758,7 +14708,6 @@ void sub_sup()
     #pragma endregion
 
   scan_math(p);
-  
 }
 
 // 1181
@@ -14766,7 +14715,7 @@ void math_fraction()
 {
   small_number c;
   c = cur_chr;
-  if (incompleat_noad != null) 
+  if (incompleat_noad != null)
     #pragma region <Ignore the fraction operation and complain about this ambiguous case 1183>
   {
     if (c >= delimited_code) {
@@ -15182,7 +15131,7 @@ void app_display(pointer j, pointer b, scaled d)
   scaled e; //{distance from right edge of box to end of line}
   int x; //{|pre_display_direction|}
   pointer p,q,r,t,u; //{for list manipulation}
-  
+
   s = display_indent; x = pre_display_direction;
   if (x == 0) shift_amount(b) = s+d;
   else {
@@ -15338,13 +15287,13 @@ pointer reverse(pointer this_box, pointer t, scaled& cur_g, float& cur_glue) // 
   int g_sign; //normal..shrinking; {selects type of glue}
   float glue_temp; //{glue value before rounding}
   halfword m, n; //{count of unmatched math nodes}
-  
+
   g_order = glue_order(this_box); g_sign = glue_sign(this_box);
   l = t; p = temp_ptr; m = min_halfword; n = min_halfword;
   while (true) {
     while (p != null)
       #pragma region <Move node |p| to the new list and go to the next node or |goto done| if the end of the reflected segment has been reached>
-reswitch: 
+reswitch:
       if (is_char_node(p))
         do {
           f = font(p); c = character(p);
@@ -15360,7 +15309,7 @@ reswitch:
           rule_wd = width(p);
           break;
         #pragma region <Cases of |reverse| that need special treatment>
-        case glue_node: 
+        case glue_node:
           round_glue;
           #pragma region <Handle a glue node for mixed...>
           if ((g_sign == stretching && stretch_order(g) == g_order) || (g_sign == shrinking && shrink_order(g) == g_order))
@@ -15379,7 +15328,7 @@ reswitch:
           #pragma endregion
           break;
 
-        case ligature_node: 
+        case ligature_node:
           flush_node_list(lig_ptr(p));
           temp_ptr = p; p = get_avail(); mem[p]=mem[lig_char(temp_ptr)]; link(p)=q;
           free_node(temp_ptr,small_node_size); goto reswitch;
@@ -15401,7 +15350,7 @@ reswitch:
               else {
                 type(p)=kern_node;
                 if (m>min_halfword) decr(m);
-                else 
+                else
                   #pragma region <Finish the reversed hlist segment and |goto done|>
                 {
                   free_node(p,small_node_size);
@@ -15453,7 +15402,6 @@ done:
 #pragma region <Declare eTeX procedures for tracing and input>
 void print_group(bool e)
 {
-
   switch (cur_group) {
   case bottom_level:
     print(TEX_STRING("bottom level")); return;
@@ -15529,7 +15477,7 @@ void scan_general_text()
   pointer p; //{tail of the token list being built}
   pointer q; //{new node being added to the token list via |store_new_token|}
   halfword unbalance; //{number of unmatched left braces}
-  
+
   s = scanner_status; w = warning_index; d = def_ref;
   scanner_status =absorbing; warning_index =cur_cs;
   def_ref = get_avail(); token_ref_count(def_ref) =null; p = def_ref;
@@ -15545,7 +15493,7 @@ void scan_general_text()
     }
     store_new_token(cur_tok);
   }
-found: 
+found:
   q = link(def_ref); free_avail(def_ref); //{discard reference count}
   if (q == null)  cur_val = temp_head;
   else cur_val = p;
@@ -15733,7 +15681,7 @@ void file_warning()
   quarterword l; //{saved value of | cur_level| or |if_limit | }
   quarterword c; //{saved value of | cur_group| or |cur_if | }
   int i; //{saved value of | if_line | }
-  
+
   p = save_ptr; l = cur_level; c = cur_group; save_ptr = cur_boundary;
   while (grp_stack[in_open] != save_ptr)
   {
@@ -15761,11 +15709,10 @@ void file_warning()
 
 void delete_sa_ref(pointer q)// {reduce reference count}
 {
-
   pointer p; //{for list manipulations}
   small_number i; //{a four bit index}
   small_number s; //{size of a node}
-  
+
   decr(sa_ref(q));
   if (sa_ref(q) != null) return;
   if (sa_index(q) < dimen_val_limit)
@@ -15833,7 +15780,7 @@ void sa_save(pointer p) // {saves value of | p | }
 {
   pointer q; // {the new save node}
   quarterword i; //{index field of node}
-  
+
   if (cur_level != sa_level)
   {
     check_full_save_stack; save_type(save_ptr) = restore_sa;
@@ -16029,7 +15976,7 @@ bool load_fmt_file()
   #pragma region <Undump the dynamic memory 1312>
   undump(lo_mem_stat_max + 1000, hi_mem_stat_min - 1, lo_mem_max);
   undump(lo_mem_stat_max + 1, lo_mem_max, rover);
-  if (eTeX_ex) for (k = int_val; k <= tok_val; k++) 
+  if (eTeX_ex) for (k = int_val; k <= tok_val; k++)
     undump(null, lo_mem_max, sa_root[k]);
   p = mem_bot; q = rover;
   do {
@@ -16087,7 +16034,6 @@ bool load_fmt_file()
   for (k = null_font; k <= font_ptr; k++)
     #pragma region <Undump the array info for internal font number k 1323>
   {
-    
     undump_qqqq(&font_check[k]);
     undump_int(&font_size[k]); undump_int(&font_dsize[k]);
     undump(min_halfword, max_halfword, font_params[k]);
@@ -16097,7 +16043,7 @@ bool load_fmt_file()
     undump_int(&char_base[k]); undump_int(&width_base[k]); undump_int(&height_base[k]);
     undump_int(&depth_base[k]); undump_int(&italic_base[k]); undump_int(&lig_kern_base[k]);
     undump_int(&kern_base[k]); undump_int(&exten_base[k]); undump_int(&param_base[k]);
-    undump(min_halfword, lo_mem_max, font_glue[k]); 
+    undump(min_halfword, lo_mem_max, font_glue[k]);
     undump(0, fmem_ptr - 1, bchar_label[k]);  undump(min_quarterword, non_char, font_bchar[k]);
     undump(min_quarterword, non_char, font_false_bchar[k]);
   }
@@ -16234,7 +16180,7 @@ void write_out(pointer p)
   q = get_avail(); info(q) = left_brace_token + TEX_STRING("{"); ins_list(q);
   old_mode = mode; mode = (mode_type)0;
   cur_cs = write_loc; q = scan_toks(false, true);
-  get_token(); 
+  get_token();
   if (cur_tok != end_write_token)
     #pragma region <Recover from an unbalanced write command 1372>
   {
@@ -16305,7 +16251,7 @@ void out_what(pointer p)
 // 1348
 void do_extension()
 {
-  //int i; 
+  //int i;
   //int j;
   int k;
   pointer p;
@@ -16391,7 +16337,7 @@ void begin_box(int box_context)
     scan_register_num(); fetch_box(cur_box);
     change_box(null); // {the box becomes void, at the same level}
     break;
-  case copy_code: 
+  case copy_code:
     scan_register_num(); fetch_box(q); cur_box = copy_node_list(q);
     break;
   case last_box_code:
@@ -16402,7 +16348,7 @@ void begin_box(int box_context)
       error();
     }
     else if (mode == vmode && head == tail) {
-      you_cant(); 
+      you_cant();
       help2(TEX_STRING("Sorry...I usually can't take things from the current page."),
         TEX_STRING("This \lastbox will therefore be void."));
       error();
@@ -16410,7 +16356,7 @@ void begin_box(int box_context)
     else {
       check_effective_tail; //(goto done);
       if (!is_char_node(tx))
-        if (type(tx) == hlist_node || type(tx) == vlist_node) 
+        if (type(tx) == hlist_node || type(tx) == vlist_node)
           #pragma region <Remove the last box, unless its part of discretionary 1081>
         {
           fetch_effective_tail(goto done);
@@ -16599,7 +16545,7 @@ bool fin_col()
         exit(1);
       }
       //--------------------------
-      
+
       type(u) = (quarterword)unset_node; span_count(u) = (quarterword)n;
       #pragma region <Determine the stretch order 659>
       if (total_stretch[filll] != 0) o = filll;
@@ -16676,7 +16622,7 @@ reswitch:
 #ifndef NO_DEBUG
   if (panicking)
     check_mem(false);
-#endif    
+#endif
   //gubed
   if (tracing_commands > 0)
     show_cur_cmd_chr();
@@ -16709,7 +16655,7 @@ reswitch:
   case mmode + ex_space:
     goto append_normal_space;
     break;
-    
+
   #pragma region <Cases of main_control that are not part of the inner loop 1045>
   case any_mode(relax):
   case vmode+spacer:
@@ -17021,7 +16967,7 @@ reswitch:
       exit(1);
     }
     //////////////////
-    
+
     tail_append(new_noad()); type(tail) = (quarterword)cur_chr;
     scan_math(nucleus(tail));
     break;
@@ -17174,15 +17120,15 @@ main_loop:
   if (mode > 0)
     if (language != clang)
       fix_language();
-  lig_stack = get_avail(); font(lig_stack) = main_f; cur_l = qi(cur_chr); 
-  
+  lig_stack = get_avail(); font(lig_stack) = main_f; cur_l = qi(cur_chr);
+
   // overflow check
   if (cur_l > 255) {
     fprintf(stderr, "! Overflow assignment 1034\n");
     exit(1);
   }
   ///////////////
-  
+
   character(lig_stack) = (quarterword)cur_l;
   cur_q = tail;
   if (cancel_boundary) {
@@ -17209,26 +17155,26 @@ main_loop_move_plus1:
 
 main_loop_move_plus2:
   if (cur_chr < font_bc[main_f] || cur_chr > font_ec[main_f]) {
-  
+
     // Overflow check
     if (cur_chr > 255) {
       fprintf(stderr, "! Overflow char_warning1 1036\n");
       exit(1);
     }
     //////////////
-    
+
     char_warning(main_f, (eight_bits)cur_chr); free_avail(lig_stack); goto big_switch;
   }
   main_i = char_info(main_f, cur_l);
   if (!char_exists(main_i)) {
-  
+
     // Overflow check
     if (cur_chr > 255) {
       fprintf(stderr, "! Overflow char_warning2 1036\n");
       exit(1);
     }
     ////////////////
-    
+
     char_warning(main_f, (eight_bits)cur_chr); free_avail(lig_stack); goto big_switch;
   }
   link(tail) = lig_stack; tail = lig_stack;
@@ -17259,7 +17205,7 @@ main_loop_lookahead_plus1:
     exit(1);
   }
   ////////////////
-  
+
   character(lig_stack) = (quarterword)cur_r;
   if (cur_r == false_bchar) cur_r = non_char;
 
@@ -17276,10 +17222,9 @@ main_lig_loop_plus1:
   main_j = font_info[main_k].qqqq;
 main_lig_loop_plus2:
   if (next_char(main_j) == cur_r)
-    if (skip_byte(main_j) <= stop_flag) 
+    if (skip_byte(main_j) <= stop_flag)
       #pragma region <Do ligature or kern command returning to main_lig_loop or main_loop_wrapup or main_loop_move 1040>
     {
-      
       if (op_byte(main_j) >= kern_flag) {
         wrapup(rt_hit); tail_append(new_kern(char_kern(main_f, main_j)));
         goto main_loop_move;
@@ -17465,7 +17410,7 @@ void init_math()
       #pragma region <Calculate the natural width, w, by which the characters of the final line extend to the right... 1146>
 
       #pragma region <Prepare for display after a non-empty paragraph>
-      if (eTeX_ex) 
+      if (eTeX_ex)
         #pragma region <Let |j| be the prototype box for the display>
       {
         if (right_skip == zero_glue)  j = new_kern(0);
@@ -17495,7 +17440,7 @@ void init_math()
         cur_dir = right_to_left;
       }
       v = v + 2 * quad(cur_font);
-      if (TeXXeT_en) 
+      if (TeXXeT_en)
         #pragma region <Initialize the LR stack>
         put_LR(before); // {this will never match}
         #pragma endregion
@@ -17641,7 +17586,6 @@ done:
 
 void just_copy(pointer p,pointer h, pointer t)
 {
-
   pointer r; //{current node being fabricated for new list}
   int words; //0..5; {number of words remaining to be copied}
 
@@ -17658,22 +17602,22 @@ void just_copy(pointer p,pointer h, pointer t)
       case rule_node:
         r = get_node(rule_node_size); words = rule_node_size;
         break;
-      case ligature_node: 
+      case ligature_node:
         r = get_avail(); //{only |font| and |character| are needed}
         mem[r]=mem[lig_char(p)]; goto found;
         break;
-      case kern_node: case math_node: 
+      case kern_node: case math_node:
         r = get_node(small_node_size);
         words = small_node_size;
         break;
-      case glue_node: 
+      case glue_node:
         r = get_node(small_node_size); add_glue_ref(glue_ptr(p));
         glue_ptr(r)=glue_ptr(p); leader_ptr(r)=null;
         break;
       case whatsit_node:
         #pragma region <Make a partial copy of the whatsit...>
         switch(subtype(p)) {
-          case open_node: 
+          case open_node:
             r = get_node(open_node_size); words = open_node_size;
             break;
           case write_node: case special_node:
@@ -17830,7 +17774,7 @@ reswitch:
   }
   math_type(p) = math_char; character(p) = qi(c % 256);
   if (c >= var_code && fam_in_range) fam(p) = cur_fam;
-  else 
+  else
     fam(p) = (c / 256) % 16;
 }
 
@@ -18025,7 +17969,7 @@ void make_accent()
         exit(1);
       }
       //////////////
-      
+
       q = new_character(f, (quarterword)cur_chr);
     }
     else if (cur_cmd == char_num) {
@@ -18041,7 +17985,7 @@ void make_accent()
       if (h != x) {
         p = hpack(p, 0, additional); shift_amount(p) = x - h;
       }
-      
+
       // Check for overflow
       float ftemp = round((w - a) / 2.0f + h * t - x * s);
       if (ftemp > 2147483583 || ftemp < -2147483583) {
@@ -18049,8 +17993,7 @@ void make_accent()
         exit(1);
       }
       /////////////////////////
-      
-      
+
       delta = (scaled)ftemp; r = new_kern(delta); subtype(r) = acc_kern;
       link(tail) = r; link(r) = p; tail = new_kern(-a - delta); subtype(tail) = acc_kern; link(p) = tail;
       p = q;
@@ -18112,7 +18055,7 @@ void no_align_error()
 
 void omit_error()
 {
-  print_err(TEX_STRING("Misplaced ")); 
+  print_err(TEX_STRING("Misplaced "));
   print_esc(TEX_STRING("omit"));
   help2(TEX_STRING("I expect to see \omit only after tab marks or the \cr of"),
     TEX_STRING("an alignment. Proceed, and I'll ignore this case."));
@@ -18186,7 +18129,7 @@ void append_italic_correction()
 {
   pointer p;
   internal_font_number f;
-  
+
   if (tail != head) {
     if (is_char_node(tail)) p = tail;
     else if (type(tail) == ligature_node) p = lig_char(tail);
@@ -18378,7 +18321,7 @@ void line_break(bool d)
         #pragma endregion
         if (second_pass && auto_breaking)
           #pragma region <Try to hyphenate the following word 894>
-        { 
+        {
           prev_s = cur_p; s = link(prev_s);
           if (s != null) {
             #pragma region <Skip to node ha, or goto done1 if no hyphenaotn should be attempted 896>
@@ -18428,7 +18371,7 @@ done2:
               }
               else if (type(s) == ligature_node)
                 #pragma region <Move the characters of a ligature node to hu and hc; but got done3... 898>
-              { 
+              {
                 if (font(lig_char(s)) != hf) goto done3;
                 j = hn; q = lig_ptr(s); if (q > null) hyf_bchar = character(q);
                 while (q > null) {
@@ -18526,7 +18469,6 @@ done2:
                 confusion(TEX_STRING("disc3"));
                 break;
               }
-            
             #pragma endregion
             s = link(s);
           } while (s != null);
@@ -18561,7 +18503,7 @@ done2:
         prev_p = cur_p; cur_p = s; goto done5;
         #pragma endregion
         break;
-      case math_node: 
+      case math_node:
         if (subtype(cur_p) < L_code) auto_breaking = myodd(subtype(cur_p));
         kern_break;
         break;
@@ -18749,7 +18691,7 @@ void post_line_break(bool d)
 
     if (TeXXeT_en)
       #pragma region <Insert LR nodes at the beginning of the current line and adjust the LR stack based on LR nodes in this line>
-    { 
+    {
       q = link(temp_head);
       if (LR_ptr!=null)
       {
@@ -18922,9 +18864,9 @@ void post_line_break(bool d)
         pen = pen + penalty(q + r);
       }
       else if (cur_line + 2 == best_line) {
-        if (d) 
+        if (d)
           pen = pen + display_widow_penalty;
-        else 
+        else
           pen = pen + widow_penalty;
       }
 
@@ -19050,7 +18992,7 @@ mycontinue:
                 lig_stack = new_lig_item((quarterword)cur_r);
                 if (j == n) bchar = non_char;
                 else {
-                  p = get_avail(); lig_ptr(lig_stack) = p; 
+                  p = get_avail(); lig_ptr(lig_stack) = p;
 
                   // overflow check
                   if (qi(hu[j + 1]) > 255) {
@@ -19058,8 +19000,8 @@ mycontinue:
                     exit(1);
                   }
                   /////////////
-                  
-                  character(p) = (quarterword)qi(hu[j + 1]); 
+
+                  character(p) = (quarterword)qi(hu[j + 1]);
                   font(p) = hf;
                 }
               }
@@ -19084,7 +19026,7 @@ mycontinue:
                   exit(1);
                 }
                 /////////////
-                
+
                 append_charnode_to_t(quarterword(cur_r)); incr(j); set_cur_r;
               }
               break;
@@ -19092,7 +19034,6 @@ mycontinue:
             if (op_byte(q) > qi(4))
               if (op_byte(q) != qi(7)) goto done;
             goto mycontinue;
-            
           }
             #pragma endregion
           w = char_kern(hf, q); goto done;
@@ -19302,7 +19243,6 @@ common_ending:
               minor_tail = link(hold_head);
               while (link(minor_tail) > null) minor_tail = link(minor_tail);
             }
-              
           } while (l < j);
           while (l > j)
             #pragma region <Append characters of hu[j..] to major_tail advancing j 917>
@@ -19358,7 +19298,7 @@ void begin_insert_or_adjust()
   else {
     scan_eight_bit_int();
     if (cur_val == 255) {
-      print_err(TEX_STRING("You can't ")); 
+      print_err(TEX_STRING("You can't "));
       print_esc(TEX_STRING("insert")); print_int(255);
       help1(TEX_STRING("I'm changing to \insert0; box 255 is special."));
       error();
@@ -19402,10 +19342,9 @@ void delete_last()
   pointer tx; //{effective tail node}
   quarterword m; // {the length of a replacement list}
 
-  if (mode == vmode && tail == head) 
+  if (mode == vmode && tail == head)
     #pragma region <Apologize for inability to do the operation now, unless unskip follows non-glue 1106>
   {
-
     if (cur_chr != glue_node || last_glue != max_halfword) {
       you_cant();
       help2(TEX_STRING("Sorry...I usually can't take things from the current page."),
@@ -19419,7 +19358,7 @@ void delete_last()
     #pragma endregion
   else  {
     check_effective_tail; //(return);
-    if (!is_char_node(tx)) 
+    if (!is_char_node(tx))
       if (type(tx) == cur_chr)
       {
         fetch_effective_tail(return);
@@ -19434,7 +19373,7 @@ void unpackage()
   pointer p;
   int c; // box_code..copy_code, 0..1
 
-  if (cur_chr > copy_code) 
+  if (cur_chr > copy_code)
   #pragma region <Handle saved items and |goto done|>
   {
     link(tail)=disc_ptr[cur_chr]; disc_ptr[cur_chr]=null;
@@ -19891,7 +19830,7 @@ void init_prim()
   primitive(TEX_STRING("leaders"), leader_ship, a_leaders);
   primitive(TEX_STRING("cleaders"), leader_ship, c_leaders);
   primitive(TEX_STRING("xleaders"), leader_ship, x_leaders);
-    
+
   // 1088
   primitive(TEX_STRING("indent"), start_par, 1);
   primitive(TEX_STRING("noindent"), start_par, 0);
@@ -20149,10 +20088,10 @@ void store_fmt_file()
 
   #pragma region <Dump the dynamic memory 1311>
   sort_avail();
-  var_used = 0; 
+  var_used = 0;
   dump_int(lo_mem_max);
   dump_int(rover);
-  if (eTeX_ex) 
+  if (eTeX_ex)
     for (k = int_val; k <= tok_val; k++) dump_int(sa_root[k]);
   p = mem_bot;
   q = rover;
@@ -20178,7 +20117,7 @@ void store_fmt_file()
   #pragma region <Dump the table of equivalents 1313>
   #pragma region <Dump regions 1 to 4 of eqtb 1315>
   k = active_base;
-  do { 
+  do {
     j = k;
     while (j < int_base - 1) {
       if (equiv(j) == equiv(j + 1) && eq_type(j) == eq_type(j + 1) && eq_level(j) == eq_level(j + 1))
@@ -20261,7 +20200,7 @@ void store_fmt_file()
     dump_int(kern_base[k]); dump_int(exten_base[k]); dump_int(param_base[k]);
     dump_int(font_glue[k]);
     dump_int(bchar_label[k]); dump_int(font_bchar[k]); dump_int(font_false_bchar[k]);
-    print_nl(TEX_STRING("\font")); print_esc(font_id_text(k)); 
+    print_nl(TEX_STRING("\font")); print_esc(font_id_text(k));
     print_char(TEX_STRING("="));
     print_file_name(font_name[k], font_area[k], TEX_STRING(""));
     if (font_size[k] != font_dsize[k]) {
@@ -20327,7 +20266,7 @@ int main(int argc, char **argv)
 
   bool ret = set_paths();
   if (!ret) exit(1);
-  
+
   #pragma region <check the constant values for consistency 14>
   bad = 0;
   if (half_error_line<30 || half_error_line > error_line - 15) bad = 1;
@@ -20340,7 +20279,7 @@ int main(int argc, char **argv)
 
   // 111
   //init
-#ifndef NO_INIT  
+#ifndef NO_INIT
   if (mem_min != mem_bot || mem_max != mem_top) bad = 10;
 #endif
   //tini
@@ -20363,7 +20302,6 @@ int main(int argc, char **argv)
 
   // 1249
   if (2 * max_halfword < mem_top - mem_min) bad = 41;
-  
 
   #pragma endregion
 
@@ -20415,7 +20353,7 @@ int main(int argc, char **argv)
       goto final_end;
     }
   }
-  
+
   // 61
   wterm_s(banner);
   if (format_ident == 0) wterm_ln_s(" (no format preloaded)");
@@ -20450,7 +20388,7 @@ int main(int argc, char **argv)
   #pragma endregion
 
   #pragma region <Enable eTeX, if requested>
-#ifndef NO_INIT 
+#ifndef NO_INIT
   if (buffer[loc] == TEX_STRING("*") && format_ident == TEX_STRING(" (INITEX)"))
   {
     no_new_control_sequence = false;
@@ -20589,7 +20527,7 @@ int main(int argc, char **argv)
   final_cleanup();
 
   do_end_of_TEX();
-  
+
 final_end:
   do_final_end();
 
