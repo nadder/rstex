@@ -500,7 +500,7 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
         // which window are we in
         int inside_window = -1;
-        for (int k=0; k<=15; k++) // metafont allows 16 separate screen areas inside one gui window
+        for (int k = 0; k <= 15; k++) // metafont allows 16 separate screen areas inside one gui window
           if (window_open[k]) {
             if (xPos >= left_col[k] && xPos < right_col[k] &&
                 yPos >= top_row[k] && yPos < bot_row[k]) {
@@ -602,7 +602,7 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             bitmap_dc, 0, 0, SRCCOPY);
 
         // draw axis
-        for (int k=0; k<=15; k++) // metafont allows 16 separate screen areas inside one gui window
+        for (int k = 0; k <= 15; k++) // metafont allows 16 separate screen areas inside one gui window
           if (window_open[k]) {
             int x_offset = m_window[k];
             int y_offset = n_window[k];
@@ -4190,7 +4190,7 @@ void make_choices(pointer knots)
 void solve_choices(pointer p, pointer q, halfword n)
 {
   int k; //:0..path_size; //{current knot number}
-  pointer r=max_halfword, s, t; //{registers for list traversal}
+  pointer r = max_halfword, s, t; //{registers for list traversal}
 
   #pragma region <Other local variables for |solve_choices|>
   fraction aa, bb, cc, ff, acc; //{temporary registers}
@@ -5682,10 +5682,11 @@ fraction crossing_point(int a, int b, int c)
   if (a < 0) zero_crossing;
   if (c >= 0)
   {
-    if (b >= 0)
+    if (b >= 0) {
       if (c > 0) no_crossing;
       else if (a == 0 && b == 0) no_crossing;
       else one_crossing;
+    }
     if (a == 0) zero_crossing;
   }
   else if (a == 0)
@@ -6666,11 +6667,11 @@ void diag_round()
             {
               case first_octant:
               case second_octant:
-                pen_edge = compromise(diag_offset(first_octant),-diag_offset(fifth_octant));
+                pen_edge = compromise(diag_offset(first_octant), -diag_offset(fifth_octant));
                 break;
               case fifth_octant:
               case sixth_octant:
-                pen_edge = -compromise(diag_offset(first_octant),-diag_offset(fifth_octant));
+                pen_edge = -compromise(diag_offset(first_octant), -diag_offset(fifth_octant));
                 break;
               case third_octant: case fourth_octant:
                 pen_edge = compromise(diag_offset(fourth_octant),
@@ -7587,7 +7588,7 @@ void dual_moves(pointer h, pointer p, pointer q)
   int mm0, mm1; //{skewed equivalents of |m0| and |m1|}
   int k; //{current offset number}
   pointer w, ww; //{pointers to the current offset and its neighbor}
-  int smooth_bot=INT_MAX, smooth_top=INT_MAX; //:0..move_size; //{boundaries of smoothing}
+  int smooth_bot = INT_MAX, smooth_top = INT_MAX; //:0..move_size; //{boundaries of smoothing}
   scaled xx, yy, xp, yp, delx, dely, tx, ty;
     //{registers for coordinate calculations}
   #pragma endregion
@@ -8262,7 +8263,7 @@ void paint_row(screen_row r, pixel_color b, trans_spec& a, screen_col n)
   do {
     col = *aa++;
     MoveToEx(bitmap_dc, col, r, NULL);
-    SetDCPenColor(bitmap_dc, b==0 ? white_color : black_color);
+    SetDCPenColor(bitmap_dc, b == 0 ? white_color : black_color);
 
     LineTo(bitmap_dc, *aa, r);
     b=!b;
@@ -9860,7 +9861,7 @@ void scan_def()
   int m; // start_def .. var_def, {the type of definition}
   int n; // 0 .. 3,  {the number of special suffix parameters}
   int k; // 0 .. param size, {the total number of parameters}
-  int c; // general_macro .. text_macro, {the kind of macro we�re defining}
+  int c; // general_macro .. text_macro, {the kind of macro we're defining}
   pointer r; // {parameter-substitution list}
   pointer q; // {tail of the macro token list}
   pointer p; // {temporary storage}
@@ -10144,7 +10145,7 @@ void macro_call(pointer def_ref, pointer arg_list, pointer macro_name)
   pointer r; //{current node in the macro's token list}
   pointer p, q; //{for list manipulation}
   int n; //{the number of arguments}
-  pointer l_delim=max_halfword, r_delim=max_halfword; //{a delimiter pair}
+  pointer l_delim = max_halfword, r_delim = max_halfword; //{a delimiter pair}
   pointer tail = max_halfword; //{tail of the argument list}
 
   r = link(def_ref); add_mac_ref(def_ref);
@@ -10746,7 +10747,7 @@ void end_name()
     cur_name = make_string();
   }
   else {
-    cur_name=str_ptr; str_ptr++;
+    cur_name = str_ptr; str_ptr++;
     str_start[str_ptr] = ext_delimiter; cur_ext = make_string();
   }
 }
@@ -10787,10 +10788,10 @@ void pack_buffered_name(small_number n, int a, int b)
   if (n + b - a + 1 + base_ext_length > file_name_size)
     b = a + file_name_size - n - 1 - base_ext_length;
   k = 0;
-  for (j = 1; j <= n; j++) append_to_name(xord[MF_base_default[j-1]]);
+  for (j = 1; j <= n; j++) append_to_name(xord[MF_base_default[j - 1]]);
   for (j = a; j <= b; j++) append_to_name(buffer[j]);
   for (j = base_default_length - base_ext_length + 1; j <= base_default_length; j++)
-    append_to_name(xord[MF_base_default[j-1]]);
+    append_to_name(xord[MF_base_default[j - 1]]);
 
   // addition for C, add zero terminator
   name_of_file[k + 1] = 0;
@@ -10911,7 +10912,7 @@ void prompt_file_name(str_number s, str_number e)
   {
     begin_name();
     k = first;
-    while ((buffer[k] == TEX_STRING(" ") || buffer[k]==tab) && k < last) k++;
+    while ((buffer[k] == TEX_STRING(" ") || buffer[k] == tab) && k < last) k++;
     while (1) {
       if (k == last)
         goto done;
@@ -11952,7 +11953,7 @@ void scan_tertiary()
 {
   pointer p; //{for list manipulation}
   halfword c, d; //{operation codes or modifiers}
-  pointer mac_name=max_halfword; //{token defined with \&{secondarydef}}
+  pointer mac_name = max_halfword; //{token defined with \&{secondarydef}}
 
   restart:
   if (cur_cmd < min_primary_command || cur_cmd > max_primary_command)
@@ -12029,8 +12030,8 @@ void scan_expression()
   int my_var_flag;//:0..max_command_code; //{initial value of |var_flag|}
   pointer mac_name = max_halfword; //{token defined with \&{tertiarydef}}
   bool cycle_hit; //{did a path expression just end with `\&{cycle}'?}
-  scaled x=INT_MAX, y=INT_MAX; //{explicit coordinates or tension at a path join}
-  int t=INT_MAX;//:endpoint..open; //{knot type following a path join}
+  scaled x = INT_MAX, y = INT_MAX; //{explicit coordinates or tension at a path join}
+  int t = INT_MAX;//:endpoint..open; //{knot type following a path join}
 
   my_var_flag = var_flag;
 restart:
@@ -14652,14 +14653,14 @@ void do_show_stats()
   if (false)
   #endif
   print(TEX_STRING("unknown"));
-  print(TEX_STRING(" (")); print_int(hi_mem_min-lo_mem_max-1);
+  print(TEX_STRING(" (")); print_int(hi_mem_min - lo_mem_max - 1);
   print(TEX_STRING(" still untouched)")); print_ln();
   print_nl(TEX_STRING("String usage "));
-  print_int(str_ptr-init_str_ptr); print_char(TEX_STRING("&"));
-  print_int(pool_ptr-init_pool_ptr);
+  print_int(str_ptr - init_str_ptr); print_char(TEX_STRING("&"));
+  print_int(pool_ptr - init_pool_ptr);
   print(TEX_STRING(" ("));
-  print_int(max_strings-max_str_ptr); print_char(TEX_STRING("&"));
-  print_int(pool_size-max_pool_ptr); print(TEX_STRING(" still untouched)")); print_ln();
+  print_int(max_strings - max_str_ptr); print_char(TEX_STRING("&"));
+  print_int(pool_size - max_pool_ptr); print(TEX_STRING(" still untouched)")); print_ln();
   get_x_next();
 }
 
@@ -14669,7 +14670,7 @@ void disp_var(pointer p)
   pointer q; //{traverses attributes and subscripts}
   int n; // 0..max_print_line; //{amount of macro text to show}
 
-  if (type(p)== structured)
+  if (type(p) == structured)
     #pragma region <Descend the structure 1047>
   {
     q = attr_head(p);
@@ -15012,7 +15013,7 @@ void ship_out(eight_bits c)
     q = sorted(p); w = 0; prev_m = -fraction_one; //{$|fraction_one|\approx\infty$}
     ww = 0; prev_w = 0; m = prev_m;
     do {
-      if (q==sentinel) mm = fraction_one;
+      if (q == sentinel) mm = fraction_one;
       else {
         d = ho(info(q)); mm = d / 8; ww = ww + (d % 8) - zero_w;
       }
@@ -15420,7 +15421,7 @@ void do_tfm_command()
           skip_error(skip_table[c]); skip_table[c] = undefined_label;
         }
         if (skip_table[c] == undefined_label) skip_byte(nl - 1) = qi(0);
-        else skip_byte(nl-1) = qi(nl - skip_table[c] - 1);
+        else skip_byte(nl - 1) = qi(nl - skip_table[c] - 1);
         skip_table[c] = nl - 1; goto done;
       }
       #pragma endregion
@@ -16768,7 +16769,7 @@ void close_files_and_terminate()
     }
   }
   print_ln();
-  if (ed_name_start != 0 && interaction>batch_mode)
+  if (ed_name_start != 0 && interaction > batch_mode)
     call_edit(&str_pool[ed_name_start], ed_name_length, edit_line);
 }
 

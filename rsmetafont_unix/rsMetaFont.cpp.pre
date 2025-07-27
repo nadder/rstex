@@ -2886,7 +2886,7 @@ bool interesting(pointer p)
 // 239
 pointer new_structure(pointer p)
 {
-  pointer q, r=max_halfword; //{list manipulation registers}
+  pointer q, r = max_halfword; //{list manipulation registers}
   switch(name_type(p)) {
     case root:
       q = link(p); r = get_node(value_node_size); equiv(q) = r;
@@ -5616,7 +5616,7 @@ void xy_round()
         }
         if (before[cur_rounding_ptr] == before[cur_rounding_ptr + 1])
           alpha = fraction_one;
-        else alpha = make_fraction(after[cur_rounding_ptr + 1]-after[cur_rounding_ptr], before[cur_rounding_ptr + 1]-before[cur_rounding_ptr]);
+        else alpha = make_fraction(after[cur_rounding_ptr + 1] - after[cur_rounding_ptr], before[cur_rounding_ptr + 1] - before[cur_rounding_ptr]);
         do {
           x_coord(p) = take_fraction(alpha, x_coord(p) - b) + a;
           right_x(p) = take_fraction(alpha, right_x(p) - b) + a;
@@ -5642,7 +5642,8 @@ void xy_round()
       }
       else a = b;
       if (myabs(a) > max_allowed) {
-        if (a > 0) a = max_allowed; else a = -max_allowed;
+        if (a > 0) a = max_allowed;
+        else a = -max_allowed;
       }
       before_and_after(b, a, q);
     }
@@ -5665,7 +5666,7 @@ void xy_round()
         }
         if (before[cur_rounding_ptr] == before[cur_rounding_ptr + 1])
           alpha = fraction_one;
-        else alpha = make_fraction(after[cur_rounding_ptr + 1] - after[cur_rounding_ptr], before[cur_rounding_ptr + 1]-before[cur_rounding_ptr]);
+        else alpha = make_fraction(after[cur_rounding_ptr + 1] - after[cur_rounding_ptr], before[cur_rounding_ptr + 1] - before[cur_rounding_ptr]);
         do {
           y_coord(p) = take_fraction(alpha, y_coord(p) - b) + a;
           right_y(p) = take_fraction(alpha, right_y(p) - b) + a;
@@ -5833,7 +5834,6 @@ void diag_round()
         } while (p != pp);
       }
     }
-
   }
 }
 
@@ -14164,7 +14164,7 @@ void init_gf()
   if (internal[hppp] <= 0) gf_ext = TEX_STRING(".gf");
   else {
     old_setting = selector; selector = new_string; print_char(TEX_STRING("."));
-    print_int(make_scaled(internal[hppp],59429463));
+    print_int(make_scaled(internal[hppp], 59429463));
     // {$2^{32}/72.27\approx59429463.07$}
     print(TEX_STRING("gf")); gf_ext = make_string(); selector = old_setting;
   }
