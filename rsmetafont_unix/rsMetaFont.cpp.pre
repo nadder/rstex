@@ -1533,7 +1533,7 @@ int ab_vs_cd(int a, int b, int c, int d)
   }
 
   while (true) {
-    q  = a / d; r = c / b;
+    q = a / d; r = c / b;
     if (q != r) {
       if (q > r) return_sign(1);
       else return_sign(-1);
@@ -1786,7 +1786,7 @@ angle n_arg(int x, int y)
   angle z; //{auxiliary register}
   int t; //{temporary storage}
   small_number k; //{loop counter}
-  int  octant;//:first_octant..sixth_octant; //{octant code}
+  int octant;//:first_octant..sixth_octant; //{octant code}
 
   if (x >= 0) octant = first_octant;
   else {
@@ -1989,7 +1989,7 @@ void print_word(memory_word w) // {prints w in all ways}
 pointer get_avail() // single-word node allocation
 {
   pointer p; // the new node being got
-  p = avail; // get top location in the avail  stack
+  p = avail; // get top location in the avail stack
   if (p != null) avail = link(avail); // and pop it off
   else if (mem_end < mem_max) { // or go into virgin territory
     mem_end++; p = mem_end;
@@ -2662,7 +2662,7 @@ void show_token_list(int p, int q, int l, int null_tally)
 
   _class = percent_class;
   tally = null_tally;
-  while (p != null &&  tally < l)
+  while (p != null && tally < l)
   {
     if (p == q)
       set_trick_count;
@@ -2983,13 +2983,13 @@ pointer find_variable(pointer t)
       {
         p = ss; pp = ss;
       }
-      else  {
+      else {
         pp = ss; s = attr_head(p);
         do {
           r = s; s = link(s);
         } while (n > attr_loc(s));
         if (n == attr_loc(s)) p = s;
-        else  {
+        else {
           q = get_node(attr_node_size); link(r) = q; link(q) = s;
           attr_loc(q) = n; name_type(q) = attr; type(q) = undefined;
           parent(q) = p; p = q;
@@ -3046,7 +3046,7 @@ void flush_variable(pointer p, pointer t, bool discard_suffixes)
     if (attr_loc(p) != n) return;
   }
   if (discard_suffixes) flush_below_variable(p);
-  else  {
+  else {
     if (type(p) == structured) p = attr_head(p);
     recycle_value(p);
   }
@@ -3058,7 +3058,7 @@ void flush_below_variable(pointer p)
   pointer q, r; //{list manipulation registers}
   if (type(p) != structured)
     recycle_value(p); //{this sets |type(p)=undefined|}
-  else  {
+  else {
     q = subscr_head(p);
     while (name_type(q) == subscr)
     {
@@ -3237,7 +3237,7 @@ void print_path(pointer h, str_number s, bool nuline)
         {
           print(TEX_STRING("{curl ")); print_scaled(right_curl(p));
         }
-        else  {
+        else {
           n_sin_cos(right_given(p)); print_char(TEX_STRING("{"));
           print_scaled(n_cos); print_char(TEX_STRING(",")); print_scaled(n_sin);
         }
@@ -3423,7 +3423,7 @@ void make_choices(pointer knots)
       {
         left_type(q) = curl; left_curl(q) = unity;
       }
-      else  {
+      else {
         left_type(q) = given; left_given(q) = n_arg(delx, dely);
       }
     }
@@ -3495,7 +3495,7 @@ void solve_choices(pointer p, pointer q, halfword n)
               if (delta_y[0] >= 0) right_y(p) = y_coord(p) + ((delta_y[0] + 1) / 3);
               else right_y(p) = y_coord(p) + ((delta_y[0] - 1) / 3);
             }
-            else  {
+            else {
               ff = make_fraction(unity, 3 * rt); //{$alpha/3$}
               right_x(p) = x_coord(p) + take_fraction(delta_x[0], ff);
               right_y(p) = y_coord(p) + take_fraction(delta_y[0], ff);
@@ -3507,7 +3507,7 @@ void solve_choices(pointer p, pointer q, halfword n)
               if (delta_y[0] >= 0) left_y(q) = y_coord(q) - ((delta_y[0] + 1) / 3);
               else left_y(q) = y_coord(q) - ((delta_y[0] - 1) / 3);
             }
-            else  {
+            else {
               ff = make_fraction(unity, 3 * lt); //{$beta/3$}
               left_x(q) = x_coord(q) - take_fraction(delta_x[0], ff);
               left_y(q) = y_coord(q) - take_fraction(delta_y[0], ff);
@@ -3533,7 +3533,7 @@ void solve_choices(pointer p, pointer q, halfword n)
         {
           aa = fraction_half; dd = 2 * delta[k];
         }
-        else  {
+        else {
           aa = make_fraction(unity, 3 * myabs(right_tension(r)) - unity);
           dd = take_fraction(delta[k], fraction_three - make_fraction(unity, myabs(right_tension(r))));
         }
@@ -3541,7 +3541,7 @@ void solve_choices(pointer p, pointer q, halfword n)
         {
           bb = fraction_half; ee = 2 * delta[k - 1];
         }
-        else  {
+        else {
           bb = make_fraction(unity, 3 * myabs(left_tension(t)) - unity);
           ee = take_fraction(delta[k - 1], fraction_three - make_fraction(unity, myabs(left_tension(t))));
         }
@@ -3555,7 +3555,7 @@ void solve_choices(pointer p, pointer q, halfword n)
             ff = take_fraction(ff, ff); //{$\alpha_k^2/\beta_k^2$}
             dd = take_fraction(dd, ff);
           }
-          else  {
+          else {
             ff = make_fraction(rt, lt);
             ff = take_fraction(ff, ff); //{$\beta_k^2/\alpha_k^2$}
             ee = take_fraction(ee, ff);
@@ -3569,7 +3569,7 @@ void solve_choices(pointer p, pointer q, halfword n)
           ww[k] = 0;
           vv[k] = acc - take_fraction(psi[1], fraction_one - ff);
         }
-        else  {
+        else {
           ff = make_fraction(fraction_one - ff, cc); //{this is $B_k/(C_k+B_k-u_{k-1}A_k)<5$}
           acc = acc - take_fraction(psi[k], ff);
           ff = take_fraction(ff, aa); //{this is $A_k/(C_k+B_k-u_{k-1}A_k)$}
@@ -4187,7 +4187,7 @@ void cull_edges(int w_lo, int w_hi, int w_out, int w_in)
     if (sorted(p) != sentinel)
     {
       r = temp_head; q = sorted(p); ww = 0; m = 1000000; prev_w = 0;
-      while (true)  {
+      while (true) {
         if (q == sentinel) mm = 1000000;
         else {
           d = ho(info(q)); mm = d / 8; ww = ww + (d % 8) - zero_w;
@@ -4230,7 +4230,7 @@ void cull_edges(int w_lo, int w_hi, int w_out, int w_in)
     }
     init_edges(cur_edges);
   }
-  else  {
+  else {
     n = n_min(cur_edges); n_min(cur_edges) = min_n;
     while (min_n > n)
     {
@@ -4845,7 +4845,7 @@ fraction crossing_point(int a, int b, int c)
 }
 
 // 394
-void  print_spec(str_number s)
+void print_spec(str_number s)
 {
   pointer p, q; // {for list traversal}
   small_number octant; // {the current octant code}
@@ -5366,7 +5366,7 @@ void split_cubic(pointer p, fraction t, scaled xq, scaled yq) //{splits the cubi
 // 419
 void octant_subdivide()
 {
-  pointer  p, q, r, s; //{for traversing the lists}
+  pointer p, q, r, s; //{for traversing the lists}
   scaled del1, del2, del3, del, dmax; //{proportional to the control points of a quadratic derived from a cubic}
   fraction t; //{where a quadratic crosses zero}
   scaled dest_x, dest_y; //{final values of |x| and |y| in the current cubic}
@@ -5661,7 +5661,7 @@ void xy_round()
         {
           b = before[cur_rounding_ptr]; a = after[cur_rounding_ptr];
         }
-        else  {
+        else {
           b = -before[cur_rounding_ptr]; a = -after[cur_rounding_ptr];
         }
         if (before[cur_rounding_ptr] == before[cur_rounding_ptr + 1])
@@ -6063,7 +6063,7 @@ pointer make_path(pointer pen_head)
   {
     octant = octant_code[k]; h = pen_head + octant; n = info(h); w = link(h);
     if (!myodd(k)) w = knil(w); // {in even octants, start at w_{n+1} }
-    for (m = 1; m <=  n + 1; m++)
+    for (m = 1; m <= n + 1; m++)
     {
       if (myodd(k)) ww = link(w); else ww = knil(w);
       if (x_coord(ww) != x_coord(w) || y_coord(ww) != y_coord(w))
@@ -6444,7 +6444,7 @@ void fill_envelope(pointer spec_head)
               if (ty >= unity)
               {
                 delx = xp - xx; yy = unity - yy;
-                while (true)  {
+                while (true) {
                   tx = take_fraction(delx, make_fraction(yy, dely));
                   if (ab_vs_cd(tx, dely, delx, yy) + xy_corr[octant] > 0) tx--;
                   m = floor_unscaled(xx + tx);
@@ -7314,7 +7314,7 @@ pointer p_plus_fq(pointer p, int f, pointer q, small_number t, small_number tt)
         else v = value(p) + take_scaled(f, value(q));
         value(p) = v; s = p; p = link(p);
         if (myabs(v) < threshold) free_node(s, dep_node_size);
-        else  {
+        else {
           if (myabs(v) >= coef_bound)
             if (watch_coefs)
             {
@@ -7340,7 +7340,7 @@ pointer p_plus_fq(pointer p, int f, pointer q, small_number t, small_number tt)
       }
       q = link(q); qq = info(q);
     }
-    else  {
+    else {
       link(r) = p; r = p; p = link(p); pp = info(p);
     }
 done:
@@ -7369,7 +7369,7 @@ pointer p_plus_q(pointer p, pointer q, small_number t)
         v = value(p) + value(q);
         value(p) = v; s = p; p = link(p); pp = info(p);
         if (myabs(v) < threshold) free_node(s, dep_node_size);
-        else  {
+        else {
           if (myabs(v) >= coef_bound)
             if (watch_coefs)
             {
@@ -7384,7 +7384,7 @@ pointer p_plus_q(pointer p, pointer q, small_number t)
       s = get_node(dep_node_size); info(s) = qq; value(s) = value(q);
       q = link(q); qq = info(q); link(r) = s; r = s;
     }
-    else  {
+    else {
       link(r) = p; r = p; p = link(p); pp = info(p);
     }
   done: value(p) = slow_add(value(p), value(q));
@@ -7573,7 +7573,7 @@ pointer single_dependency(pointer p)
   int m; //{the number of doublings}
   m = value(p) % s_scale;
   if (m > 28) return const_dependency(0);
-  else  {
+  else {
     q = get_node(dep_node_size);
     value(q) = two_to_the[28 - m]; info(q) = p;
     link(q) = const_dependency(0); return q;
@@ -7620,7 +7620,7 @@ void linear_eq(pointer p, small_number t)
     {
       link(s) = link(r); free_node(r, dep_node_size);
     }
-    else  {
+    else {
       w = make_fraction(value(r), v);
       if (myabs(w) <= half_fraction_threshold)
       {
@@ -8732,7 +8732,7 @@ void expand()
           help1(TEX_STRING("I'm ignoring this; it doesn't match any if."));
           error();
         }
-      else  {
+      else {
         while (cur_mod != fi_code) pass_text(); //{skip to \&{fi}}
         {
           p = cond_ptr; if_line = if_line_field(p);
@@ -8784,7 +8784,7 @@ void expand()
             p = null;
             do {
               if (file_state) end_file_reading();
-              else  {
+              else {
                 if (token_type <= loop_text) p = start;
                 end_token_list();
               }
@@ -8941,7 +8941,7 @@ void macro_call(pointer def_ref, pointer arg_list, pointer macro_name)
             TEX_STRING("You might want to delete some tokens before continuing."));
           back_error(); cur_cmd = comma;
         }
-        else  {
+        else {
           missing_err(text(r_delim));
           help2(TEX_STRING("I've gotten to the end of the macro parameter list."),
             TEX_STRING("You might want to delete some tokens before continuing."));
@@ -9912,7 +9912,7 @@ void recycle_value(pointer p)
           r = link(s);
           if (info(r) == null) goto done;
           if (info(r) != p) s = r;
-          else  {
+          else {
             t = type(q); link(s) = link(r); info(r) = q;
             if (myabs(value(r)) > max_c[t])
             {
@@ -9922,12 +9922,13 @@ void recycle_value(pointer p)
               }
               max_c[t] = myabs(value(r)); max_ptr[t] = r;
             }
-            else  {
+            else {
               link(r) = max_link[t]; max_link[t] = r;
             }
           }
         }
-        done:  q = link(r);
+done:
+        q = link(r);
       }
       if (max_c[dependent] > 0 || max_c[proto_dependent] > 0)
       {
@@ -10110,7 +10111,7 @@ void scan_primary()
     {
       num = 0; denom = 0;
     }
-    else  {
+    else {
       get_x_next();
       if (cur_cmd != numeric_token)
       {
@@ -10131,7 +10132,7 @@ void scan_primary()
       if (cur_cmd < numeric_token) //{in particular, |cur_cmd != plus_or_minus|}
       {
         p = stash_cur_exp(); scan_primary();
-        if (myabs(num) >= myabs(denom) || cur_type < pair_type)  do_binary(p, times);
+        if (myabs(num) >= myabs(denom) || cur_type < pair_type) do_binary(p, times);
         else {
           frac_mult(num, denom);
           free_node(p, value_node_size);
@@ -10190,7 +10191,7 @@ void scan_primary()
           {
             q = equiv(q);
             if (q == null) goto done2;
-            while (true)  {
+            while (true) {
               p = link(p);
               if (p == null)
               {
@@ -10234,7 +10235,7 @@ void scan_primary()
           back_input(); //{that was the token following the current expression}
           back_expr(); cur_cmd = left_bracket; cur_mod = 0; cur_sym = frozen_left_bracket;
         }
-        else  {
+        else {
           if (cur_type != known) bad_subscript();
           cur_cmd = numeric_token; cur_mod = cur_exp; cur_sym = 0;
         }
@@ -10258,7 +10259,7 @@ void scan_primary()
     }
     p = find_variable(q);
     if (p != null) make_exp_copy(p);
-    else  {
+    else {
       obliterated(q);
       help_line[2] = TEX_STRING("While I was evaluating the suffix of this variable,");
       help_line[1] = TEX_STRING("something was redefined, and it's no longer a variable!");
@@ -10285,7 +10286,7 @@ void scan_primary()
           }
           unstash_cur_exp(p);
         }
-        else  {
+        else {
           q = stash_cur_exp(); get_x_next(); scan_expression();
           if (cur_cmd != right_bracket)
           {
@@ -10330,7 +10331,7 @@ void stash_in(pointer p)
       {
         type(p) = known; value(p) = 0; free_node(q, dep_node_size);
       }
-      else  {
+      else {
         type(p) = dependent; new_dep(p, q);
       }
       recycle_value(cur_exp);
@@ -10512,7 +10513,7 @@ mycontinue:
       }
       get_x_next(); scan_primary();
       if (d != secondary_primary_macro) do_binary(p, (quarterword)c);
-      else  {
+      else {
         back_input(); binary_mac(p, c, mac_name);
         ref_count(c)--; get_x_next(); goto restart;
       }
@@ -10553,7 +10554,7 @@ mycontinue:
     }
     get_x_next(); scan_secondary();
     if (d != tertiary_secondary_macro) do_binary(p, (quarterword)c);
-    else  {
+    else {
       back_input(); binary_mac(p, c, mac_name);
       ref_count(c)--; get_x_next(); goto restart;
     }
@@ -10779,7 +10780,7 @@ mycontinue:
               free_node(pp, knot_node_size);
               if (qq == pp) qq = q;
             }
-            else  {
+            else {
               if (right_type(q) == _open_)
                 if (left_type(q) == curl || left_type(q) == given)
                 {
@@ -11504,7 +11505,7 @@ void do_binary(pointer p, quarterword c)
         {
           v = value(p); free_node(p, value_node_size);
         }
-        else  {
+        else {
           v = cur_exp; unstash_cur_exp(p);
         }
         if (cur_type == known) cur_exp = take_scaled(cur_exp, v);
@@ -11526,7 +11527,7 @@ void do_binary(pointer p, quarterword c)
 
     case over:
       if (cur_type != known || type(p) < pair_type) bad_binary(p, over);
-      else  {
+      else {
         v = cur_exp; unstash_cur_exp(p);
         if (v == 0)
         {
@@ -11581,7 +11582,7 @@ void do_binary(pointer p, quarterword c)
       break;
     case subpath_of:
       if (cur_type == pair_type) pair_to_path();
-      if (nice_pair(p, type(p)) &&  cur_type == path_type)
+      if (nice_pair(p, type(p)) && cur_type == path_type)
         chop_path(value(p));
       else bad_binary(p, subpath_of);
       break;
@@ -11982,7 +11983,7 @@ void edges_trans(pointer p, quarterword c)
         if (tyx % unity == 0)
         {
           xy_swap_edges(); txx = txy; tyy = tyx; txy = 0; tyx = 0;
-          if (empty_edges(cur_edges))  return;
+          if (empty_edges(cur_edges)) return;
         }
   if (txy == 0)
     if (tyx == 0)
@@ -12209,8 +12210,8 @@ void chop_string(pointer p)
 void chop_path(pointer p)
 {
   pointer q; //{a knot in the original path}
-  pointer  pp, qq, rr, ss; //{link variables for copies of path nodes}
-  scaled  a, b, k, l; //{indices for chopping}
+  pointer pp, qq, rr, ss; //{link variables for copies of path nodes}
+  scaled a, b, k, l; //{indices for chopping}
   bool reversed; //{was |a>b|?}
 
   l = path_length(); a = value(x_part_loc(p)); b = value(y_part_loc(p));
@@ -12694,14 +12695,15 @@ void try_eq(pointer l, pointer r)
     t = dependent; p = single_dependency(l); negate(value(p));
     q = dep_final;
   }
-  else  {
+  else {
     p = dep_list(l); q = p;
-    while (true)  {
+    while (true) {
       negate(value(q));
       if (info(q) == null) goto done;
       q = link(q);
     }
-  done:  link(prev_dep(l)) = link(q); prev_dep(link(q)) = prev_dep(l);
+  done:
+    link(prev_dep(l)) = link(q); prev_dep(link(q)) = prev_dep(l);
     type(l) = known;
   }
 
@@ -12710,7 +12712,7 @@ void try_eq(pointer l, pointer r)
     {
       value(q) = value(q) + cur_exp; goto done1;
     }
-    else  {
+    else {
       tt = cur_type;
       if (tt == independent) pp = single_dependency(cur_exp);
       else pp = dep_list(cur_exp);
@@ -12719,7 +12721,7 @@ void try_eq(pointer l, pointer r)
   {
     value(q) = value(q) + value(r); goto done1;
   }
-  else  {
+  else {
     tt = type(r);
     if (tt == independent) pp = single_dependency(r);
     else pp = dep_list(r);
@@ -12762,7 +12764,7 @@ void try_eq(pointer l, pointer r)
     }
     free_node(p, dep_node_size);
   }
-  else  {
+  else {
     linear_eq(p, t);
     if (r == null)
       if (cur_type != known)
@@ -13021,7 +13023,7 @@ void disp_token()
       delete_str_ref(cur_mod);
     }
   }
-  else  {
+  else {
     slow_print(text(cur_sym)); print_char(TEX_STRING("="));
     if (eq_type(cur_sym) >= outer_tag) print(TEX_STRING("(outer) "));
     print_cmd_mod(cur_cmd, cur_mod);
@@ -13245,7 +13247,7 @@ void do_add_to()
         help2(TEX_STRING("This expression should have specified a known picture."),
           TEX_STRING("So I'll not change anything just now.")); put_get_flush_error(0);
       }
-      else  {
+      else {
         merge_edges(cur_exp); flush_cur_exp(0);
       }
     }
@@ -13259,7 +13261,7 @@ void do_add_to()
           TEX_STRING("So I'll not change anything just now."));
         put_get_flush_error(0); flush_token_list(lhs);
       }
-      else  {
+      else {
         rhs = cur_exp; w = 1; cur_pen = null_pen;
         while (cur_cmd == with_option)
           if (scan_with()) {
@@ -13281,7 +13283,7 @@ void do_add_to()
                 left_x(rhs) = x_coord(rhs); left_y(rhs) = y_coord(rhs);
                 left_type(rhs) = _explicit; right_type(rhs) = _explicit;
               }
-              else  {
+              else {
                 p = htap_ypoc(rhs); q = link(p);
                 right_x(path_tail) = right_x(q); right_y(path_tail) = right_y(q);
                 right_type(path_tail) = right_type(q);
@@ -13403,7 +13405,7 @@ void ship_out(eight_bits c)
                 {
                   gf_out(skip1); gf_out(delta);
                 }
-                else  {
+                else {
                   gf_out(skip1 + 1); gf_two(delta);
                 }
               }
@@ -13411,7 +13413,7 @@ void ship_out(eight_bits c)
               {
                 delta = m - cur_min_m;
                 if (delta > max_new_row) gf_out(skip0);
-                else  {
+                else {
                   gf_out(new_row_0 + delta); goto done;
                 }
               }
@@ -13504,7 +13506,7 @@ void do_display()
       TEX_STRING("So I'll not change anything just now."));
     put_get_flush_error(0);
   }
-  else  {
+  else {
     e = cur_exp; cur_type = vacuous;
     get_x_next(); scan_expression();
     if (cur_type != known) goto common_ending;
@@ -14797,7 +14799,7 @@ void close_files_and_terminate()
   wake_up_terminal();
 
   if (gf_prev_ptr > 0 || internal[fontmaking] > 0) {
-    rover = lo_mem_stat_max + 1; link(rover)  = empty_flag; lo_mem_max = hi_mem_min - 1;
+    rover = lo_mem_stat_max + 1; link(rover) = empty_flag; lo_mem_max = hi_mem_min - 1;
     if (lo_mem_max - rover > max_halfword) lo_mem_max = max_halfword + rover;
     node_size(rover) = lo_mem_max - rover; llink(rover) = rover; rlink(rover) = rover;
     link(lo_mem_max) = null; info(lo_mem_max) = null;
@@ -15097,11 +15099,11 @@ void debug_help() //{routine to display various things}
         case 7: do_show_dependencies(); break;
         case 9: show_token_list(n, null, 100000, 0); break;
         case 10: slow_print(n); break;
-        case 11: check_mem(n > 0);  break; // {check wellformedness; print new busy locations if n > 0}
-        case 12: search_mem(n);  break; // {look for pointers to n}
-        case 13: std::cin >> l; /*read(term_in, l);*/ print_cmd_mod(n, l);  break;
-        case 14: for (k = 0; k <= n; k++) print(buffer[k]);  break;
-        case 15: panicking = !panicking;  break;
+        case 11: check_mem(n > 0); break; // {check wellformedness; print new busy locations if n > 0}
+        case 12: search_mem(n); break; // {look for pointers to n}
+        case 13: std::cin >> l; /*read(term_in, l);*/ print_cmd_mod(n, l); break;
+        case 14: for (k = 0; k <= n; k++) print(buffer[k]); break;
+        case 15: panicking = !panicking; break;
         default: print(TEX_STRING("?")); break;
       }
     }

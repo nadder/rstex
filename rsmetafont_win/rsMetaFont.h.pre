@@ -856,7 +856,7 @@ enum enum_char_class {
   space_class = 2, // the class number of spaces and nonstandard characters
   percent_class = 3, // the class number of '%'
   string_class = 4, // the class number of '"'
-  right_paren_class = 8, // the class number of ')'  
+  right_paren_class = 8, // the class number of ')'
   letter_class = 9, // letters and the underline character
   left_bracket_class = 17, // '['
   right_bracket_class = 18, // ']'
@@ -931,7 +931,7 @@ const int text_macro = 7; // preface to a macro with an undelimited text paramet
 const int value_node_size = 2; // the number of words in a value node
 
 // 229
-#define attr_loc_loc(n)  (n + 2) // where the attr_loc and parent fields are
+#define attr_loc_loc(n) (n + 2) // where the attr_loc and parent fields are
 #define attr_loc(n) info(attr_loc_loc(n)) // hash address of this attribute
 #define parent(n) link(attr_loc_loc(n)) // pointer to structured variable
 #define subscript_loc(n) (n + 2) // where the subscript field lives
@@ -1191,7 +1191,7 @@ Array<int, 0, move_size> env_move;
 
 // 547
 #define we_found_it do {\
-  tt = (t + 04000) /  010000; goto found;\
+  tt = (t + 04000) / 010000; goto found;\
 } while(false)
 
 // 552
@@ -2126,7 +2126,7 @@ int total_weight(pointer h);
 scaled path_length();
 pointer make_spec(pointer h, scaled safety_margin, int tracing);
 void new_boundary(pointer p, small_number octant);
-void  print_spec(str_number s);
+void print_spec(str_number s);
 void remove_cubic(pointer p);
 void skew(scaled x, scaled y, small_number octant);
 void test_known(quarterword c);

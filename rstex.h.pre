@@ -410,7 +410,7 @@ enum equiv_region3_code : halfword
   above_display_skip_code = 3, // extra glue just above displayed math
   below_display_skip_code = 4, // extra glue just below deisplayed math
   above_display_short_skip_code = 5, // glue above displayed math following short lines
-  below_display_short_skip_code = 6,  // glue below displayed math following short lines
+  below_display_short_skip_code = 6, // glue below displayed math following short lines
   left_skip_code = 7, // glue at left of justified lines
   right_skip_code = 8, // glue at right of justified lines
   top_skip_code = 9, // glue at top of main pages
@@ -2415,7 +2415,7 @@ Array<trie_pointer, 0, trie_size> trie_hash; // used to identify equivalent subt
 
 // init
 #ifndef NO_INIT
-Array<bool, 1, trie_size>  trie_taken; // does a family start here?
+Array<bool, 1, trie_size> trie_taken; // does a family start here?
 Array<trie_pointer, 0, 255> trie_min; // the first possible slot for each character
 trie_pointer trie_max; // largest location used in trie
 bool trie_not_ready; // is the trie still in linked form?

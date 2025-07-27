@@ -1414,7 +1414,7 @@ void node_ins(node_pointer p, node_pointer q)
     prev[r] = p; next[p] = r; prev[p] = q; next[q] = p;
   }
   if (yy[p] - yt[p] > max_height) max_height = yy[p] - yt[p];
-  if (yb[p] - yy[p] > max_depth)  max_depth = yb[p] - yy[p];
+  if (yb[p] - yy[p] > max_depth) max_depth = yb[p] - yy[p];
 }
 
 // 185
@@ -1497,7 +1497,7 @@ bool place_label(node_pointer p)
   }
   if (!overlap(p, dfl)) goto found;
   //@<Try the fourth choice for label direction@>;
-  xx[p] = dvi_x;  yy[p] = dvi_y; dot_for_label[p] = dfl; //{no luck; restore the coordinates}
+  xx[p] = dvi_x; yy[p] = dvi_y; dot_for_label[p] = dfl; //{no luck; restore the coordinates}
   return false;
   //@<Find non-overlapping coordinates, if possible, and |goto| found; otherwise set |place_label:=false| and |return|@>;
 
@@ -1916,7 +1916,7 @@ int main(int argc, char* argv[])
           next[q] = next[p];
           //@<Enter a prescribed label for node |p| into the rectangle list, and typeset it@>;
           hbox(info[p], label_font, false); //{Compute the size of this label}
-          dvi_x = xx[p];  dvi_y = yy[p];
+          dvi_x = xx[p]; dvi_y = yy[p];
           if (lab_typ[p] < TEX_STRING("5")) r = dot_for_label[p]; else r = 0;
           switch (lab_typ[p]) {
           case TEX_STRING("1"): case TEX_STRING("5"):top_coords(p); break;
