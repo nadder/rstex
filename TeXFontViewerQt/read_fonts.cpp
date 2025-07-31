@@ -35,7 +35,6 @@ void myabort(char const*msg)
     throw -1;
 }
 
-
 bool myfeof(FILE *fp) {
 	int c=fgetc(fp);
 	if (c!=EOF)
@@ -65,7 +64,6 @@ struct Array
 
 //////////////////////////////////// pk file ////////////////////////////////////////
 
-
 std::vector<std::vector<eight_bits>> image_raster(256);
 char_raster_info char_info[256];
 
@@ -75,9 +73,7 @@ int num_chars;
 
 static int term_pos; // current terminal position
 
-
 static int pk_loc;
-
 
 const int pk_id = 89; //{the version of \.{PK} file described}
 //const int pk_xxx1 = 240; //{\&{special} commands}
@@ -104,7 +100,6 @@ static Array<bool, 0, 255> status; // : array[0..255] of boolean ; {has the char
 static int dyn_f; // {dynamic packing variable}
 static int car; // {the character we are reading}
 static int packet_length; // {the length of the character packet}
-
 
 // 51
 static int repeat_count; //{how many times to repeat the next row?}
@@ -250,7 +245,6 @@ bool get_image_raster_bit(unsigned bit_offset, std::vector<eight_bits>& raster)
 	return (raster[byte_index] & (1 << bit_index)) != 0;
 }
 
-
 void copy_row(int width, int /*height*/, int row_to_copy, int n_rows_to_copy, std::vector<eight_bits>&raster)
 {
 	int src_offset;
@@ -284,7 +278,6 @@ void zoom_raster(int zoom_factor, int width, int height, std::vector<eight_bits>
 	}
 }
 
-
 void read_pk_file(char const * filename)
 {
 	int raster_char_index = 0;
@@ -314,8 +307,6 @@ void read_pk_file(char const * filename)
     font_info.design_size = design_size/(1024.0*1024.0);
     font_info.hppp = hppp/(256.0*256.0);
     font_info.vppp = vppp/(256.0*256.0);
-
-
 
 	skip_specials();
 	while (flag_byte!=pk_post) {
@@ -475,19 +466,12 @@ void read_pk_file(char const * filename)
 			if (rows_left!=0||h_bit!=width)
                 myabort("Bad PK file: More bits than required!");
 			 //@.More bits than required@>
-
-
-
 		}
 			// Create normally packed raster>
 
 		// Read and translate raster description >
         if (end_of_packet!=pk_loc) myabort("Bad PK file: Bad packet length!");
-
-
-
 		// Unpack and write characters 40
-
 		skip_specials();
 	}
 	j=0;
@@ -506,19 +490,7 @@ void read_pk_file(char const * filename)
 	fclose(log_file);
     pk_file = nullptr;
     log_file = nullptr;
-
-
-
-
 }
-
-
-
-
-///////////////////////////////////////////////////
-
-
-
 
 //////////////////////////////////// gf file ////////////////////////////////////////
 
@@ -551,14 +523,11 @@ const int post_post=249; // postamble ending}
 #define undefined_commands 250:251:252:253:254:255
 const int gf_id_byte = 131;
 
-
 enum paint_color
 {
 	pw_white,
 	pw_black
 };
-
-
 
 static int gf_loc;
 static int gf_len;
@@ -575,7 +544,6 @@ void move_to_byte(int n)
 	gf_loc=n;
 }
 
-
 int gf_byte() //{returns the next byte, unsigned}
 {
 	eight_bits b = 0;
@@ -584,8 +552,6 @@ int gf_byte() //{returns the next byte, unsigned}
 	gf_loc++;
 	return b;
 }
-	
-
 
 int gf_signed_quad() //{returns the next four bytes, signed}
 {
@@ -610,7 +576,6 @@ unsigned int read_big_endian_32bit(FILE *fp)
 	}
 	return c[3] + c[2]*256u + c[1]*256u*256u + c[0]*256u*256u*256u;
 }
-
 
 void ReadPXLFile(char const *filename)
 {
@@ -716,14 +681,7 @@ void ReadPXLFile(char const *filename)
     pxl_file = NULL;
     fclose(log_file);
     log_file = NULL;
-
-
-
-
 }
-
-
-
 
 void ReadGFFile(char const *filename)
 {
@@ -760,7 +718,6 @@ void ReadGFFile(char const *filename)
 	UNUSED(cur_char_dy);
 	UNUSED(gf_ch);
 	num_chars = 0;
-
 
 	for (i = 0; i < 256; i++) status[i] = virgin;
 
@@ -1027,7 +984,6 @@ void ReadGFFile(char const *filename)
 			case no_op:
 				break;
 
-
 			case post_post:
 				;
 				break;
@@ -1036,7 +992,6 @@ void ReadGFFile(char const *filename)
 				{
                     char buf[256]; sprintf(buf, "Unexpected %d in postamble", gf_com); myabort(buf);
 				}
-
 				break;
 
 		}
@@ -1047,6 +1002,3 @@ void ReadGFFile(char const *filename)
     gf_file = nullptr;
     log_file = nullptr;
 }
-
-
-

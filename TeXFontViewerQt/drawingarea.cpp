@@ -19,12 +19,10 @@ DrawingArea::DrawingArea(QWidget *parent) : QWidget(parent),cur_char(-1),zoom_fa
     userxStart(10), useryStart(10), xStart(0), yStart(0), show_ref(false),
     show_grid(false), show_chardx(false), show_charwd(false), width(0), height(0)
 {
-
 }
 
 void DrawingArea::sizeDrawingArea()
 {
-
     int x_off = char_info[cur_char].x_off;
     int y_off = char_info[cur_char].y_off;
 
@@ -42,19 +40,15 @@ void DrawingArea::sizeDrawingArea()
     xStart = yStart = 0;
     if (min_x < 0) {
         xStart = -min_x;
-
-
     }
     if (min_y < 0) {
         yStart = -min_y;
-
     }
 
     int drawingAreaWidth = max_x - min_x;
     int drawingAreaHeight = max_y - min_y;
 
     this->resize(drawingAreaWidth+userxStart+20, drawingAreaHeight+useryStart+20);
-
 }
 
 void DrawingArea::SetZoomBuf()
@@ -93,10 +87,7 @@ void DrawingArea::SetZoomBuf()
 
 
     sizeDrawingArea();
-
-
 }
-
 
 
 void draw_grid(QPainter& painter, int start_x, int start_y, int end_x, int end_y, int grid_spacing)
@@ -169,7 +160,6 @@ void DrawingArea::paintEvent(QPaintEvent * /*event*/)
         painter.drawRect(origin_x,up_left_y, ppx - origin_x, char_info[cur_char].height*zoom_factor);
     }
 
-
     if (show_ref) {
         int circleWidth = 1*zoom_factor;
         if (circleWidth < 7) circleWidth = 7;
@@ -179,8 +169,5 @@ void DrawingArea::paintEvent(QPaintEvent * /*event*/)
         painter.setBrush(Qt::red);
         painter.setPen(Qt::red);
         painter.drawEllipse(QPoint(origin_x, origin_y), circleWidth/2,circleWidth/2);
-
     }
-
-
 }

@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     curBkColor = Qt::white;
     total_num_fonts_opened = 0;
     QPalette pal = palette();
-    pal.setColor(QPalette::Background, curBkColor);
+    pal.setColor(QPalette::Window, curBkColor);
     scrollarea->setAutoFillBackground(true);
     scrollarea->setPalette(pal);
 
@@ -53,31 +53,24 @@ void MainWindow::InitStatusbar()
     pStatusBar->addWidget(labelZoom);
 
     labelCharIndex = new QLabel("");
-    labelCharIndex->setMinimumSize(labelCharIndex->sizeHint());
-    pStatusBar->addWidget(labelCharIndex);
+    pStatusBar->addWidget(labelCharIndex, 1);
 
     labelWidth = new QLabel("");
-    labelWidth->setMinimumSize(labelWidth->sizeHint());
-    pStatusBar->addWidget(labelWidth);
+    pStatusBar->addWidget(labelWidth, 1);
 
     labelRes = new QLabel("");
-    labelRes->setMinimumSize(labelRes->sizeHint());
-    pStatusBar->addWidget(labelRes);
+    pStatusBar->addWidget(labelRes, 1);
 
     labelDsgSz = new QLabel("");
-    labelDsgSz->setMinimumSize(labelDsgSz->sizeHint());
-    pStatusBar->addWidget(labelDsgSz);
+    pStatusBar->addWidget(labelDsgSz, 1);
 
     labelOffset = new QLabel("");
-    labelOffset->setMinimumSize(labelOffset->sizeHint());
-    pStatusBar->addWidget(labelOffset);
+    pStatusBar->addWidget(labelOffset, 1);
 
     labelNumChars = new QLabel("");
-    labelNumChars->setMinimumSize(labelOffset->sizeHint());
-    pStatusBar->addWidget(labelNumChars);
+    pStatusBar->addWidget(labelNumChars, 1);
 
     UpdateStatusbar();
-
 }
 
 
@@ -100,7 +93,6 @@ void MainWindow::dropEvent(QDropEvent* e)
 
 void MainWindow::UpdateStatusbar()
 {
-
     labelZoom->setText(QString::number(drawingarea->zoom_factor*100) + "%");
 
     if (total_num_fonts_opened > 0) {
@@ -108,9 +100,9 @@ void MainWindow::UpdateStatusbar()
         qs = QString::number(font_info.hppp*72.27, 'f', 2);
         labelRes->setText(QString("ppi: ") + qs);
         qs = QString::number(font_info.design_size, 'f', 2);
-        labelDsgSz->setText(QString("designsz:")+qs);
+        labelDsgSz->setText(QString("designsz: ") + qs);
         qs = QString::number(num_chars);
-        labelNumChars->setText(QString("nChars:")+qs);
+        labelNumChars->setText(QString("nChars: ") + qs);
     }
     else {
         labelRes->setText("");
@@ -118,21 +110,18 @@ void MainWindow::UpdateStatusbar()
         labelNumChars->setText("");
     }
 
-
-
     if (drawingarea->cur_char >= 0)
     {
-        labelCharIndex->setText(QString("ord:%1, code:%2").arg(drawingarea->cur_char).arg(char_info[drawingarea->cur_char].code));
-        QString qs;
-        qs.sprintf("charwd: px:%.2f,pt:%.2f,chardx:%.0f", char_info[drawingarea->cur_char].tfm_width,
-                char_info[drawingarea->cur_char].tfm_width/font_info.hppp,
-                char_info[drawingarea->cur_char].horz_esc);
-        labelWidth->setText(qs);
-        qs.sprintf("xoff:%d, yoff:%d, w:%d, h:%d", char_info[drawingarea->cur_char].x_off,
-                   char_info[drawingarea->cur_char].y_off,
-                   char_info[drawingarea->cur_char].width,
-                   char_info[drawingarea->cur_char].height);
-        labelOffset->setText(qs);
+        labelCharIndex->setText(QString("ord: %1  code: %2").arg(drawingarea->cur_char).arg(char_info[drawingarea->cur_char].code));
+        labelWidth->setText(QString("charwd px: %1  charwd pt: %2  chardx: %3")
+                                .arg(char_info[drawingarea->cur_char].tfm_width, 0, 'f', 2)
+                                .arg(char_info[drawingarea->cur_char].tfm_width/font_info.hppp, 0, 'f', 2)
+                                .arg(char_info[drawingarea->cur_char].horz_esc, 0, 'f', 0));
+        labelOffset->setText(QString("xoff: %1  yoff: %2  w: %3  h: %4")
+                                .arg(char_info[drawingarea->cur_char].x_off)
+                                .arg(char_info[drawingarea->cur_char].y_off)
+                                .arg(char_info[drawingarea->cur_char].width)
+                                .arg(char_info[drawingarea->cur_char].height));
     }
     else {
         labelCharIndex->setText("");
@@ -148,7 +137,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     if (event->type() == QEvent::Wheel && QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
     {
         QWheelEvent*p = static_cast<QWheelEvent*>(event);
-        if (p->delta() > 0)
+        if (p->angleDelta().y() > 0)
             on_actionzoomin_triggered();
         else {
             on_actionzoomout_triggered();
@@ -186,7 +175,6 @@ void MainWindow::on_actionExit_triggered()
     QApplication::quit();
 }
 
-
 void MainWindow::do_open_filename(QString the_filename)
 {
     if (the_filename.length() < 1)
@@ -219,7 +207,7 @@ void MainWindow::do_open_filename(QString the_filename)
                 QDir::setCurrent(olddir); // restore path
                 if (!gfFileInfo.exists()) {
                     QString msg;
-                    msg.sprintf("Could not open '%s'.\nCould be because the gf file is called something else or Metafont failed.", qPrintable(gfFileInfo.fileName()));
+                    msg.asprintf("Could not open '%s'.\nCould be because the gf file is called something else or Metafont failed.", qPrintable(gfFileInfo.fileName()));
                     QMessageBox::critical(this, "Error", msg);
                     return;
                 }
@@ -282,8 +270,6 @@ void MainWindow::on_actionOpen_triggered()
     QString the_filename = QFileDialog::getOpenFileName(this,
         tr("Open Font"), "", tr("Font Files (*.*gf *.*pk *.*mf *.*pxl *.*GF *.*PK *.*MF *.*PXL)"));
     do_open_filename(the_filename);
-
-
 }
 
 void MainWindow::on_actionnext_triggered()
@@ -338,7 +324,6 @@ void MainWindow::on_actionup_triggered()
     drawingarea->useryStart-=20;
     drawingarea->sizeDrawingArea();
     drawingarea->update();
-
 }
 
 void MainWindow::on_actiondown_triggered()
@@ -363,9 +348,11 @@ void MainWindow::on_actionref_triggered()
 }
 
 void MainWindow::on_actiongrid_triggered()
-{
-    drawingarea->show_grid = !drawingarea->show_grid;
+{    
+    drawingarea->show_grid = !drawingarea->show_grid;    
     drawingarea->update();
+    if (drawingarea->zoom_factor < 4)
+        statusBar()->showMessage("Zoom in more to show pixel grid!", 2000);
 }
 
 void MainWindow::on_actionchardx_triggered()
@@ -392,7 +379,7 @@ void MainWindow::on_actionbkcolor_triggered()
     if (clr.isValid()) {
         curBkColor = clr;
         QPalette pal = palette();
-        pal.setColor(QPalette::Background, curBkColor);
+        pal.setColor(QPalette::Window, curBkColor);
         scrollarea->setAutoFillBackground(true);
         scrollarea->setPalette(pal);
     }

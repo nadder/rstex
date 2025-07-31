@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>375</width>
-    <height>224</height>
+    <width>369</width>
+    <height>209</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -38,7 +38,7 @@
     <set>QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>40</x>
@@ -51,14 +51,14 @@
     <item>
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>TeXFontViewer, Version 1.0.0</string>
+       <string>TeXFontViewer, Version 1.1</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Copyright (c) 2019</string>
+       <string>Copyright (c) 2025</string>
       </property>
      </widget>
     </item>
