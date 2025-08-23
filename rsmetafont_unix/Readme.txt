@@ -1,10 +1,10 @@
-This is the Unix version of rsMetaFont, no GUI support yet.
-1. Compile the file CreatePoolFile.cpp to get cpf.exe or similar.
-2. Run the command cpf.exe TEX_STRING rsMetaFont.cpp.pre rsMetaFont.h.pre.
-   Make sure that after this step you have the three files
+This is the Unix version of rsMetaFont.
+1. Compile the file CreatePoolFile.cpp to get cpf or similar.
+2. Run the command cpf TEX_STRING rsMetaFont.cpp.pre rsMetaFont.h.pre.
+   Make sure that after this step you have the three files:
    rsMetaFont.cpp, rsMetaFont.h, and tex.pool.
 3. Rename tex.pool to mf.pool.
-4. Compile rsMetaFont.cpp e.g. g++ -orsmf rsMetaFont.cpp.
+4. Compile rsMetaFont.cpp by e.g. g++ -orsmf rsMetaFont.cpp.
 5. Celebrate!
 
 To create a plain base file make sure you have plain.mf nearby and run:

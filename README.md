@@ -19,15 +19,6 @@ machine converted into C it's not easy to understand or step through the code
 in a debugger. So that's why I decided to translate the program to C++. By doing so
 one also hopefully gains some understanding of what the code does.
 
-Another aspect was that I was interested in knowing how long it would take
-to write the program. I didn't keep a stop watch at hand but a rough estimate is
-that it took about 30 hours to type the whole program in and more than twice that to
-fix all typos and other bugs introduced before it finally passed the trip test.
-This was kind of what I expected except I thought the debugging time would be on 
-par with the time it took to type it in. Had I been more systematic in my approach
-and introduced more asserts and checks from the beginning the debugging time would
-have been considerably shorter.
-
 The program consists of two files `rstex.h.pre` and `rstex.cpp.pre`.
 These two files must be preprocessed by another program `CreatePoolFile` which converts all
 special strings in the program to numbers (as the original tangle program does),
@@ -50,8 +41,7 @@ It is not meant to be a working typesetting system, it is meant for educational 
 for those who want to understand how this complex software works.
 
 ## rsMetaFont
-I have also translated [mf.web](https://ctan.org/pkg/metafont) for Windows and Unix but currently
-only the Windows version supports graphical screen output.
+I have also translated [mf.web](https://ctan.org/pkg/metafont) for Windows and Unix.
 
 ## TeXFontViewerQt
 A small program to view the original TeX font bitmaps (PXL, GF, PK, or MF).
@@ -64,6 +54,7 @@ will exist some day.
 # Copyright
 These programs are copyright (C) 2023 by Richard Sandberg (mylodon at gmail dot com).
 The original `tex.web` is copyright (C) 1982 by Donald Knuth.
+The original e-TeX, `etex.ch` is copyright (C) 2012 by P. Breitenlohner.
 
 # License
 These programs are for educational purpose only, all commercial use is strictly forbidden.
