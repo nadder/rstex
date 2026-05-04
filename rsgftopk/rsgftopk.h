@@ -144,10 +144,10 @@ Array<char, 1, name_length + 1> pk_name;
 
 char temp_str[1024]; // temporary buffer for error messages
 
-const int comm_length = 23; // {length of |preamble_comment|}
+const int comm_length = 25; // {length of |preamble_comment|}
 const int from_length = 6;  // {length of its |' from '| part}
 Array<char, 1, comm_length + 1> comment;
-const char *preamble_comment = "GFtoPK 2.4 output from ";
+const char *preamble_comment = "rsgftopk 1.0 output from ";
 
 #define incr(s) (++s)
 #define decr(s) (--s)
